@@ -27,7 +27,7 @@ class WaitElasticCommand extends Command
     /**
      * Wait sleep time for elastic connection in seconds
      */
-    private const int WAIT_SLEEP_TIME = 2;
+    private const WAIT_SLEEP_TIME = 2;
 
     /**
      * Constructor

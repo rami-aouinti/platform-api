@@ -17,7 +17,7 @@ use function str_starts_with;
  */
 class StopwatchCompilerPass implements CompilerPassInterface
 {
-    private const array SERVICE_TAGS = [
+    private const SERVICE_TAGS = [
         'security.voter',
         'kernel.event_subscriber',
         'validator.constraint_validator',

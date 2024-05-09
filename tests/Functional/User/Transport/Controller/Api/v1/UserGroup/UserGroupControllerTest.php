@@ -26,7 +26,7 @@ class UserGroupControllerTest extends WebTestCase
 {
     use UserHelper;
 
-    private const string USER_GROUP_NAME_FOR_TEST = 'Normal users';
+    private const USER_GROUP_NAME_FOR_TEST = 'Normal users';
     protected static string $baseUrl = self::API_URL_PREFIX . '/v1/user_group';
     private UserGroupResource $userGroupResource;
 

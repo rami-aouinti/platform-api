@@ -29,7 +29,7 @@ class UserControllerTest extends WebTestCase
 {
     use UserHelper;
 
-    private const string USERNAME_FOR_TEST = 'john-logged';
+    private const USERNAME_FOR_TEST = 'john-logged';
     protected static string $baseUrl = self::API_URL_PREFIX . '/v1/user';
     private UserResource $userResource;
 

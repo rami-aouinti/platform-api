@@ -19,7 +19,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
  */
 class IsUserHimselfVoter extends Voter
 {
-    private const string ATTRIBUTE = 'IS_USER_HIMSELF';
+    private const ATTRIBUTE = 'IS_USER_HIMSELF';
 
     /**
      * {@inheritdoc}

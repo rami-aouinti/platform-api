@@ -46,7 +46,7 @@ class ApiKey implements EntityInterface, UserGroupAwareInterface
     use Timestampable;
     use Uuid;
 
-    final public const int TOKEN_LENGTH = 40;
+    final public const TOKEN_LENGTH = 40;
 
     #[ORM\Id]
     #[ORM\Column(
