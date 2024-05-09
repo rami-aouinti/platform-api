@@ -31,7 +31,7 @@ class CreateRolesCommand extends Command
 {
     use SymfonyStyleTrait;
 
-    final public const string NAME = 'user:create-roles';
+    final public const NAME = 'user:create-roles';
 
     /**
      * Constructor

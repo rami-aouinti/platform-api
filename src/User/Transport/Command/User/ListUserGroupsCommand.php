@@ -31,7 +31,7 @@ class ListUserGroupsCommand extends Command
 {
     use SymfonyStyleTrait;
 
-    final public const string NAME = 'user:list-groups';
+    final public const NAME = 'user:list-groups';
 
     /**
      * Constructor

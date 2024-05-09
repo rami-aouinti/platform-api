@@ -28,7 +28,7 @@ class EditUserCommand extends Command
 {
     use SymfonyStyleTrait;
 
-    final public const string NAME = 'user:edit';
+    final public const NAME = 'user:edit';
 
     /**
      * Constructor

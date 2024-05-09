@@ -14,9 +14,9 @@ use Elasticsearch\ClientBuilder;
  */
 class ElasticsearchService implements ElasticsearchServiceInterface
 {
-    final public const string INDEX_PREFIX = 'index';
-    final public const string INDEX_DATE_FORMAT = 'Y_m_d';
-    final public const string TEMPLATE_NAME = 'template_1';
+    final public const INDEX_PREFIX = 'index';
+    final public const INDEX_DATE_FORMAT = 'Y_m_d';
+    final public const TEMPLATE_NAME = 'template_1';
 
     private Client $client;
 

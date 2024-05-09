@@ -17,8 +17,8 @@ use function is_string;
  */
 class OpenSslCryptService implements OpenSslCryptServiceInterface
 {
-    final public const string ERROR_WRONG_ALGORITHM = 'OS does not support crypt algorithm';
-    final public const string ERROR_MISSING_DATA_FOR_DECRYPT = 'Missing or wrong data for decrypt';
+    final public const ERROR_WRONG_ALGORITHM = 'OS does not support crypt algorithm';
+    final public const ERROR_MISSING_DATA_FOR_DECRYPT = 'Missing or wrong data for decrypt';
 
     public function __construct(
         private readonly string $algorithm,

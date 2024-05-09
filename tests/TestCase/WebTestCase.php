@@ -17,7 +17,7 @@ use function gc_enable;
  */
 abstract class WebTestCase extends BaseWebTestCase
 {
-    public const string API_URL_PREFIX = '/api';
+    public const API_URL_PREFIX = '/api';
 
     /**
      * @codeCoverageIgnore

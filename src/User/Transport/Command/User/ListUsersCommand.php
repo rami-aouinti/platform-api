@@ -32,7 +32,7 @@ class ListUsersCommand extends Command
 {
     use SymfonyStyleTrait;
 
-    final public const string NAME = 'user:list';
+    final public const NAME = 'user:list';
 
     /**
      * Constructor
