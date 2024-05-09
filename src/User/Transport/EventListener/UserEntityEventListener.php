@@ -15,10 +15,10 @@ use function strlen;
 /**
  * @package App\User
  */
-class UserEntityEventListener
+readonly class UserEntityEventListener
 {
     public function __construct(
-        private readonly UserPasswordHasherInterface $userPasswordHasher,
+        private UserPasswordHasherInterface $userPasswordHasher,
     ) {
     }
 

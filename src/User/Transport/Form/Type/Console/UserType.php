@@ -12,6 +12,7 @@ use App\Tool\Application\Service\LocalizationService;
 use App\Tool\Domain\Service\Interfaces\LocalizationServiceInterface;
 use App\User\Application\DTO\User\User as UserDto;
 use App\User\Application\Resource\UserGroupResource;
+use App\User\Domain\Entity\Enum\SexEnum;
 use App\User\Transport\Form\DataTransformer\UserGroupTransformer;
 use App\User\Transport\Form\Type\Traits\UserGroupChoices;
 use Symfony\Component\Form\AbstractType;
@@ -69,6 +70,15 @@ class UserType extends AbstractType
             Type\EmailType::class,
             [
                 FormTypeLabelInterface::LABEL => 'Email address',
+                FormTypeLabelInterface::REQUIRED => true,
+                FormTypeLabelInterface::EMPTY_DATA => '',
+            ],
+        ],
+        [
+            'birthday',
+            Type\DateTimeType::class,
+            [
+                FormTypeLabelInterface::LABEL => 'Birthday',
                 FormTypeLabelInterface::REQUIRED => true,
                 FormTypeLabelInterface::EMPTY_DATA => '',
             ],
@@ -155,6 +165,17 @@ class UserType extends AbstractType
                     FormTypeLabelInterface::LABEL => 'Language',
                     FormTypeLabelInterface::REQUIRED => true,
                     FormTypeLabelInterface::EMPTY_DATA => Language::getDefault(),
+                ],
+            );
+        $builder
+            ->add(
+                'sex',
+                Type\EnumType::class,
+                [
+                    FormTypeLabelInterface::CLASS_NAME => SexEnum::class,
+                    FormTypeLabelInterface::LABEL => 'Sex',
+                    FormTypeLabelInterface::REQUIRED => true,
+                    FormTypeLabelInterface::EMPTY_DATA => SexEnum::getDefault(),
                 ],
             );
         $builder

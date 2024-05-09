@@ -11,6 +11,7 @@ use App\Role\Application\Security\RolesService;
 use App\User\Domain\Entity\User as Entity;
 use App\User\Domain\Entity\UserGroup;
 use App\User\Domain\Repository\Interfaces\UserRepositoryInterface as Repository;
+use App\User\Infrastructure\Repository\UserRepository;
 use Throwable;
 
 use function array_filter;
@@ -24,7 +25,7 @@ use function in_array;
  * @codingStandardsIgnoreStart
  *
  * @method Entity getReference(string $id, ?string $entityManagerName = null)
- * @method \App\User\Infrastructure\Repository\UserRepository getRepository()
+ * @method UserRepository getRepository()
  * @method Entity[] find(?array $criteria = null, ?array $orderBy = null, ?int $limit = null, ?int $offset = null, ?array $search = null, ?string $entityManagerName = null)
  * @method Entity|null findOne(string $id, ?bool $throwExceptionIfNotFound = null, ?string $entityManagerName = null)
  * @method Entity|null findOneBy(array $criteria, ?array $orderBy = null, ?bool $throwExceptionIfNotFound = null, ?string $entityManagerName = null)
@@ -39,7 +40,7 @@ use function in_array;
 class UserResource extends RestResource
 {
     /**
-     * @param \App\User\Infrastructure\Repository\UserRepository $repository
+     * @param UserRepository $repository
      */
     public function __construct(
         Repository $repository,
