@@ -8,8 +8,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * Class Address
- *
  * @package App\User\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -20,7 +18,7 @@ class Address
     final public const SET_USER_BASIC = 'set.UserBasic';
 
     #[ORM\Column(
-        type: "string",
+        type: 'string',
         length: 255
     )]
     #[Groups([
@@ -33,7 +31,7 @@ class Address
     public string $country;
 
     #[ORM\Column(
-        type: "string",
+        type: 'string',
         length: 255
     )]
     #[Groups([
@@ -46,7 +44,7 @@ class Address
     public string $city;
 
     #[ORM\Column(
-        type: "string",
+        type: 'string',
         length: 255
     )]
     #[Groups([
@@ -59,7 +57,7 @@ class Address
     public string $postcode;
 
     #[ORM\Column(
-        type: "string",
+        type: 'string',
         length: 255
     )]
     #[Groups([
@@ -72,7 +70,7 @@ class Address
     public string $street;
 
     #[ORM\Column(
-        type: "string",
+        type: 'string',
         length: 255
     )]
     #[Groups([
@@ -98,43 +96,43 @@ class Address
         $this->houseNumber = $houseNumber;
     }
 
-    public  function getCountry(): string
+    public function getCountry(): string
     {
         return $this->country;
     }
-    public  function setCountry(string $country):void
+    public function setCountry(string $country): void
     {
         $this->country = $country;
     }
-    public  function getCity(): string
+    public function getCity(): string
     {
         return $this->city;
     }
-    public  function setCity(string $city):void
+    public function setCity(string $city): void
     {
         $this->city = $city;
     }
-    public  function getPostcode(): string
+    public function getPostcode(): string
     {
         return $this->postcode;
     }
-    public  function setPostcode(string $postcode):void
+    public function setPostcode(string $postcode): void
     {
         $this->postcode = $postcode;
     }
-    public  function getStreet(): string
+    public function getStreet(): string
     {
         return $this->street;
     }
-    public  function setStreet(string $street):void
+    public function setStreet(string $street): void
     {
         $this->street = $street;
     }
-    public  function getHouseNumber(): string
+    public function getHouseNumber(): string
     {
         return $this->houseNumber;
     }
-    public  function setHouseNumber(string $houseNumber):void
+    public function setHouseNumber(string $houseNumber): void
     {
         $this->houseNumber = $houseNumber;
     }

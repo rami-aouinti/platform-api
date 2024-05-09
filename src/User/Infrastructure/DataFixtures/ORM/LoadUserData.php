@@ -121,13 +121,14 @@ final class LoadUserData extends Fixture implements OrderedFixtureInterface
         return true;
     }
 
-    /**
-     * @return Address
-     */
     private function createAddress(): Address
     {
         return new Address(
-            'Germany', 'Köln', '50859', 'Widdersdorder landstr', '11'
+            'Germany',
+            'Köln',
+            '50859',
+            'Widdersdorder landstr',
+            '11'
         );
     }
 }

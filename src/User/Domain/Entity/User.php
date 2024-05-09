@@ -158,8 +158,8 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     private string $email = '';
 
     #[ORM\Column(
-        name: "birthday",
-        type: "datetime",
+        name: 'birthday',
+        type: 'datetime',
         nullable: true
     )]
     #[Groups([
@@ -174,8 +174,8 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     private ?\DateTimeInterface $birthday = null;
 
     #[ORM\Column(
-        name: "image",
-        type: "string",
+        name: 'image',
+        type: 'string',
         length: 255,
         nullable: true
     )]
@@ -189,8 +189,8 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     private ?string $image = null;
 
     #[ORM\Column(
-        name: "sex",
-        type: "string",
+        name: 'sex',
+        type: 'string',
         enumType: SexEnum::class
     )]
     #[Groups([
@@ -215,7 +215,7 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     private Address $address;
 
     #[ORM\Column(
-        type: "json",
+        type: 'json',
         nullable: true
     )]
     #[Groups([
@@ -373,51 +373,51 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
         return $this;
     }
 
-    public  function getBirthday(): ?\DateTimeInterface
+    public function getBirthday(): ?\DateTimeInterface
     {
         return $this->birthday;
     }
-    public  function setBirthday(?\DateTimeInterface $birthday):self
+    public function setBirthday(?\DateTimeInterface $birthday): self
     {
         $this->birthday = $birthday;
 
         return $this;
     }
-    public  function getImage(): ?string
+    public function getImage(): ?string
     {
         return $this->image;
     }
-    public  function setImage(?string $image):self
+    public function setImage(?string $image): self
     {
         $this->image = $image;
 
         return $this;
     }
-    public  function getSex(): SexEnum
+    public function getSex(): SexEnum
     {
         return $this->sex;
     }
-    public  function setSex(SexEnum $sex):self
+    public function setSex(SexEnum $sex): self
     {
         $this->sex = $sex;
 
         return $this;
     }
-    public  function getAddress(): Address
+    public function getAddress(): Address
     {
         return $this->address;
     }
-    public  function setAddress(Address $address):self
+    public function setAddress(Address $address): self
     {
         $this->address = $address;
 
         return $this;
     }
-    public  function getSocialMedia(): array
+    public function getSocialMedia(): array
     {
         return $this->socialMedia;
     }
-    public  function setSocialMedia(array $socialMedia):self
+    public function setSocialMedia(array $socialMedia): self
     {
         $this->socialMedia = $socialMedia;
 

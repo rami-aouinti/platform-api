@@ -8,8 +8,6 @@ use App\General\Domain\Enum\Interfaces\DatabaseEnumInterface;
 use App\General\Domain\Enum\Traits\GetValues;
 
 /**
- * Class SexEnum
- *
  * @package App\User\Domain\Entity\Enum
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

@@ -157,55 +157,55 @@ class User extends RestDto
         return $this;
     }
 
-    public  function getBirthday(): ?\DateTimeInterface
+    public function getBirthday(): ?\DateTimeInterface
     {
         return $this->birthday;
     }
-    public  function setBirthday(?\DateTimeInterface $birthday):self
+    public function setBirthday(?\DateTimeInterface $birthday): self
     {
         $this->setVisited('birthday');
         $this->birthday = $birthday;
 
         return $this;
     }
-    public  function getImage(): ?string
+    public function getImage(): ?string
     {
         return $this->image;
     }
-    public  function setImage(?string $image):self
+    public function setImage(?string $image): self
     {
         $this->setVisited('image');
         $this->image = $image;
 
         return $this;
     }
-    public  function getSex(): SexEnum
+    public function getSex(): SexEnum
     {
         return $this->sex;
     }
-    public  function setSex(SexEnum $sex):self
+    public function setSex(SexEnum $sex): self
     {
         $this->setVisited('sex');
         $this->sex = $sex;
 
         return $this;
     }
-    public  function getAddress(): Address
+    public function getAddress(): Address
     {
         return $this->address;
     }
-    public  function setAddress(Address $address):self
+    public function setAddress(Address $address): self
     {
         $this->setVisited('address');
         $this->address = $address;
 
         return $this;
     }
-    public  function getSocialMedia(): array
+    public function getSocialMedia(): array
     {
         return $this->socialMedia;
     }
-    public  function setSocialMedia(array $socialMedia):self
+    public function setSocialMedia(array $socialMedia): self
     {
         $this->setVisited('socialMedia');
         $this->socialMedia = $socialMedia;
