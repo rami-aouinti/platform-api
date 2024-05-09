@@ -8,6 +8,7 @@ use App\General\Transport\Command\HelperConfigure;
 use App\General\Transport\Command\Traits\SymfonyStyleTrait;
 use App\Role\Application\Security\RolesService;
 use App\Role\Domain\Repository\Interfaces\RoleRepositoryInterface;
+use App\Role\Infrastructure\Repository\RoleRepository;
 use App\User\Application\DTO\User\UserCreate as UserDto;
 use App\User\Application\Resource\UserGroupResource;
 use App\User\Application\Resource\UserResource;
@@ -71,7 +72,7 @@ class CreateUserCommand extends Command
     /**
      * Constructor
      *
-     * @param \App\Role\Infrastructure\Repository\RoleRepository $roleRepository
+     * @param RoleRepository $roleRepository
      *
      * @throws LogicException
      */

@@ -13,6 +13,8 @@ use App\General\Domain\Enum\Locale;
 use App\Tool\Application\Validator\Constraints as ToolAppAssert;
 use App\Tool\Domain\Service\Interfaces\LocalizationServiceInterface;
 use App\User\Application\Validator\Constraints as UserAppAssert;
+use App\User\Domain\Entity\Address;
+use App\User\Domain\Entity\Enum\SexEnum;
 use App\User\Domain\Entity\Interfaces\UserGroupAwareInterface;
 use App\User\Domain\Entity\User as Entity;
 use App\User\Domain\Entity\UserGroup as UserGroupEntity;
@@ -61,6 +63,20 @@ class User extends RestDto
 
     #[Assert\NotBlank]
     #[Assert\NotNull]
+    protected ?\DateTimeInterface $birthday = null;
+
+    protected ?string $image = null;
+
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    protected SexEnum $sex;
+
+    protected Address $address;
+
+    protected array $socialMedia = [];
+
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     protected Language $language;
 
     #[Assert\NotBlank]
@@ -84,6 +100,7 @@ class User extends RestDto
 
     public function __construct()
     {
+        $this->sex = SexEnum::getDefault();
         $this->language = Language::getDefault();
         $this->locale = Locale::getDefault();
     }
@@ -136,6 +153,62 @@ class User extends RestDto
     {
         $this->setVisited('email');
         $this->email = $email;
+
+        return $this;
+    }
+
+    public  function getBirthday(): ?\DateTimeInterface
+    {
+        return $this->birthday;
+    }
+    public  function setBirthday(?\DateTimeInterface $birthday):self
+    {
+        $this->setVisited('birthday');
+        $this->birthday = $birthday;
+
+        return $this;
+    }
+    public  function getImage(): ?string
+    {
+        return $this->image;
+    }
+    public  function setImage(?string $image):self
+    {
+        $this->setVisited('image');
+        $this->image = $image;
+
+        return $this;
+    }
+    public  function getSex(): SexEnum
+    {
+        return $this->sex;
+    }
+    public  function setSex(SexEnum $sex):self
+    {
+        $this->setVisited('sex');
+        $this->sex = $sex;
+
+        return $this;
+    }
+    public  function getAddress(): Address
+    {
+        return $this->address;
+    }
+    public  function setAddress(Address $address):self
+    {
+        $this->setVisited('address');
+        $this->address = $address;
+
+        return $this;
+    }
+    public  function getSocialMedia(): array
+    {
+        return $this->socialMedia;
+    }
+    public  function setSocialMedia(array $socialMedia):self
+    {
+        $this->setVisited('socialMedia');
+        $this->socialMedia = $socialMedia;
 
         return $this;
     }
@@ -229,6 +302,11 @@ class User extends RestDto
             $this->firstName = $entity->getFirstName();
             $this->lastName = $entity->getLastName();
             $this->email = $entity->getEmail();
+            $this->birthday = $entity->getBirthday();
+            $this->image = $entity->getImage();
+            $this->sex = $entity->getSex();
+            $this->address = $entity->getAddress();
+            $this->socialMedia = $entity->getSocialMedia();
             $this->language = $entity->getLanguage();
             $this->locale = $entity->getLocale();
             $this->timezone = $entity->getTimezone();

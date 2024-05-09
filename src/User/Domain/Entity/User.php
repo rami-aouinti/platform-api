@@ -11,6 +11,7 @@ use App\General\Domain\Entity\Traits\Uuid;
 use App\General\Domain\Enum\Language;
 use App\General\Domain\Enum\Locale;
 use App\Tool\Domain\Service\Interfaces\LocalizationServiceInterface;
+use App\User\Domain\Entity\Enum\SexEnum;
 use App\User\Domain\Entity\Interfaces\UserGroupAwareInterface;
 use App\User\Domain\Entity\Interfaces\UserInterface;
 use App\User\Domain\Entity\Traits\Blameable;
@@ -157,6 +158,76 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     private string $email = '';
 
     #[ORM\Column(
+        name: "birthday",
+        type: "datetime",
+        nullable: true
+    )]
+    #[Groups([
+        'User',
+        'User.birthday',
+
+        self::SET_USER_PROFILE,
+        self::SET_USER_BASIC,
+    ])]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    private ?\DateTimeInterface $birthday = null;
+
+    #[ORM\Column(
+        name: "image",
+        type: "string",
+        length: 255,
+        nullable: true
+    )]
+    #[Groups([
+        'User',
+        'User.image',
+
+        self::SET_USER_PROFILE,
+        self::SET_USER_BASIC,
+    ])]
+    private ?string $image = null;
+
+    #[ORM\Column(
+        name: "sex",
+        type: "string",
+        enumType: SexEnum::class
+    )]
+    #[Groups([
+        'User',
+        'User.sex',
+
+        self::SET_USER_PROFILE,
+        self::SET_USER_BASIC,
+    ])]
+    private SexEnum $sex;
+
+    #[ORM\Embedded(
+        class: Address::class
+    )]
+    #[Groups([
+        'User',
+        'User.address',
+
+        self::SET_USER_PROFILE,
+        self::SET_USER_BASIC,
+    ])]
+    private Address $address;
+
+    #[ORM\Column(
+        type: "json",
+        nullable: true
+    )]
+    #[Groups([
+        'User',
+        'User.socialMedia',
+
+        self::SET_USER_PROFILE,
+        self::SET_USER_BASIC,
+    ])]
+    private array $socialMedia = [];
+
+    #[ORM\Column(
         name: 'language',
         type: AppTypes::ENUM_LANGUAGE,
         nullable: false,
@@ -298,6 +369,57 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public  function getBirthday(): ?\DateTimeInterface
+    {
+        return $this->birthday;
+    }
+    public  function setBirthday(?\DateTimeInterface $birthday):self
+    {
+        $this->birthday = $birthday;
+
+        return $this;
+    }
+    public  function getImage(): ?string
+    {
+        return $this->image;
+    }
+    public  function setImage(?string $image):self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+    public  function getSex(): SexEnum
+    {
+        return $this->sex;
+    }
+    public  function setSex(SexEnum $sex):self
+    {
+        $this->sex = $sex;
+
+        return $this;
+    }
+    public  function getAddress(): Address
+    {
+        return $this->address;
+    }
+    public  function setAddress(Address $address):self
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+    public  function getSocialMedia(): array
+    {
+        return $this->socialMedia;
+    }
+    public  function setSocialMedia(array $socialMedia):self
+    {
+        $this->socialMedia = $socialMedia;
 
         return $this;
     }

@@ -9,8 +9,11 @@ use App\General\Domain\Enum\Locale;
 use App\General\Domain\Rest\UuidHelper;
 use App\Role\Application\Security\Interfaces\RolesServiceInterface;
 use App\Tests\Utils\PhpUnitUtil;
+use App\User\Domain\Entity\Address;
+use App\User\Domain\Entity\Enum\SexEnum;
 use App\User\Domain\Entity\User;
 use App\User\Domain\Entity\UserGroup;
+use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -84,12 +87,16 @@ final class LoadUserData extends Fixture implements OrderedFixtureInterface
     private function createUser(ObjectManager $manager, ?string $role = null): bool
     {
         $suffix = $role === null ? '' : '-' . $this->rolesService->getShort($role);
+        $address = $this->createAddress();
         // Create new entity
         $entity = (new User())
             ->setUsername('john' . $suffix)
             ->setFirstName('John')
             ->setLastName('Doe')
             ->setEmail('john.doe' . $suffix . '@test.com')
+            ->setBirthday(new DateTime('now'))
+            ->setSex(SexEnum::Male)
+            ->setAddress($address)
             ->setLanguage(Language::EN)
             ->setLocale(Locale::EN)
             ->setPlainPassword('password' . $suffix);
@@ -112,5 +119,15 @@ final class LoadUserData extends Fixture implements OrderedFixtureInterface
         $this->addReference('User-' . $entity->getUsername(), $entity);
 
         return true;
+    }
+
+    /**
+     * @return Address
+     */
+    private function createAddress(): Address
+    {
+        return new Address(
+            'Germany', 'Köln', '50859', 'Widdersdorder landstr', '11'
+        );
     }
 }
