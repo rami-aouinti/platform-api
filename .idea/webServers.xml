@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="8fa36c5c-0282-446f-a20d-62290888060c" name="Frontend">
+        <fileTransfer rootFolder="/Frontend" accessType="SFTP" host="access-5010118320.ud-webspace.de" port="22" sshConfigId="11d903df-aca5-4634-9e94-d5cf47fcf461" sshConfig="a327100@access-5010118320.ud-webspace.de:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
