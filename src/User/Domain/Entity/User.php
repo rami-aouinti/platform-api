@@ -159,6 +159,57 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     private string $email = '';
 
     #[ORM\Column(
+        name: 'phone',
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+    )]
+    #[Groups([
+        'User',
+        'User.phone',
+
+        self::SET_USER_PROFILE,
+        self::SET_USER_BASIC,
+    ])]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    private string $phone = '';
+
+    #[ORM\Column(
+        name: 'title',
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+    )]
+    #[Groups([
+        'User',
+        'User.title',
+
+        self::SET_USER_PROFILE,
+        self::SET_USER_BASIC,
+    ])]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    private string $title = '';
+
+    #[ORM\Column(
+        name: 'description',
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+    )]
+    #[Groups([
+        'User',
+        'User.description',
+
+        self::SET_USER_PROFILE,
+        self::SET_USER_BASIC,
+    ])]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    private string $description = '';
+
+    #[ORM\Column(
         name: 'birthday',
         type: 'datetime',
         nullable: true
@@ -216,17 +267,57 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     private Address $address;
 
     #[ORM\Column(
-        type: 'json',
+        type: 'string',
         nullable: true
     )]
     #[Groups([
         'User',
-        'User.socialMedia',
+        'User.googleId',
 
         self::SET_USER_PROFILE,
         self::SET_USER_BASIC,
     ])]
-    private array $socialMedia = [];
+    private ?string $googleId = null;
+
+    #[ORM\Column(
+        type: 'string',
+        nullable: true
+    )]
+    #[Groups([
+        'User',
+        'User.facebookId',
+
+        self::SET_USER_PROFILE,
+        self::SET_USER_BASIC,
+    ])]
+    private ?string $facebookId = null;
+
+
+    #[ORM\Column(
+        type: 'string',
+        nullable: true
+    )]
+    #[Groups([
+        'User',
+        'User.instagramId',
+
+        self::SET_USER_PROFILE,
+        self::SET_USER_BASIC,
+    ])]
+    private ?string $instagramId = null;
+
+    #[ORM\Column(
+        type: 'string',
+        nullable: true
+    )]
+    #[Groups([
+        'User',
+        'User.twitterId',
+
+        self::SET_USER_PROFILE,
+        self::SET_USER_BASIC,
+    ])]
+    private ?string $twitterId = null;
 
     #[ORM\Column(
         name: 'language',
@@ -374,6 +465,61 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
         return $this;
     }
 
+    public  function getPhone(): string
+    {
+        return $this->phone;
+    }
+    public  function setPhone(string $phone):self
+    {
+        $this->phone = $phone;
+        return $this;
+    }
+    public  function getTitle(): string
+    {
+        return $this->title;
+    }
+    public  function setTitle(string $title):self
+    {
+        $this->title = $title;
+        return $this;
+    }
+    public  function getDescription(): string
+    {
+        return $this->description;
+    }
+    public  function setDescription(string $description):self
+    {
+        $this->description = $description;
+        return $this;
+    }
+    public  function getFacebookId(): ?string
+    {
+        return $this->facebookId;
+    }
+    public  function setFacebookId(?string $facebookId):self
+    {
+        $this->facebookId = $facebookId;
+        return $this;
+    }
+    public  function getInstagramId(): ?string
+    {
+        return $this->instagramId;
+    }
+    public  function setInstagramId(?string $instagramId):self
+    {
+        $this->instagramId = $instagramId;
+        return $this;
+    }
+    public  function getTwitterId(): ?string
+    {
+        return $this->twitterId;
+    }
+    public  function setTwitterId(?string $twitterId):self
+    {
+        $this->twitterId = $twitterId;
+        return $this;
+    }
+
     public function getBirthday(): ?DateTimeInterface
     {
         return $this->birthday;
@@ -414,13 +560,14 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
 
         return $this;
     }
-    public function getSocialMedia(): array
+
+    public  function getGoogleId(): ?string
     {
-        return $this->socialMedia;
+        return $this->googleId;
     }
-    public function setSocialMedia(array $socialMedia): self
+    public  function setGoogleId(?string $googleId):self
     {
-        $this->socialMedia = $socialMedia;
+        $this->googleId = $googleId;
 
         return $this;
     }

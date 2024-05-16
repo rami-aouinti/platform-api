@@ -18,15 +18,9 @@
 	"license": "MIT",
 	"authors": [
 		{
-			"name": "Dmitriy Kravtsov",
-			"email": "dmitriy.kravtsov@systemsdk.com",
-			"homepage": "https://github.com/dimadeush",
-			"role": "Developer"
-		},
-		{
-			"name": "Tarmo Leppänen",
-			"email": "tarmo.leppanen@protacon.com",
-			"homepage": "https://github.com/tarlepp",
+			"name": "Rami Aouinti",
+			"email": "rami.aouinti@gmail.com",
+			"homepage": "https://github.com/rami-aouinti",
 			"role": "Developer"
 		}
 	],
@@ -34,13 +28,14 @@
 		"php": "^8.2.0",
 		"ext-amqp": "*",
 		"ext-ctype": "*",
+		"ext-hash": "*",
 		"ext-iconv": "*",
 		"ext-json": "*",
 		"ext-mbstring": "*",
-		"ext-hash": "*",
 		"ext-openssl": "*",
 		"ext-pdo": "*",
 		"ext-pdo_mysql": "*",
+		"ext-pdo_sqlite": "*",
 		"beberlei/doctrineextensions": "^1.5",
 		"doctrine/doctrine-bundle": "^2.12",
 		"doctrine/doctrine-migrations-bundle": "^3.3",
@@ -48,7 +43,10 @@
 		"dukecity/command-scheduler-bundle": "^5.0",
 		"elasticsearch/elasticsearch": "^7.17",
 		"gedmo/doctrine-extensions": "^3.15",
+		"knplabs/knp-paginator-bundle": "^6.3",
+		"league/commonmark": "^2.4",
 		"lexik/jwt-authentication-bundle": "^2.21",
+		"liip/imagine-bundle": "^2.12",
 		"mark-gerarts/automapper-plus-bundle": "^1.5",
 		"matomo/device-detector": "^6.3",
 		"matthiasnoback/symfony-console-form": "^5.3",
@@ -56,6 +54,7 @@
 		"nelmio/cors-bundle": "^2.4",
 		"phpdocumentor/reflection-docblock": "^5.4",
 		"ramsey/uuid-doctrine": "^2.0",
+		"stof/doctrine-extensions-bundle": "^1.11",
 		"symfony/amqp-messenger": "6.4.*",
 		"symfony/asset": "6.4.*",
 		"symfony/config": "6.4.*",
@@ -77,17 +76,21 @@
 		"symfony/property-access": "6.4.*",
 		"symfony/property-info": "6.4.*",
 		"symfony/proxy-manager-bridge": "6.4.*",
-		"symfony/runtime": "6.4.*",
 		"symfony/routing": "6.4.*",
+		"symfony/runtime": "6.4.*",
 		"symfony/security-bundle": "6.4.*",
 		"symfony/serializer": "6.4.*",
 		"symfony/string": "6.4.*",
 		"symfony/translation": "6.4.*",
 		"symfony/twig-bundle": "6.4.*",
+		"symfony/ux-live-component": "*",
 		"symfony/validator": "6.4.*",
 		"symfony/web-link": "6.4.*",
 		"symfony/yaml": "6.4.*",
-		"twig/extra-bundle": "^2.12|^3.0"
+		"symfonycasts/sass-bundle": "^0.6.0",
+		"twig/extra-bundle": "*",
+		"twig/intl-extra": "*",
+		"twig/markdown-extra": "*"
 	},
 	"conflict": {
 		"symfony/debug": "<3.3",
@@ -196,7 +199,8 @@
 			"cache:warmup": "symfony-cmd",
 			"cache:pool:clear cache.app || true": "symfony-cmd",
 			"assets:install --symlink --relative %PUBLIC_DIR%": "symfony-cmd",
-			"assets:install %PUBLIC_DIR%": "symfony-cmd"
+			"assets:install %PUBLIC_DIR%": "symfony-cmd",
+			"importmap:install": "symfony-cmd"
 		}
 	},
 	"support": {

@@ -10,7 +10,7 @@ use App\General\Transport\Form\Type\Interfaces\FormTypeLabelInterface;
 use App\General\Transport\Form\Type\Traits\AddBasicFieldToForm;
 use App\Tool\Application\Service\LocalizationService;
 use App\Tool\Domain\Service\Interfaces\LocalizationServiceInterface;
-use App\User\Application\DTO\User\User as UserDto;
+use App\Blog\Application\DTO\Post\User as UserDto;
 use App\User\Application\Resource\UserGroupResource;
 use App\User\Domain\Entity\Enum\SexEnum;
 use App\User\Transport\Form\DataTransformer\UserGroupTransformer;
@@ -70,6 +70,24 @@ class UserType extends AbstractType
             Type\EmailType::class,
             [
                 FormTypeLabelInterface::LABEL => 'Email address',
+                FormTypeLabelInterface::REQUIRED => true,
+                FormTypeLabelInterface::EMPTY_DATA => '',
+            ],
+        ],
+        [
+            'image',
+            Type\TextType::class,
+            [
+                FormTypeLabelInterface::LABEL => 'Image',
+                FormTypeLabelInterface::REQUIRED => true,
+                FormTypeLabelInterface::EMPTY_DATA => '',
+            ],
+        ],
+        [
+            'googleId',
+            Type\TextType::class,
+            [
+                FormTypeLabelInterface::LABEL => 'Google Account',
                 FormTypeLabelInterface::REQUIRED => true,
                 FormTypeLabelInterface::EMPTY_DATA => '',
             ],

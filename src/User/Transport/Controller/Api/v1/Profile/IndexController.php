@@ -25,11 +25,11 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 #[AsController]
 #[OA\Tag(name: 'Profile')]
-class IndexController
+readonly class IndexController
 {
     public function __construct(
-        private readonly SerializerInterface $serializer,
-        private readonly RolesService $rolesService,
+        private SerializerInterface $serializer,
+        private RolesService $rolesService,
     ) {
     }
 

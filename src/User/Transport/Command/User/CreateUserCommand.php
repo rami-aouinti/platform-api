@@ -9,7 +9,7 @@ use App\General\Transport\Command\Traits\SymfonyStyleTrait;
 use App\Role\Application\Security\RolesService;
 use App\Role\Domain\Repository\Interfaces\RoleRepositoryInterface;
 use App\Role\Infrastructure\Repository\RoleRepository;
-use App\User\Application\DTO\User\UserCreate as UserDto;
+use App\Blog\Application\DTO\Post\UserCreate as UserDto;
 use App\User\Application\Resource\UserGroupResource;
 use App\User\Application\Resource\UserResource;
 use App\User\Transport\Command\Traits\ApiKeyUserManagementHelperTrait;
@@ -58,6 +58,22 @@ class CreateUserCommand extends Command
         [
             self::PARAMETER_NAME => 'email',
             self::PARAMETER_DESCRIPTION => 'Email of the user',
+        ],
+        [
+            self::PARAMETER_NAME => 'birthday',
+            self::PARAMETER_DESCRIPTION => 'Birthday of the user',
+        ],
+        [
+            self::PARAMETER_NAME => 'sex',
+            self::PARAMETER_DESCRIPTION => 'Sex of the user',
+        ],
+        [
+            self::PARAMETER_NAME => 'image',
+            self::PARAMETER_DESCRIPTION => 'Image of the user',
+        ],
+        [
+            self::PARAMETER_NAME => 'googleId',
+            self::PARAMETER_DESCRIPTION => 'Google Account of the user',
         ],
         [
             self::PARAMETER_NAME => 'plainPassword',

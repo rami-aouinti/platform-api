@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\User\Application\Validator\Constraints;
 
-use App\User\Application\DTO\User\User as UserDto;
+use App\Blog\Application\DTO\Post\User as UserDto;
 use App\User\Domain\Entity\Interfaces\UserInterface;
 use App\User\Domain\Repository\Interfaces\UserRepositoryInterface;
 use Doctrine\ORM\NonUniqueResultException;

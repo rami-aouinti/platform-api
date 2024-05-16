@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\User\Transport\AutoMapper\User;
 
 use App\General\Transport\AutoMapper\RestAutoMapperConfiguration;
-use App\User\Application\DTO\User\UserCreate;
-use App\User\Application\DTO\User\UserPatch;
-use App\User\Application\DTO\User\UserUpdate;
+use App\Blog\Application\DTO\Post\UserCreate;
+use App\Blog\Application\DTO\Post\UserPatch;
+use App\Blog\Application\DTO\Post\UserUpdate;
 
 /**
  * @package App\User

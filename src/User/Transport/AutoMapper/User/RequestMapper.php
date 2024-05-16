@@ -31,7 +31,7 @@ class RequestMapper extends RestRequestMapper
         'image',
         'sex',
         'address',
-        'socialMedia',
+        'googleId',
         'language',
         'locale',
         'timezone',

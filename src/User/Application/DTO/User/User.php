@@ -73,7 +73,7 @@ class User extends RestDto
 
     protected Address $address;
 
-    protected array $socialMedia = [];
+    protected ?string $googleId = null;
 
     #[Assert\NotBlank]
     #[Assert\NotNull]
@@ -201,14 +201,14 @@ class User extends RestDto
 
         return $this;
     }
-    public function getSocialMedia(): array
+    public  function getGoogleId(): ?string
     {
-        return $this->socialMedia;
+        return $this->googleId;
     }
-    public function setSocialMedia(array $socialMedia): self
+    public  function setGoogleId(?string $googleId):self
     {
-        $this->setVisited('socialMedia');
-        $this->socialMedia = $socialMedia;
+        $this->setVisited('googleId');
+        $this->googleId = $googleId;
 
         return $this;
     }
@@ -306,7 +306,7 @@ class User extends RestDto
             $this->image = $entity->getImage();
             $this->sex = $entity->getSex();
             $this->address = $entity->getAddress();
-            $this->socialMedia = $entity->getSocialMedia();
+            $this->googleId = $entity->getGoogleId();
             $this->language = $entity->getLanguage();
             $this->locale = $entity->getLocale();
             $this->timezone = $entity->getTimezone();
