@@ -6,6 +6,8 @@
 parameters:
     locale: 'en'
     app.notifications.email_sender: anonymous@example.com
+    app_locales: ar|cs|da|de|de_CH|el|en|eo|es|eu|fa|fi|fo|fr|he|hr|hu|id|it|ja|ko|nb_NO|nl|pa|pl|pt|pt_BR|ro|ru|sk|sl|sv|tr|uk|vi|zh_CN|zh_Hant|zh_Hant_TW|cs_CZ|da_DK|da_GL|de_AT|de_BE|de_CH|de_DE|de_IT|de_LI|de_LU|el_CY|el_GR|en_AE|en_AG|en_AI|en_AS|en_AT|en_AU|en_BB|en_BE|en_BI|en_BM|en_BS|en_BW|en_BZ|en_CA|en_CC|en_CH|en_CK|en_CM|en_CX|en_CY|en_DE|en_DG|en_DK|en_DM|en_ER|en_FI|en_FJ|en_FK|en_FM|en_GB|en_GD|en_GG|en_GH|en_GI|en_GM|en_GU|en_GY|en_HK|en_ID|en_IE|en_IL|en_IM|en_IN|en_IO|en_JE|en_JM|en_KE|en_KI|en_KN|en_KY|en_LC|en_LR|en_LS|en_MG|en_MH|en_MO|en_MP|en_MS|en_MT|en_MU|en_MV|en_MW|en_MY|en_NA|en_NF|en_NG|en_NH|en_NL|en_NR|en_NU|en_NZ|en_PG|en_PH|en_PK|en_PN|en_PR|en_PW|en_RH|en_RW|en_SB|en_SC|en_SD|en_SE|en_SG|en_SH|en_SI|en_SL|en_SS|en_SX|en_SZ|en_TC|en_TK|en_TO|en_TT|en_TV|en_TZ|en_UG|en_UM|en_US|en_VC|en_VG|en_VI|en_VU|en_WS|en_ZA|en_ZM|en_ZW|es_AR|es_BO|es_BR|es_BZ|es_CL|es_CO|es_CR|es_CU|es_DO|es_EA|es_EC|es_ES|es_GQ|es_GT|es_HN|es_IC|es_MX|es_NI|es_PA|es_PE|es_PH|es_PR|es_PY|es_SV|es_US|es_UY|es_VE|eu_ES|fa_AF|fa_IR|fi_FI|fo_DK|fo_FO|fr_BE|fr_BF|fr_BI|fr_BJ|fr_BL|fr_CA|fr_CD|fr_CF|fr_CG|fr_CH|fr_CI|fr_CM|fr_DJ|fr_DZ|fr_FR|fr_GA|fr_GF|fr_GN|fr_GP|fr_GQ|fr_HT|fr_KM|fr_LU|fr_MA|fr_MC|fr_MF|fr_MG|fr_ML|fr_MQ|fr_MR|fr_MU|fr_NC|fr_NE|fr_PF|fr_PM|fr_RE|fr_RW|fr_SC|fr_SN|fr_SY|fr_TD|fr_TG|fr_TN|fr_VU|fr_WF|fr_YT|he_IL|hr_BA|hr_HR|hu_HU|it_CH|it_IT|it_SM|it_VA|ja_JP|ko_CN|ko_KP|ko_KR|nl_AW|nl_BE|nl_BQ|nl_CW|nl_NL|nl_SR|nl_SX|pl_PL|pt_AO|pt_BR|pt_CH|pt_CV|pt_GQ|pt_GW|pt_LU|pt_MO|pt_MZ|pt_PT|pt_ST|pt_TL|ro_MD|ro_RO|ru_BY|ru_KG|ru_KZ|ru_MD|ru_RU|ru_UA|sk_SK|sv_AX|sv_FI|sv_SE|tr_CY|tr_TR|uk_UA|vi_VN
+
 
 services:
     # default configuration for services in *this* file
@@ -15,6 +17,8 @@ services:
         bind:
             $projectDir: '%kernel.project_dir%'
             $environment: '%kernel.environment%'
+            $projectDirectory: '%kernel.project_dir%'
+            $kernelEnvironment: '%kernel.environment%'
             $locale: '%locale%'
             $databaseHealthHistoryDays: '%env(int:DATABASE_HEALTH_HISTORY_DAYS)%'
             $databaseLogLoginHistoryDays: '%env(int:DATABASE_LOG_LOGIN_HISTORY_DAYS)%'
@@ -87,6 +91,126 @@ services:
             $host: '%env(ELASTICSEARCH_HOST)%'
             $username: '%env(ELASTICSEARCH_USERNAME)%'
             $password: '%env(ELASTICSEARCH_PASSWORD)%'
+
+    App\Crm\Transport\Configuration\MailConfiguration:
+        arguments: [ '%env(MAILER_FROM)%' ]
+
+    App\Crm\Transport\Configuration\LocaleService:
+        arguments: [ '%kimai.languages%' ]
+
+    App\Crm\Application\Configuration\LocaleService:
+        arguments: [ '%kimai.languages%' ]
+
+    App\Crm\Application\Configuration\SystemConfiguration:
+        arguments:
+            $settings: '%kimai.config%'
+
+    App\Crm\Application\Pdf\MPdfConverter:
+        arguments:
+            $cacheDirectory: '%kernel.cache_dir%'
+
+    App\Crm\Application\Utils\FileHelper:
+        arguments:
+            $dataDir: '%kimai.data_dir%'
+
+    App\Crm\Transport\API\Serializer\ValidationFailedExceptionErrorHandler:
+        arguments: [ '@translator.default', '@fos_rest.serializer.flatten_exception_handler' ]
+
+    App\Crm\Transport\Command\ExportCreateCommand:
+        arguments:
+            $mailer: '@App\Crm\Transport\Mail\KimaiMailer'
+
+    # ================================================================================
+    # TIMESHEET RECORD CALCULATOR
+    # ================================================================================
+
+    App\Crm\Transport\Timesheet\RoundingService:
+        arguments:
+            # this is currently required, as local.yaml allows to configure several rules,
+            # while the database system only allows one rounding rule
+            $rules: '%kimai.timesheet.rounding%'
+
+    App\Crm\Transport\Timesheet\RateService:
+        arguments: [ '%kimai.timesheet.rates%' ]
+
+
+    # ================================================================================
+    # REPOSITORIES
+    # ================================================================================
+
+    App\Crm\Domain\Repository\TimesheetRepository:
+        class: App\Crm\Domain\Repository\TimesheetRepository
+        factory: [ '@doctrine.orm.entity_manager', getRepository ]
+        arguments: [ 'App\Crm\Domain\Entity\Timesheet' ]
+
+    App\Crm\Domain\Repository\TeamRepository:
+        class: App\Crm\Domain\Repository\TeamRepository
+        factory: [ '@doctrine.orm.entity_manager', getRepository ]
+        arguments: [ 'App\Crm\Domain\Entity\Team' ]
+
+    App\Crm\Domain\Repository\ActivityRepository:
+        class: App\Crm\Domain\Repository\ActivityRepository
+        factory: [ '@doctrine.orm.entity_manager', getRepository ]
+        arguments: [ 'App\Crm\Domain\Entity\Activity' ]
+
+    App\Crm\Domain\Repository\ProjectRepository:
+        class: App\Crm\Domain\Repository\ProjectRepository
+        factory: [ '@doctrine.orm.entity_manager', getRepository ]
+        arguments: [ 'App\Crm\Domain\Entity\Project' ]
+
+    App\Crm\Domain\Repository\TagRepository:
+        class: App\Crm\Domain\Repository\TagRepository
+        factory: [ '@doctrine.orm.entity_manager', getRepository ]
+        arguments: [ 'App\Crm\Domain\Entity\Tag' ]
+
+    App\Crm\Domain\Repository\CustomerRepository:
+        class: App\Crm\Domain\Repository\CustomerRepository
+        factory: [ '@doctrine.orm.entity_manager', getRepository ]
+        arguments: [ 'App\Crm\Domain\Entity\Customer' ]
+
+    App\Crm\Domain\Repository\InvoiceTemplateRepository:
+        class: App\Crm\Domain\Repository\InvoiceTemplateRepository
+        factory: [ '@doctrine.orm.entity_manager', getRepository ]
+        arguments: [ 'App\Crm\Domain\Entity\InvoiceTemplate' ]
+
+    App\Crm\Domain\Repository\ConfigurationRepository:
+        class: App\Crm\Domain\Repository\ConfigurationRepository
+        factory: [ '@doctrine.orm.entity_manager', getRepository ]
+        arguments: [ 'App\Crm\Domain\Entity\Configuration' ]
+
+    App\Crm\Domain\Repository\InvoiceDocumentRepository:
+        class: App\Crm\Domain\Repository\InvoiceDocumentRepository
+        arguments: [ '%kimai.invoice.documents%' ]
+
+    App\Crm\Domain\Repository\CustomerRateRepository:
+        class: App\Crm\Domain\Repository\CustomerRateRepository
+        factory: [ '@doctrine.orm.entity_manager', getRepository ]
+        arguments: [ 'App\Crm\Domain\Entity\CustomerRate' ]
+
+    App\Crm\Domain\Repository\ActivityRateRepository:
+        class: App\Crm\Domain\Repository\ActivityRateRepository
+        factory: [ '@doctrine.orm.entity_manager', getRepository ]
+        arguments: [ 'App\Crm\Domain\Entity\ActivityRate' ]
+
+    App\Crm\Domain\Repository\ProjectRateRepository:
+        class: App\Crm\Domain\Repository\ProjectRateRepository
+        factory: [ '@doctrine.orm.entity_manager', getRepository ]
+        arguments: [ 'App\Crm\Domain\Entity\ProjectRate' ]
+
+    App\Crm\Domain\Repository\InvoiceRepository:
+        class: App\Crm\Domain\Repository\InvoiceRepository
+        factory: [ '@doctrine.orm.entity_manager', getRepository ]
+        arguments: [ 'App\Crm\Domain\Entity\Invoice' ]
+
+    App\Crm\Domain\Repository\BookmarkRepository:
+        class: App\Crm\Domain\Repository\BookmarkRepository
+        factory: [ '@doctrine.orm.entity_manager', getRepository ]
+        arguments: [ 'App\Crm\Domain\Entity\Bookmark' ]
+
+    App\Crm\Domain\Repository\WorkingTimeRepository:
+        class: App\Crm\Domain\Repository\WorkingTimeRepository
+        factory: [ '@doctrine.orm.entity_manager', getRepository ]
+        arguments: [ 'App\Crm\Domain\Entity\WorkingTime' ]
         #lazy: true
 
 when@dev:

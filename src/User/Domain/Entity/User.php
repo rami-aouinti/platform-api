@@ -31,7 +31,7 @@ use Throwable;
  * @package App\User
  */
 #[ORM\Entity]
-#[ORM\Table(name: 'user')]
+#[ORM\Table(name: 'platform_user')]
 #[ORM\UniqueConstraint(
     name: 'uq_username',
     columns: ['username'],
@@ -49,6 +49,21 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     use Timestampable;
     use UserRelations;
     use Uuid;
+
+    public const ROLE_USER = 'ROLE_USER';
+    public const ROLE_TEAMLEAD = 'ROLE_TEAMLEAD';
+    public const ROLE_ADMIN = 'ROLE_ADMIN';
+    public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+
+    public const DEFAULT_ROLE = self::ROLE_USER;
+    public const DEFAULT_LANGUAGE = 'en';
+    public const DEFAULT_FIRST_WEEKDAY = 'monday';
+
+    public const AUTH_INTERNAL = 'kimai';
+    public const AUTH_LDAP = 'ldap';
+    public const AUTH_SAML = 'saml';
+
+    public const WIZARDS = ['intro', 'profile'];
 
     final public const SET_USER_PROFILE = 'set.UserProfile';
     final public const SET_USER_BASIC = 'set.UserBasic';

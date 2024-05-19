@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of the Kimai time-tracking app.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace App\Crm\Transport\Form\Type;
+
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+
+final class DateTimeTextType extends AbstractType
+{
+    public function getParent(): string
+    {
+        return TextType::class;
+    }
+}

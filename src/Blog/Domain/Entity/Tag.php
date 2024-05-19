@@ -31,7 +31,7 @@ use Throwable;
  * @author Yonel Ceruto <yonelceruto@gmail.com>
  */
 #[ORM\Entity]
-#[ORM\Table(name: 'tag')]
+#[ORM\Table(name: 'platform_blog_tag')]
 class Tag implements \JsonSerializable
 {
     use Blameable;

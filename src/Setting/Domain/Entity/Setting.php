@@ -38,7 +38,7 @@ use Throwable;
  * @author Rami Aouinti <rami.aouinti@gmail.com>
  */
 #[ORM\Entity(repositoryClass: SettingRepository::class)]
-#[ORM\Table(name: 'setting')]
+#[ORM\Table(name: 'platform_setting')]
 class Setting
 {
     use Blameable;
@@ -123,7 +123,7 @@ class Setting
     ])]
     private DateTimeImmutable $publishedAt;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\OneToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $author = null;
 

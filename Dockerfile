@@ -50,6 +50,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
       intl \
       opcache \
       zip \
+      gd \
+      xsl \
     && docker-php-ext-enable amqp \
     && rm -rf /tmp/* \
     && rm -rf /var/list/apt/* \
