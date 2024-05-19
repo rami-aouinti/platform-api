@@ -27,7 +27,9 @@ final class SystemConfigurationForm extends AbstractType
     {
         $builder->add('configuration', CollectionType::class, [
             'entry_type' => SystemConfigurationType::class,
-            'entry_options' => ['label' => false],
+            'entry_options' => [
+                'label' => false,
+            ],
             'allow_add' => false,
             'allow_delete' => false,
             'label' => false,
@@ -42,7 +44,7 @@ final class SystemConfigurationForm extends AbstractType
             'csrf_field_name' => '_token',
             'csrf_token_id' => 'edit_system_configurations',
             'attr' => [
-                'data-form-event' => 'kimai.systemConfigUpdate'
+                'data-form-event' => 'kimai.systemConfigUpdate',
             ],
         ]);
     }

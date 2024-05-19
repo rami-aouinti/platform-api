@@ -26,8 +26,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[OA\Tag(name: 'Default')]
 final class StatusController extends BaseApiController
 {
-    public function __construct(private readonly ViewHandlerInterface $viewHandler)
-    {
+    public function __construct(
+        private readonly ViewHandlerInterface $viewHandler
+    ) {
     }
 
     /**
@@ -37,7 +38,9 @@ final class StatusController extends BaseApiController
     #[Route(methods: ['GET'], path: '/ping')]
     public function pingAction(): Response
     {
-        $view = new View(['message' => 'pong'], 200);
+        $view = new View([
+            'message' => 'pong',
+        ], 200);
 
         return $this->viewHandler->handle($view);
     }

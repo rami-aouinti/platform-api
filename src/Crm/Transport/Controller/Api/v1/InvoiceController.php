@@ -11,17 +11,26 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Controller\Api\v1;
 
-use App\Crm\Transport\Configuration\SystemConfiguration;
+use App\Crm\Application\Export\Spreadsheet\EntityWithMetaFieldsExporter;
+use App\Crm\Application\Export\Spreadsheet\Writer\BinaryFileResponseWriter;
+use App\Crm\Application\Export\Spreadsheet\Writer\XlsxWriter;
+use App\Crm\Application\Utils\DataTable;
+use App\Crm\Application\Utils\PageSetup;
 use App\Crm\Domain\Entity\Customer;
 use App\Crm\Domain\Entity\Invoice;
 use App\Crm\Domain\Entity\InvoiceTemplate;
 use App\Crm\Domain\Entity\MetaTableTypeInterface;
+use App\Crm\Domain\Repository\CustomerRepository;
+use App\Crm\Domain\Repository\InvoiceDocumentRepository;
+use App\Crm\Domain\Repository\InvoiceRepository;
+use App\Crm\Domain\Repository\InvoiceTemplateRepository;
+use App\Crm\Domain\Repository\Query\BaseQuery;
+use App\Crm\Domain\Repository\Query\InvoiceArchiveQuery;
+use App\Crm\Domain\Repository\Query\InvoiceQuery;
+use App\Crm\Transport\Configuration\SystemConfiguration;
 use App\Crm\Transport\Event\InvoiceDocumentsEvent;
 use App\Crm\Transport\Event\InvoiceMetaDefinitionEvent;
 use App\Crm\Transport\Event\InvoiceMetaDisplayEvent;
-use App\Crm\Application\Export\Spreadsheet\EntityWithMetaFieldsExporter;
-use App\Crm\Application\Export\Spreadsheet\Writer\BinaryFileResponseWriter;
-use App\Crm\Application\Export\Spreadsheet\Writer\XlsxWriter;
 use App\Crm\Transport\Form\InvoiceDocumentUploadForm;
 use App\Crm\Transport\Form\InvoiceEditForm;
 use App\Crm\Transport\Form\InvoiceTemplateForm;
@@ -30,15 +39,6 @@ use App\Crm\Transport\Form\Toolbar\InvoiceToolbarForm;
 use App\Crm\Transport\Form\Type\DatePickerType;
 use App\Crm\Transport\Form\Type\InvoiceTemplateType;
 use App\Crm\Transport\Invoice\ServiceInvoice;
-use App\Crm\Domain\Repository\CustomerRepository;
-use App\Crm\Domain\Repository\InvoiceDocumentRepository;
-use App\Crm\Domain\Repository\InvoiceRepository;
-use App\Crm\Domain\Repository\InvoiceTemplateRepository;
-use App\Crm\Domain\Repository\Query\BaseQuery;
-use App\Crm\Domain\Repository\Query\InvoiceArchiveQuery;
-use App\Crm\Domain\Repository\Query\InvoiceQuery;
-use App\Crm\Application\Utils\DataTable;
-use App\Crm\Application\Utils\PageSetup;
 use Exception;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -112,17 +112,17 @@ final class InvoiceController extends AbstractController
 
             $values = [
                 'invoiceDate' => null,
-                'template' => $customerTpl
+                'template' => $customerTpl,
             ];
 
             $forms[] = $this->createFormWithName('customer_' . $customer->getId(), FormType::class, $values, [
-                    'csrf_protection' => false,
-                ])
+                'csrf_protection' => false,
+            ])
                 ->add('template', InvoiceTemplateType::class)
                 ->add('invoiceDate', DatePickerType::class, [
                     'required' => true,
                     'label' => 'invoice_date',
-                    'help' => 'invoice_date.help'
+                    'help' => 'invoice_date.help',
                 ])
                 ->createView();
         }
@@ -215,7 +215,9 @@ final class InvoiceController extends AbstractController
 
                 $this->flashSuccess('action.update.success');
 
-                return $this->redirectToRoute('admin_invoice_list', ['id' => $invoice->getId()]);
+                return $this->redirectToRoute('admin_invoice_list', [
+                    'id' => $invoice->getId(),
+                ]);
             } catch (Exception $ex) {
                 $this->flashUpdateException($ex);
             }
@@ -238,7 +240,7 @@ final class InvoiceController extends AbstractController
         }
 
         if ($status === Invoice::STATUS_PAID) {
-            if (null === $invoice->getPaymentDate()) {
+            if ($invoice->getPaymentDate() === null) {
                 $invoice->setPaymentDate($this->getDateTimeFactory()->createDateTime());
                 $invoice->setIsPaid();
             }
@@ -249,7 +251,7 @@ final class InvoiceController extends AbstractController
             return $this->render('invoice/invoice_edit.html.twig', [
                 'page_setup' => $this->createPageSetup(),
                 'invoice' => $invoice,
-                'form' => $form->createView()
+                'form' => $form->createView(),
             ]);
         }
 
@@ -285,7 +287,7 @@ final class InvoiceController extends AbstractController
         return $this->render('invoice/invoice_edit.html.twig', [
             'page_setup' => $this->createPageSetup(),
             'invoice' => $invoice,
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ]);
     }
 
@@ -319,7 +321,7 @@ final class InvoiceController extends AbstractController
     {
         $file = $this->service->getInvoiceFile($invoice);
 
-        if (null === $file) {
+        if ($file === null) {
             throw $this->createNotFoundException(
                 sprintf('Invoice file "%s" could not be found for invoice ID "%s"', $invoice->getInvoiceFilename(), $invoice->getId())
             );
@@ -328,7 +330,11 @@ final class InvoiceController extends AbstractController
         return $this->file($file->getRealPath(), $file->getBasename());
     }
 
-    #[Route(path: '/show/{page}', defaults: ['page' => 1], requirements: ['page' => '[1-9]\d*'], name: 'admin_invoice_list', methods: ['GET'])]
+    #[Route(path: '/show/{page}', defaults: [
+        'page' => 1,
+    ], requirements: [
+        'page' => '[1-9]\d*',
+    ], name: 'admin_invoice_list', methods: ['GET'])]
     #[IsGranted('view_invoice')]
     public function showInvoicesAction(Request $request, int $page): Response
     {
@@ -356,24 +362,69 @@ final class InvoiceController extends AbstractController
         $table->setPaginationRoute('admin_invoice_list');
         $table->setReloadEvents('kimai.invoiceUpdate');
 
-        $table->addColumn('avatar', ['class' => 'text-nowrap w-avatar d-none d-md-table-cell', 'title' => false, 'orderBy' => false]);
-        $table->addColumn('date', ['class' => 'd-none d-sm-table-cell text-nowrap w-min']);
-        $table->addColumn('user', ['class' => 'd-none text-nowrap w-min', 'orderBy' => false]);
-        $table->addColumn('customer', ['class' => 'alwaysVisible text-nowrap', 'orderBy' => false]);
-        $table->addColumn('comment', ['class' => 'd-none', 'title' => 'description']);
+        $table->addColumn('avatar', [
+            'class' => 'text-nowrap w-avatar d-none d-md-table-cell',
+            'title' => false,
+            'orderBy' => false,
+        ]);
+        $table->addColumn('date', [
+            'class' => 'd-none d-sm-table-cell text-nowrap w-min',
+        ]);
+        $table->addColumn('user', [
+            'class' => 'd-none text-nowrap w-min',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('customer', [
+            'class' => 'alwaysVisible text-nowrap',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('comment', [
+            'class' => 'd-none',
+            'title' => 'description',
+        ]);
 
         foreach ($metaColumns as $metaColumn) {
-            $table->addColumn('mf_' . $metaColumn->getName(), ['title' => $metaColumn->getLabel(), 'class' => 'd-none', 'orderBy' => false]);
+            $table->addColumn('mf_' . $metaColumn->getName(), [
+                'title' => $metaColumn->getLabel(),
+                'class' => 'd-none',
+                'orderBy' => false,
+            ]);
         }
 
-        $table->addColumn('invoice_number', ['class' => 'd-none d-md-table-cell w-min', 'title' => 'invoice.number', 'orderBy' => 'invoice.number']);
-        $table->addColumn('due_date', ['class' => 'd-none w-min', 'title' => 'invoice.due_days', 'orderBy' => false]);
-        $table->addColumn('payment_date', ['class' => 'd-none w-min', 'title' => 'invoice.payment_date', 'orderBy' => false]);
-        $table->addColumn('status', ['class' => 'd-none d-sm-table-cell w-min', 'orderBy' => 'status']);
-        $table->addColumn('subtotal', ['class' => 'd-none text-end w-min', 'title' => 'invoice.subtotal', 'orderBy' => false]);
-        $table->addColumn('tax', ['class' => 'd-none text-end w-min', 'title' => 'invoice.tax']);
-        $table->addColumn('total_rate', ['class' => 'd-none d-md-table-cell text-end w-min']);
-        $table->addColumn('actions', ['class' => 'actions']);
+        $table->addColumn('invoice_number', [
+            'class' => 'd-none d-md-table-cell w-min',
+            'title' => 'invoice.number',
+            'orderBy' => 'invoice.number',
+        ]);
+        $table->addColumn('due_date', [
+            'class' => 'd-none w-min',
+            'title' => 'invoice.due_days',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('payment_date', [
+            'class' => 'd-none w-min',
+            'title' => 'invoice.payment_date',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('status', [
+            'class' => 'd-none d-sm-table-cell w-min',
+            'orderBy' => 'status',
+        ]);
+        $table->addColumn('subtotal', [
+            'class' => 'd-none text-end w-min',
+            'title' => 'invoice.subtotal',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('tax', [
+            'class' => 'd-none text-end w-min',
+            'title' => 'invoice.tax',
+        ]);
+        $table->addColumn('total_rate', [
+            'class' => 'd-none d-md-table-cell text-end w-min',
+        ]);
+        $table->addColumn('actions', [
+            'class' => 'actions',
+        ]);
 
         $page = $this->createPageSetup('all_invoices');
         $page->setDataTable($table);
@@ -410,7 +461,11 @@ final class InvoiceController extends AbstractController
         return $writer->getFileResponse($spreadsheet);
     }
 
-    #[Route(path: '/template/{page}', requirements: ['page' => '[1-9]\d*'], defaults: ['page' => 1], name: 'admin_invoice_template', methods: ['GET', 'POST'])]
+    #[Route(path: '/template/{page}', requirements: [
+        'page' => '[1-9]\d*',
+    ], defaults: [
+        'page' => 1,
+    ], name: 'admin_invoice_template', methods: ['GET', 'POST'])]
     #[IsGranted('manage_invoice_template')]
     public function listTemplateAction(int $page): Response
     {
@@ -424,18 +479,57 @@ final class InvoiceController extends AbstractController
         $table->setPaginationRoute('admin_invoice_template');
         $table->setReloadEvents('kimai.invoiceTemplateUpdate');
 
-        $table->addColumn('name', ['class' => 'alwaysVisible', 'orderBy' => false]);
-        $table->addColumn('title', ['class' => 'd-none text-nowrap', 'orderBy' => false]);
-        $table->addColumn('company', ['class' => 'd-none', 'orderBy' => false]);
-        $table->addColumn('vat_id', ['class' => 'd-none text-nowrap', 'orderBy' => false]);
-        $table->addColumn('tax_rate', ['class' => 'd-none text-nowrap', 'orderBy' => false]);
-        $table->addColumn('due_days', ['class' => 'd-none text-nowrap', 'orderBy' => false]);
-        $table->addColumn('address', ['class' => 'd-none', 'orderBy' => false]);
-        $table->addColumn('contact', ['class' => 'd-none', 'orderBy' => false]);
-        $table->addColumn('calculator', ['class' => 'd-none', 'orderBy' => false, 'title' => 'invoice_calculator', 'translation_domain' => 'invoice-calculator']);
-        $table->addColumn('renderer', ['class' => 'd-none', 'orderBy' => false, 'title' => 'invoice_renderer', 'translation_domain' => 'invoice-renderer']);
-        $table->addColumn('language', ['class' => 'd-none text-nowrap', 'orderBy' => false]);
-        $table->addColumn('actions', ['class' => 'actions']);
+        $table->addColumn('name', [
+            'class' => 'alwaysVisible',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('title', [
+            'class' => 'd-none text-nowrap',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('company', [
+            'class' => 'd-none',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('vat_id', [
+            'class' => 'd-none text-nowrap',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('tax_rate', [
+            'class' => 'd-none text-nowrap',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('due_days', [
+            'class' => 'd-none text-nowrap',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('address', [
+            'class' => 'd-none',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('contact', [
+            'class' => 'd-none',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('calculator', [
+            'class' => 'd-none',
+            'orderBy' => false,
+            'title' => 'invoice_calculator',
+            'translation_domain' => 'invoice-calculator',
+        ]);
+        $table->addColumn('renderer', [
+            'class' => 'd-none',
+            'orderBy' => false,
+            'title' => 'invoice_renderer',
+            'translation_domain' => 'invoice-renderer',
+        ]);
+        $table->addColumn('language', [
+            'class' => 'd-none text-nowrap',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('actions', [
+            'class' => 'actions',
+        ]);
 
         $page = $this->createPageSetup('admin_invoice_template.title');
         $page->setDataTable($table);
@@ -527,7 +621,7 @@ final class InvoiceController extends AbstractController
 
         $form = $this->createForm(InvoiceDocumentUploadForm::class, null, [
             'action' => $this->generateUrl('admin_invoice_document_upload', []),
-            'method' => 'POST'
+            'method' => 'POST',
         ]);
 
         if ($canUpload) {
@@ -543,7 +637,7 @@ final class InvoiceController extends AbstractController
                 $success = true;
 
                 $allowed = InvoiceDocumentUploadForm::EXTENSIONS_NO_TWIG;
-                if ((bool) $systemConfiguration->find('invoice.upload_twig') === true) {
+                if ((bool)$systemConfiguration->find('invoice.upload_twig') === true) {
                     $allowed = InvoiceDocumentUploadForm::EXTENSIONS;
                 }
 
@@ -595,7 +689,10 @@ final class InvoiceController extends AbstractController
 
         return $this->render('invoice/document_upload.html.twig', [
             'page_setup' => $page,
-            'error_replacer' => ['%max%' => $event->getMaximumAllowedDocuments(), '%dir%' => $dir],
+            'error_replacer' => [
+                '%max%' => $event->getMaximumAllowedDocuments(),
+                '%dir%' => $dir,
+            ],
             'upload_error' => $uploadError,
             'can_upload' => $canUpload,
             'form' => $form->createView(),
@@ -661,19 +758,6 @@ final class InvoiceController extends AbstractController
         return $this->createTemplate($request, null);
     }
 
-    private function createTemplate(Request $request, ?InvoiceTemplate $copyFrom = null): Response
-    {
-        $template = new InvoiceTemplate();
-        $template->setLanguage($request->getLocale());
-
-        if (null !== $copyFrom) {
-            $template = clone $copyFrom;
-            $template->setName($copyFrom->getName() . ' (1)');
-        }
-
-        return $this->renderTemplateForm($template, $request);
-    }
-
     #[Route(path: '/template/{id}/delete/{csrfToken}', name: 'admin_invoice_template_delete', methods: ['GET', 'POST'])]
     #[IsGranted('manage_invoice_template')]
     public function deleteTemplate(InvoiceTemplate $template, string $csrfToken, CsrfTokenManagerInterface $csrfTokenManager): Response
@@ -694,6 +778,19 @@ final class InvoiceController extends AbstractController
         }
 
         return $this->redirectToRoute('admin_invoice_template');
+    }
+
+    private function createTemplate(Request $request, ?InvoiceTemplate $copyFrom = null): Response
+    {
+        $template = new InvoiceTemplate();
+        $template->setLanguage($request->getLocale());
+
+        if ($copyFrom !== null) {
+            $template = clone $copyFrom;
+            $template->setName($copyFrom->getName() . ' (1)');
+        }
+
+        return $this->renderTemplateForm($template, $request);
     }
 
     private function getDefaultQuery(): InvoiceQuery
@@ -749,7 +846,7 @@ final class InvoiceController extends AbstractController
         return $this->render('invoice/template_edit.html.twig', [
             'page_setup' => $page,
             'template' => $template,
-            'form' => $editForm->createView()
+            'form' => $editForm->createView(),
         ]);
     }
 
@@ -760,7 +857,7 @@ final class InvoiceController extends AbstractController
             'include_user' => $this->isGranted('view_other_timesheet'),
             'timezone' => $this->getDateTimeFactory()->getTimezone()->getName(),
             'attr' => [
-                'id' => 'invoice-print-form'
+                'id' => 'invoice-print-form',
             ],
         ]);
     }
@@ -771,7 +868,7 @@ final class InvoiceController extends AbstractController
             'action' => $this->generateUrl('admin_invoice_list', []),
             'timezone' => $this->getDateTimeFactory()->getTimezone()->getName(),
             'attr' => [
-                'id' => 'invoice-archive-form'
+                'id' => 'invoice-archive-form',
             ],
         ]);
     }
@@ -781,17 +878,18 @@ final class InvoiceController extends AbstractController
         if ($template->getId() === null) {
             $url = $this->generateUrl('admin_invoice_template_create');
         } else {
-            $url = $this->generateUrl('admin_invoice_template_edit', ['id' => $template->getId()]);
+            $url = $this->generateUrl('admin_invoice_template_edit', [
+                'id' => $template->getId(),
+            ]);
         }
 
         return $this->createForm(InvoiceTemplateForm::class, $template, [
             'action' => $url,
-            'method' => 'POST'
+            'method' => 'POST',
         ]);
     }
 
     /**
-     * @param InvoiceArchiveQuery $query
      * @return MetaTableTypeInterface[]
      */
     private function findMetaColumns(InvoiceArchiveQuery $query): array
@@ -808,7 +906,9 @@ final class InvoiceController extends AbstractController
         $this->dispatcher->dispatch($event);
 
         return $this->createForm(InvoiceEditForm::class, $invoice, [
-            'action' => $this->generateUrl('admin_invoice_edit', ['id' => $invoice->getId()]),
+            'action' => $this->generateUrl('admin_invoice_edit', [
+                'id' => $invoice->getId(),
+            ]),
             'method' => 'POST',
             'timezone' => $this->getDateTimeFactory()->getTimezone()->getName(),
         ]);

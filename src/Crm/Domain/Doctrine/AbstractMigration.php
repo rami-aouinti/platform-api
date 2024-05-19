@@ -47,19 +47,6 @@ abstract class AbstractMigration extends BaseAbstractMigration
         $this->abortIfPlatformNotSupported();
     }
 
-    /**
-     * Abort the migration is the current platform is not supported.
-     *
-     * @throws Exception
-     */
-    private function abortIfPlatformNotSupported(): void
-    {
-        $platform = $this->connection->getDatabasePlatform();
-        if (!($platform instanceof MySQLPlatform)) {
-            $this->abortIf(true, 'Unsupported database platform: ' . \get_class($platform));
-        }
-    }
-
     protected function preventEmptyMigrationWarning(): void
     {
         $this->addSql('#prevent empty warning - no SQL to execute');
@@ -79,5 +66,18 @@ abstract class AbstractMigration extends BaseAbstractMigration
         }
 
         parent::addSql($sql, $params, $types);
+    }
+
+    /**
+     * Abort the migration is the current platform is not supported.
+     *
+     * @throws Exception
+     */
+    private function abortIfPlatformNotSupported(): void
+    {
+        $platform = $this->connection->getDatabasePlatform();
+        if (!($platform instanceof MySQLPlatform)) {
+            $this->abortIf(true, 'Unsupported database platform: ' . \get_class($platform));
+        }
     }
 }

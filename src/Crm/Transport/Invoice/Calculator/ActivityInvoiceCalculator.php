@@ -23,13 +23,18 @@ final class ActivityInvoiceCalculator extends AbstractSumInvoiceCalculator imple
     public function getIdentifiers(ExportableItem $invoiceItem): array
     {
         return [
-            $invoiceItem->getActivity()?->getId()
+            $invoiceItem->getActivity()?->getId(),
         ];
+    }
+
+    public function getId(): string
+    {
+        return 'activity';
     }
 
     protected function mergeSumInvoiceItem(InvoiceItem $invoiceItem, ExportableItem $entry): void
     {
-        if (null === $entry->getActivity()) {
+        if ($entry->getActivity() === null) {
             return;
         }
 
@@ -38,10 +43,5 @@ final class ActivityInvoiceCalculator extends AbstractSumInvoiceCalculator imple
         } else {
             $invoiceItem->setDescription($entry->getActivity()->getName());
         }
-    }
-
-    public function getId(): string
-    {
-        return 'activity';
     }
 }

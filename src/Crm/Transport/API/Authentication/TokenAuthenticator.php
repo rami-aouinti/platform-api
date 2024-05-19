@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\API\Authentication;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Domain\Repository\ApiUserRepository;
+use App\User\Domain\Entity\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,8 +34,7 @@ final class TokenAuthenticator extends AbstractAuthenticator
     public function __construct(
         private readonly ApiUserRepository $userProvider,
         private readonly PasswordHasherFactoryInterface $passwordHasherFactory
-    )
-    {
+    ) {
     }
 
     public function supports(Request $request): bool
@@ -55,34 +54,16 @@ final class TokenAuthenticator extends AbstractAuthenticator
         return false;
     }
 
-    private function getCredentials(Request $request): array
-    {
-        $apiUser = $request->headers->get(self::HEADER_USERNAME);
-        if (null === $apiUser || '' === $apiUser) {
-            throw new CustomUserMessageAuthenticationException('Authentication required, missing user header: ' . self::HEADER_USERNAME);
-        }
-
-        $apiToken = $request->headers->get(self::HEADER_TOKEN);
-        if (null === $apiToken || '' === $apiToken) {
-            throw new CustomUserMessageAuthenticationException('Authentication required, missing token header: ' . self::HEADER_TOKEN);
-        }
-
-        return [
-            'username' => $apiUser,
-            'password' => $apiToken
-        ];
-    }
-
     public function authenticate(Request $request): Passport
     {
         $credentials = $this->getCredentials($request);
 
         $checkCredentials = function (?string $presentedPassword, User $user) {
-            if ('' === $presentedPassword) {
+            if ($presentedPassword === '') {
                 throw new BadCredentialsException('The presented password cannot be empty.');
             }
 
-            if (null === $user->getApiToken()) {
+            if ($user->getApiToken() === null) {
                 throw new BadCredentialsException('The user has no activated API account.');
             }
 
@@ -95,7 +76,10 @@ final class TokenAuthenticator extends AbstractAuthenticator
 
         $passport = new Passport(
             new UserBadge($credentials['username'], [$this->userProvider, 'loadUserByIdentifier']),
-            new CustomCredentials($checkCredentials, $credentials['password'])
+            new CustomCredentials(
+                $checkCredentials,
+                $credentials['password']
+            )
         );
 
         $passport->addBadge(new ApiTokenUpgradeBadge($credentials['password'], $this->userProvider));
@@ -111,9 +95,27 @@ final class TokenAuthenticator extends AbstractAuthenticator
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
         $data = [
-            'message' => $exception instanceof CustomUserMessageAuthenticationException ? $exception->getMessage() : 'Invalid credentials'
+            'message' => $exception instanceof CustomUserMessageAuthenticationException ? $exception->getMessage() : 'Invalid credentials',
         ];
 
         return new JsonResponse($data, Response::HTTP_FORBIDDEN);
+    }
+
+    private function getCredentials(Request $request): array
+    {
+        $apiUser = $request->headers->get(self::HEADER_USERNAME);
+        if ($apiUser === null || $apiUser === '') {
+            throw new CustomUserMessageAuthenticationException('Authentication required, missing user header: ' . self::HEADER_USERNAME);
+        }
+
+        $apiToken = $request->headers->get(self::HEADER_TOKEN);
+        if ($apiToken === null || $apiToken === '') {
+            throw new CustomUserMessageAuthenticationException('Authentication required, missing token header: ' . self::HEADER_TOKEN);
+        }
+
+        return [
+            'username' => $apiUser,
+            'password' => $apiToken,
+        ];
     }
 }

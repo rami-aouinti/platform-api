@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Controller\Api\v1\Reporting;
 
-use App\Crm\Transport\Controller\Api\v1\AbstractController;
 use App\Crm\Application\Export\Spreadsheet\Writer\BinaryFileResponseWriter;
 use App\Crm\Application\Export\Spreadsheet\Writer\XlsxWriter;
 use App\Crm\Application\Reporting\CustomerMonthlyProjects\CustomerMonthlyProjects;
@@ -19,6 +18,7 @@ use App\Crm\Application\Reporting\CustomerMonthlyProjects\CustomerMonthlyProject
 use App\Crm\Application\Reporting\CustomerMonthlyProjects\CustomerMonthlyProjectsRepository;
 use App\Crm\Domain\Repository\Query\UserQuery;
 use App\Crm\Domain\Repository\Query\VisibilityInterface;
+use App\Crm\Transport\Controller\Api\v1\AbstractController;
 use App\User\Infrastructure\Repository\UserRepository;
 use PhpOffice\PhpSpreadsheet\Reader\Html;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,8 +27,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * Class CustomerMonthlyProjectsController
- *
  * @package App\Crm\Transport\Controller\Api\v1\Reporting
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

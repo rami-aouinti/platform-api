@@ -11,12 +11,12 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Controller\Api\v1\Reporting;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Application\Export\Spreadsheet\Writer\BinaryFileResponseWriter;
 use App\Crm\Application\Export\Spreadsheet\Writer\XlsxWriter;
 use App\Crm\Application\Model\DailyStatistic;
 use App\Crm\Application\Reporting\MonthByUser\MonthByUser;
 use App\Crm\Application\Reporting\MonthByUser\MonthByUserForm;
+use App\User\Domain\Entity\User;
 use Exception;
 use PhpOffice\PhpSpreadsheet\Reader\Html;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,8 +26,6 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * Class UserMonthController
- *
  * @package App\Crm\Transport\Controller\Api\v1\Reporting
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -36,8 +34,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class UserMonthController extends AbstractUserReportController
 {
     /**
-     * @param Request $request
-     * @return Response
      * @throws Exception
      */
     #[Route(path: '/month', name: 'report_user_month', methods: ['GET', 'POST'])]

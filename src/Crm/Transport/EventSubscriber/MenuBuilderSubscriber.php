@@ -23,8 +23,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 final class MenuBuilderSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private MenuService $menuService)
-    {
+    public function __construct(
+        private MenuService $menuService
+    ) {
     }
 
     public static function getSubscribedEvents(): array
@@ -64,9 +65,7 @@ final class MenuBuilderSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param string $route
      * @param MenuItemInterface[] $items
-     * @return bool
      */
     private function activateByRoute(string $route, array $items): bool
     {

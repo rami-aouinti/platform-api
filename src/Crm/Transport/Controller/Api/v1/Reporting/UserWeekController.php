@@ -25,8 +25,6 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * Class UserWeekController
- *
  * @package App\Crm\Transport\Controller\Api\v1\Reporting
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -35,8 +33,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class UserWeekController extends AbstractUserReportController
 {
     /**
-     * @param Request $request
-     * @return Response
      * @throws Exception
      */
     #[Route(path: '/week', name: 'report_user_week', methods: ['GET', 'POST'])]

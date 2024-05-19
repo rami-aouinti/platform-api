@@ -46,7 +46,7 @@ final class ProjectDetailsForm extends AbstractType
                     }
 
                     $event->getForm()->add('project', ProjectType::class, array_merge($projectOptions, [
-                        'projects' => $projects
+                        'projects' => $projects,
                     ]));
                 }
             }

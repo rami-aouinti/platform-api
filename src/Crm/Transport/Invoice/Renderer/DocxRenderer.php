@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Invoice\Renderer;
 
+use App\Crm\Application\Model\InvoiceDocument;
 use App\Crm\Transport\Invoice\InvoiceModel;
 use App\Crm\Transport\Invoice\RendererInterface;
-use App\Crm\Application\Model\InvoiceDocument;
 use PhpOffice\PhpWord\Escaper\Xml;
 use PhpOffice\PhpWord\Exception\Exception as OfficeException;
 use PhpOffice\PhpWord\Settings;
@@ -60,7 +60,7 @@ final class DocxRenderer extends AbstractRenderer implements RendererInterface
         }
 
         $cacheFile = @tempnam(sys_get_temp_dir(), 'kimai-invoice-docx');
-        if (false === $cacheFile) {
+        if ($cacheFile === false) {
             throw new \Exception('Could not open temporary file');
         }
 

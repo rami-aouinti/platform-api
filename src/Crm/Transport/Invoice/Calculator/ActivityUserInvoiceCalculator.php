@@ -28,13 +28,18 @@ final class ActivityUserInvoiceCalculator extends AbstractSumInvoiceCalculator i
 
         return [
             $invoiceItem->getActivity()?->getId(),
-            $invoiceItem->getUser()->getId()
+            $invoiceItem->getUser()->getId(),
         ];
+    }
+
+    public function getId(): string
+    {
+        return 'activity_user';
     }
 
     protected function mergeSumInvoiceItem(InvoiceItem $invoiceItem, ExportableItem $entry): void
     {
-        if (null === $entry->getActivity()) {
+        if ($entry->getActivity() === null) {
             return;
         }
 
@@ -43,10 +48,5 @@ final class ActivityUserInvoiceCalculator extends AbstractSumInvoiceCalculator i
         } else {
             $invoiceItem->setDescription($entry->getActivity()->getName());
         }
-    }
-
-    public function getId(): string
-    {
-        return 'activity_user';
     }
 }

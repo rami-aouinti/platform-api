@@ -15,8 +15,6 @@ use App\Crm\Domain\Entity\Project;
 use App\Crm\Domain\Entity\Team;
 
 /**
- * Class AbstractUserList
- *
  * @package App\Crm\Application\Reporting
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

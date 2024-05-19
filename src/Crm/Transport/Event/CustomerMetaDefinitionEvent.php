@@ -19,8 +19,9 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 final class CustomerMetaDefinitionEvent extends Event
 {
-    public function __construct(private Customer $entity)
-    {
+    public function __construct(
+        private Customer $entity
+    ) {
     }
 
     public function getEntity(): Customer

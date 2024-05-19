@@ -12,10 +12,10 @@ declare(strict_types=1);
 namespace App\Crm\Transport\Form\Type;
 
 use App\Crm\Domain\Entity\Activity;
-use App\Crm\Transport\Form\Helper\ActivityHelper;
-use App\Crm\Transport\Form\Helper\ProjectHelper;
 use App\Crm\Domain\Repository\ActivityRepository;
 use App\Crm\Domain\Repository\Query\ActivityFormTypeQuery;
+use App\Crm\Transport\Form\Helper\ActivityHelper;
+use App\Crm\Transport\Form\Helper\ProjectHelper;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormInterface;
@@ -28,8 +28,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 final class ActivityType extends AbstractType
 {
-    public function __construct(private ActivityHelper $activityHelper, private ProjectHelper $projectHelper)
-    {
+    public function __construct(
+        private ActivityHelper $activityHelper,
+        private ProjectHelper $projectHelper
+    ) {
     }
 
     public function getChoiceLabel(Activity $activity): string
@@ -39,7 +41,7 @@ final class ActivityType extends AbstractType
 
     public function groupBy(Activity $activity, $key, $index): ?string
     {
-        if (null === $activity->getProject()) {
+        if ($activity->getProject() === null) {
             return null;
         }
 
@@ -47,7 +49,6 @@ final class ActivityType extends AbstractType
     }
 
     /**
-     * @param Activity $activity
      * @param string $key
      * @param mixed $value
      * @return array<string, string|int|null>
@@ -55,7 +56,10 @@ final class ActivityType extends AbstractType
     public function getChoiceAttributes(Activity $activity, $key, $value): array
     {
         if (null !== ($project = $activity->getProject())) {
-            return ['data-project' => $project->getId(), 'data-currency' => $project->getCustomer()?->getCurrency()];
+            return [
+                'data-project' => $project->getId(),
+                'data-currency' => $project->getCustomer()?->getCurrency(),
+            ];
         }
 
         return [];
@@ -85,8 +89,10 @@ final class ActivityType extends AbstractType
         ]);
 
         $resolver->setDefault('api_data', function (Options $options) {
-            if (false !== $options['allow_create']) {
-                return ['create' => 'post_activity'];
+            if ($options['allow_create'] !== false) {
+                return [
+                    'create' => 'post_activity',
+                ];
             }
 
             return [];
@@ -96,11 +102,11 @@ final class ActivityType extends AbstractType
             return function (ActivityRepository $repo) use ($options) {
                 $query = new ActivityFormTypeQuery($options['activities'], $options['projects']);
 
-                if (true === $options['query_builder_for_user']) {
+                if ($options['query_builder_for_user'] === true) {
                     $query->setUser($options['user']);
                 }
 
-                if (null !== $options['ignore_activity']) {
+                if ($options['ignore_activity'] !== null) {
                     $query->setActivityToIgnore($options['ignore_activity']);
                 }
 

@@ -19,8 +19,9 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 final class TimesheetExportedValidator extends ConstraintValidator
 {
-    public function __construct(private readonly Security $security)
-    {
+    public function __construct(
+        private readonly Security $security
+    ) {
     }
 
     public function validate(mixed $value, Constraint $constraint): void
@@ -45,7 +46,7 @@ final class TimesheetExportedValidator extends ConstraintValidator
         // can trigger is right when the "export" flag ist set from the "edit form".
         // most teamleads should not have "edit_exported_timesheet" but only "edit_export_other_timesheet"
 
-        if (null !== $this->security->getUser() && $this->security->isGranted('edit_export', $value)) {
+        if ($this->security->getUser() !== null && $this->security->isGranted('edit_export', $value)) {
             return;
         }
 

@@ -19,17 +19,18 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\BadgeInterface;
 final class ApiTokenUpgradeBadge implements BadgeInterface
 {
     /**
-     * @param string|null $plaintextApiToken
      * @param PasswordUpgraderInterface<User> $passwordUpgrader
      */
-    public function __construct(private ?string $plaintextApiToken, private PasswordUpgraderInterface $passwordUpgrader)
-    {
+    public function __construct(
+        private ?string $plaintextApiToken,
+        private PasswordUpgraderInterface $passwordUpgrader
+    ) {
     }
 
     public function getAndErasePlaintextApiToken(): string
     {
         $password = $this->plaintextApiToken;
-        if (null === $password) {
+        if ($password === null) {
             throw new LogicException('The api token is erased as another listener already used this badge.');
         }
 

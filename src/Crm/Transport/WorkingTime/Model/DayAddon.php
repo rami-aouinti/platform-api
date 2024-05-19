@@ -15,8 +15,11 @@ final class DayAddon
 {
     private bool $billable = true;
 
-    public function __construct(private string $title, private int $duration, private int $visibleDuration)
-    {
+    public function __construct(
+        private string $title,
+        private int $duration,
+        private int $visibleDuration
+    ) {
     }
 
     public function getTitle(): string

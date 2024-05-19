@@ -24,8 +24,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class TimePickerType extends AbstractType
 {
-    public function __construct(private LocaleService $localeService)
-    {
+    public function __construct(
+        private LocaleService $localeService
+    ) {
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -40,7 +41,7 @@ final class TimePickerType extends AbstractType
             'placeholder' => $formFormat, // $format
             'model_timezone' => date_default_timezone_get(),
             'view_timezone' => date_default_timezone_get(),
-            'block_prefix' => 'time'
+            'block_prefix' => 'time',
         ]);
     }
 
@@ -69,8 +70,8 @@ final class TimePickerType extends AbstractType
                         }
 
                         $now = new \DateTime('now', new \DateTimeZone($options['model_timezone']));
-                        $hour = !is_numeric($data['hour']) ? 0 : (int) $data['hour'];
-                        $minute = !is_numeric($data['minute']) ? 0 : (int) $data['minute'];
+                        $hour = !is_numeric($data['hour']) ? 0 : (int)$data['hour'];
+                        $minute = !is_numeric($data['minute']) ? 0 : (int)$data['minute'];
                         $now->setTime($hour, $minute, 0);
                         $data = $now;
                     }

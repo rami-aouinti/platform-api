@@ -23,8 +23,6 @@ use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class Project
- *
  * @package App\Crm\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -136,7 +134,9 @@ class Project implements EntityWithMetaFields, EntityWithBudget
     #[Serializer\Groups(['Default'])]
     #[Exporter\Expose(label: 'visible', type: 'boolean')]
     private bool $visible = true;
-    #[ORM\Column(name: 'billable', type: 'boolean', nullable: false, options: ['default' => true])]
+    #[ORM\Column(name: 'billable', type: 'boolean', nullable: false, options: [
+        'default' => true,
+    ])]
     #[Assert\NotNull]
     #[Serializer\Expose]
     #[Serializer\Groups(['Default'])]
@@ -172,7 +172,9 @@ class Project implements EntityWithMetaFields, EntityWithBudget
     /**
      * Whether this project allows booking of global activities
      */
-    #[ORM\Column(name: 'global_activities', type: 'boolean', nullable: false, options: ['default' => true])]
+    #[ORM\Column(name: 'global_activities', type: 'boolean', nullable: false, options: [
+        'default' => true,
+    ])]
     #[Assert\NotNull]
     #[Serializer\Expose]
     #[Serializer\Groups(['Default'])]
@@ -190,6 +192,34 @@ class Project implements EntityWithMetaFields, EntityWithBudget
         $this->teams = new ArrayCollection();
     }
 
+    public function __toString(): string
+    {
+        return $this->getName();
+    }
+
+    public function __clone()
+    {
+        if ($this->id !== null) {
+            $this->id = null;
+        }
+
+        $currentTeams = $this->teams;
+        $this->teams = new ArrayCollection();
+        /** @var Team $team */
+        foreach ($currentTeams as $team) {
+            $this->addTeam($team);
+        }
+
+        $currentMeta = $this->meta;
+        $this->meta = new ArrayCollection();
+        /** @var ProjectMeta $meta */
+        foreach ($currentMeta as $meta) {
+            $newMeta = clone $meta;
+            $newMeta->setEntity($this);
+            $this->setMetaField($newMeta);
+        }
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -200,14 +230,14 @@ class Project implements EntityWithMetaFields, EntityWithBudget
         return $this->customer;
     }
 
-    public function setCustomer(?Customer $customer): Project
+    public function setCustomer(?Customer $customer): self
     {
         $this->customer = $customer;
 
         return $this;
     }
 
-    public function setName(string $name): Project
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -219,7 +249,7 @@ class Project implements EntityWithMetaFields, EntityWithBudget
         return $this->name;
     }
 
-    public function setComment(?string $comment): Project
+    public function setComment(?string $comment): self
     {
         $this->comment = $comment;
 
@@ -231,7 +261,7 @@ class Project implements EntityWithMetaFields, EntityWithBudget
         return $this->comment;
     }
 
-    public function setVisible(bool $visible): Project
+    public function setVisible(bool $visible): self
     {
         $this->visible = $visible;
 
@@ -258,44 +288,11 @@ class Project implements EntityWithMetaFields, EntityWithBudget
         return $this->orderNumber;
     }
 
-    public function setOrderNumber(?string $orderNumber): Project
+    public function setOrderNumber(?string $orderNumber): self
     {
         $this->orderNumber = $orderNumber;
 
         return $this;
-    }
-
-    /**
-     * Make sure begin and end date have the correct timezone.
-     * This will be called once for each item after being loaded from the database.
-     *
-     * @throws Exception
-     */
-    protected function localizeDates(): void
-    {
-        if ($this->localized) {
-            return;
-        }
-
-        if (null === $this->timezone) {
-            $this->timezone = date_default_timezone_get();
-        }
-
-        $timezone = new \DateTimeZone($this->timezone);
-
-        if (null !== $this->orderDate) {
-            $this->orderDate->setTimezone($timezone);
-        }
-
-        if (null !== $this->start) {
-            $this->start->setTimezone($timezone);
-        }
-
-        if (null !== $this->end) {
-            $this->end->setTimezone($timezone);
-        }
-
-        $this->localized = true;
     }
 
     public function getOrderDate(): ?DateTime
@@ -305,11 +302,11 @@ class Project implements EntityWithMetaFields, EntityWithBudget
         return $this->orderDate;
     }
 
-    public function setOrderDate(?DateTime $orderDate): Project
+    public function setOrderDate(?DateTime $orderDate): self
     {
         $this->orderDate = $orderDate;
 
-        if (null !== $orderDate) {
+        if ($orderDate !== null) {
             $this->timezone = $orderDate->getTimezone()->getName();
         }
 
@@ -323,11 +320,11 @@ class Project implements EntityWithMetaFields, EntityWithBudget
         return $this->start;
     }
 
-    public function setStart(?DateTime $start): Project
+    public function setStart(?DateTime $start): self
     {
         $this->start = $start;
 
-        if (null !== $start) {
+        if ($start !== null) {
             $this->timezone = $start->getTimezone()->getName();
         }
 
@@ -341,11 +338,11 @@ class Project implements EntityWithMetaFields, EntityWithBudget
         return $this->end;
     }
 
-    public function setEnd(?DateTime $end): Project
+    public function setEnd(?DateTime $end): self
     {
         $this->end = $end;
 
-        if (null !== $end) {
+        if ($end !== null) {
             $this->timezone = $end->getTimezone()->getName();
         }
 
@@ -362,9 +359,6 @@ class Project implements EntityWithMetaFields, EntityWithBudget
         $this->globalActivities = $globalActivities;
     }
 
-    /**
-     * @return Collection
-     */
     public function getMetaFields(): Collection
     {
         return $this->meta;
@@ -476,31 +470,36 @@ class Project implements EntityWithMetaFields, EntityWithBudget
         return $this->number;
     }
 
-    public function __toString(): string
+    /**
+     * Make sure begin and end date have the correct timezone.
+     * This will be called once for each item after being loaded from the database.
+     *
+     * @throws Exception
+     */
+    protected function localizeDates(): void
     {
-        return $this->getName();
-    }
-
-    public function __clone()
-    {
-        if ($this->id !== null) {
-            $this->id = null;
+        if ($this->localized) {
+            return;
         }
 
-        $currentTeams = $this->teams;
-        $this->teams = new ArrayCollection();
-        /** @var Team $team */
-        foreach ($currentTeams as $team) {
-            $this->addTeam($team);
+        if ($this->timezone === null) {
+            $this->timezone = date_default_timezone_get();
         }
 
-        $currentMeta = $this->meta;
-        $this->meta = new ArrayCollection();
-        /** @var ProjectMeta $meta */
-        foreach ($currentMeta as $meta) {
-            $newMeta = clone $meta;
-            $newMeta->setEntity($this);
-            $this->setMetaField($newMeta);
+        $timezone = new \DateTimeZone($this->timezone);
+
+        if ($this->orderDate !== null) {
+            $this->orderDate->setTimezone($timezone);
         }
+
+        if ($this->start !== null) {
+            $this->start->setTimezone($timezone);
+        }
+
+        if ($this->end !== null) {
+            $this->end->setTimezone($timezone);
+        }
+
+        $this->localized = true;
     }
 }

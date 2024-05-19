@@ -28,7 +28,7 @@ class ProjectQuery extends BaseQuery implements VisibilityInterface
         'project_end',
         'budget',
         'timeBudget',
-        'visible'
+        'visible',
     ];
 
     /**
@@ -99,7 +99,7 @@ class ProjectQuery extends BaseQuery implements VisibilityInterface
         return $this->projectStart;
     }
 
-    public function setProjectStart(?\DateTime $projectStart): ProjectQuery
+    public function setProjectStart(?\DateTime $projectStart): self
     {
         $this->projectStart = $projectStart;
 
@@ -111,7 +111,7 @@ class ProjectQuery extends BaseQuery implements VisibilityInterface
         return $this->projectEnd;
     }
 
-    public function setProjectEnd(?\DateTime $projectEnd): ProjectQuery
+    public function setProjectEnd(?\DateTime $projectEnd): self
     {
         $this->projectEnd = $projectEnd;
 

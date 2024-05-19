@@ -18,8 +18,10 @@ final class ProjectInactiveQuery
 {
     private DateTime $lastChange;
 
-    public function __construct(DateTime $lastChange, private User $user)
-    {
+    public function __construct(
+        DateTime $lastChange,
+        private User $user
+    ) {
         $this->lastChange = clone $lastChange;
     }
 

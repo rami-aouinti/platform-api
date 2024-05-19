@@ -18,8 +18,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 final class DefaultMode extends AbstractTrackingMode
 {
-    public function __construct(private RoundingService $rounding)
-    {
+    public function __construct(
+        private RoundingService $rounding
+    ) {
     }
 
     public function canEditBegin(): bool
@@ -61,7 +62,7 @@ final class DefaultMode extends AbstractTrackingMode
     {
         parent::create($timesheet, $request);
 
-        if (null === $timesheet->getBegin()) {
+        if ($timesheet->getBegin() === null) {
             $timesheet->setBegin(new DateTime('now', $this->getTimezone($timesheet)));
         }
 
@@ -70,7 +71,7 @@ final class DefaultMode extends AbstractTrackingMode
         if (!$timesheet->isRunning()) {
             $this->rounding->roundEnd($timesheet);
 
-            if (null !== $timesheet->getDuration()) {
+            if ($timesheet->getDuration() !== null) {
                 $this->rounding->roundDuration($timesheet);
             }
         }

@@ -14,11 +14,11 @@ namespace App\Crm\Transport\Form;
 use App\Crm\Domain\Entity\Activity;
 use App\Crm\Domain\Entity\Customer;
 use App\Crm\Domain\Entity\Project;
+use App\Crm\Domain\Repository\ProjectRepository;
+use App\Crm\Domain\Repository\Query\ProjectFormTypeQuery;
 use App\Crm\Transport\Form\Type\ActivityType;
 use App\Crm\Transport\Form\Type\CustomerType;
 use App\Crm\Transport\Form\Type\ProjectType;
-use App\Crm\Domain\Repository\ProjectRepository;
-use App\Crm\Domain\Repository\Query\ProjectFormTypeQuery;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -49,7 +49,7 @@ trait FormTrait
             'placeholder' => '',
             'activity_enabled' => true,
             'query_builder_for_user' => true,
-            'join_customer' => true
+            'join_customer' => true,
         ], $options);
 
         $builder->add('project', ProjectType::class, array_merge($options, [
@@ -70,8 +70,8 @@ trait FormTrait
                     'group_by' => null,
                     'query_builder' => function (ProjectRepository $repo) use ($builder, $project, $customer, $isNew) {
                         // is there a better way to prevent starting a record with a hidden project ?
-                        $project = \is_string($project) ? (int) $project : $project;
-                        $customer = \is_string($customer) ? (int) $customer : $customer;
+                        $project = \is_string($project) ? (int)$project : $project;
+                        $customer = \is_string($customer) ? (int)$customer : $customer;
                         if ($isNew && \is_int($project)) {
                             /** @var Project $project */
                             $project = $repo->find($project);
@@ -106,7 +106,10 @@ trait FormTrait
 
     protected function addActivity(FormBuilderInterface $builder, ?Activity $activity = null, ?Project $project = null, array $options = []): void
     {
-        $options = array_merge(['placeholder' => '', 'query_builder_for_user' => true], $options);
+        $options = array_merge([
+            'placeholder' => '',
+            'query_builder_for_user' => true,
+        ], $options);
 
         $options['projects'] = $project;
         $options['activities'] = $activity;

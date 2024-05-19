@@ -21,8 +21,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 final class InvoiceCalculatorType extends AbstractType
 {
-    public function __construct(private ServiceInvoice $service)
-    {
+    public function __construct(
+        private ServiceInvoice $service
+    ) {
     }
 
     public function configureOptions(OptionsResolver $resolver): void

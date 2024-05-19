@@ -11,13 +11,13 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Invoice\Renderer;
 
-use App\Export\Base\DispositionInlineInterface;
-use App\Crm\Transport\Invoice\InvoiceFilename;
-use App\Crm\Transport\Invoice\InvoiceModel;
 use App\Crm\Application\Model\InvoiceDocument;
 use App\Crm\Application\Pdf\HtmlToPdfConverter;
 use App\Crm\Application\Pdf\PdfContext;
 use App\Crm\Application\Pdf\PdfRendererTrait;
+use App\Crm\Transport\Invoice\InvoiceFilename;
+use App\Crm\Transport\Invoice\InvoiceModel;
+use App\Export\Base\DispositionInlineInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment;
 
@@ -25,8 +25,10 @@ final class PdfRenderer extends AbstractTwigRenderer implements DispositionInlin
 {
     use PDFRendererTrait;
 
-    public function __construct(Environment $twig, private HtmlToPdfConverter $converter)
-    {
+    public function __construct(
+        Environment $twig,
+        private HtmlToPdfConverter $converter
+    ) {
         parent::__construct($twig);
     }
 
@@ -46,7 +48,9 @@ final class PdfRenderer extends AbstractTwigRenderer implements DispositionInlin
         $context->setOption('margin_top', '12');
         $context->setOption('margin_bottom', '8');
 
-        $content = $this->renderTwigTemplate($document, $model, ['pdfContext' => $context]);
+        $content = $this->renderTwigTemplate($document, $model, [
+            'pdfContext' => $context,
+        ]);
         $content = $this->converter->convertToPdf($content, $context->getOptions());
 
         return $this->createPdfResponse($content, $context);

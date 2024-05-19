@@ -16,9 +16,6 @@ namespace App\Crm\Application\Model;
  */
 class TimesheetStatistic
 {
-    /**
-     * @var \DateTime|null
-     */
     protected ?\DateTime $firstEntry = null;
     protected int $durationThisMonth = 0;
     protected int $durationTotal = 0;
@@ -40,8 +37,6 @@ class TimesheetStatistic
 
     /**
      * This is actually the rate, wrong wording...
-     *
-     * @return float
      */
     public function getAmountTotal(): float
     {
@@ -55,7 +50,7 @@ class TimesheetStatistic
      */
     public function setAmountTotal($amountTotal): void
     {
-        $this->amountTotal = (float) $amountTotal;
+        $this->amountTotal = (float)$amountTotal;
     }
 
     public function getRateTotalBillable(): float
@@ -78,13 +73,11 @@ class TimesheetStatistic
      */
     public function setDurationTotal($durationTotal): void
     {
-        $this->durationTotal = (int) $durationTotal;
+        $this->durationTotal = (int)$durationTotal;
     }
 
     /**
      * This is actually the rate, wrong wording...
-     *
-     * @return float
      */
     public function getAmountThisMonth(): float
     {
@@ -98,7 +91,7 @@ class TimesheetStatistic
      */
     public function setAmountThisMonth($amountThisMonth): void
     {
-        $this->amountThisMonth = (float) $amountThisMonth;
+        $this->amountThisMonth = (float)$amountThisMonth;
     }
 
     public function getRateThisMonthBillable(): float

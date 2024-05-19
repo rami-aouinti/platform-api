@@ -35,7 +35,6 @@ class ProjectRateRepository extends EntityRepository
     }
 
     /**
-     * @param Project $project
      * @return ProjectRate[]
      */
     public function getRatesForProject(Project $project): array

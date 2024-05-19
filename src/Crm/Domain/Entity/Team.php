@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace App\Crm\Domain\Entity;
 
 use App\Crm\Application\Validator\Constraints as Constraints;
+use App\User\Domain\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -19,11 +20,8 @@ use JMS\Serializer\Annotation as Serializer;
 use OpenApi\Attributes as OA;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\User\Domain\Entity\User;
 
 /**
- * Class Team
- *
  * @package App\Crm\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -36,6 +34,8 @@ use App\User\Domain\Entity\User;
 #[Constraints\Team]
 class Team
 {
+    use ColorTrait;
+
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -94,8 +94,6 @@ class Team
     #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/Activity'))]
     private Collection $activities;
 
-    use ColorTrait;
-
     public function __construct(string $name)
     {
         $this->name = $name;
@@ -105,12 +103,50 @@ class Team
         $this->activities = new ArrayCollection();
     }
 
+    public function __toString(): string
+    {
+        return $this->getName();
+    }
+
+    public function __clone()
+    {
+        if ($this->id !== null) {
+            $this->id = null;
+        }
+
+        $members = $this->members;
+        $this->members = new ArrayCollection();
+        foreach ($members as $member) {
+            $newMember = clone $member;
+            $newMember->setTeam($this);
+            $this->addMember($newMember);
+        }
+
+        $customers = $this->customers;
+        $this->customers = new ArrayCollection();
+        foreach ($customers as $customer) {
+            $this->addCustomer($customer);
+        }
+
+        $projects = $this->projects;
+        $this->projects = new ArrayCollection();
+        foreach ($projects as $project) {
+            $this->addProject($project);
+        }
+
+        $activities = $this->activities;
+        $this->activities = new ArrayCollection();
+        foreach ($activities as $activity) {
+            $this->addActivity($activity);
+        }
+    }
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setName(?string $name): Team
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -150,7 +186,7 @@ class Team
             return;
         }
 
-        if (null !== $this->findMemberByUser($user)) {
+        if ($this->findMemberByUser($user) !== null) {
             return;
         }
 
@@ -161,17 +197,6 @@ class Team
     public function hasMember(TeamMember $member): bool
     {
         return $this->members->contains($member);
-    }
-
-    private function findMemberByUser(User $user): ?TeamMember
-    {
-        foreach ($this->members as $member) {
-            if ($member->getUser() === $user) {
-                return $member;
-            }
-        }
-
-        return null;
     }
 
     public function removeMember(TeamMember $member): void
@@ -230,8 +255,6 @@ class Team
 
     /**
      * Removes the teamlead flag, but leaves the user within the team.
-     *
-     * @param User $user
      */
     public function demoteTeamlead(User $user): void
     {
@@ -243,7 +266,7 @@ class Team
 
     public function hasUser(User $user): bool
     {
-        return (null !== $this->findMemberByUser($user));
+        return $this->findMemberByUser($user) !== null;
     }
 
     public function hasUsers(): bool
@@ -264,7 +287,7 @@ class Team
 
     public function addUser(User $user): void
     {
-        if (null !== $this->findMemberByUser($user)) {
+        if ($this->findMemberByUser($user) !== null) {
             return;
         }
 
@@ -397,41 +420,14 @@ class Team
         return $this->activities;
     }
 
-    public function __toString(): string
+    private function findMemberByUser(User $user): ?TeamMember
     {
-        return $this->getName();
-    }
-
-    public function __clone()
-    {
-        if ($this->id !== null) {
-            $this->id = null;
+        foreach ($this->members as $member) {
+            if ($member->getUser() === $user) {
+                return $member;
+            }
         }
 
-        $members = $this->members;
-        $this->members = new ArrayCollection();
-        foreach ($members as $member) {
-            $newMember = clone $member;
-            $newMember->setTeam($this);
-            $this->addMember($newMember);
-        }
-
-        $customers = $this->customers;
-        $this->customers = new ArrayCollection();
-        foreach ($customers as $customer) {
-            $this->addCustomer($customer);
-        }
-
-        $projects = $this->projects;
-        $this->projects = new ArrayCollection();
-        foreach ($projects as $project) {
-            $this->addProject($project);
-        }
-
-        $activities = $this->activities;
-        $this->activities = new ArrayCollection();
-        foreach ($activities as $activity) {
-            $this->addActivity($activity);
-        }
+        return null;
     }
 }

@@ -17,8 +17,6 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class DateTimeApiType
- *
  * @package App\Crm\Transport\Form\API
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

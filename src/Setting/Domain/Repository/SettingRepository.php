@@ -16,7 +16,6 @@ namespace App\Setting\Domain\Repository;
 use App\Setting\Domain\Entity\Setting;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use function Symfony\Component\String\u;
 
 /**
  * This custom Doctrine repository contains some methods which are useful when

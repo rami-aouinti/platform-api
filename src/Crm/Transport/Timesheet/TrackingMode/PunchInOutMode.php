@@ -41,7 +41,7 @@ final class PunchInOutMode implements TrackingModeInterface
 
     public function create(Timesheet $timesheet, ?Request $request = null): void
     {
-        if (null === $timesheet->getBegin()) {
+        if ($timesheet->getBegin() === null) {
             $timesheet->setBegin(new DateTime('now', $this->getTimezone($timesheet)));
         }
     }

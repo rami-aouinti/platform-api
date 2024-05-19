@@ -19,8 +19,9 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 final class ProjectMetaDefinitionEvent extends Event
 {
-    public function __construct(private Project $entity)
-    {
+    public function __construct(
+        private Project $entity
+    ) {
     }
 
     public function getEntity(): Project

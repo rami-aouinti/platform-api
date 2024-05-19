@@ -24,14 +24,16 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 final class RedirectToLocaleSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private UrlGeneratorInterface $urlGenerator, private LocaleService $localeService)
-    {
+    public function __construct(
+        private UrlGeneratorInterface $urlGenerator,
+        private LocaleService $localeService
+    ) {
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::REQUEST => ['onKernelRequest']
+            KernelEvents::REQUEST => ['onKernelRequest'],
         ];
     }
 
@@ -40,14 +42,14 @@ final class RedirectToLocaleSubscriber implements EventSubscriberInterface
         $request = $event->getRequest();
 
         // only trigger on the homepage
-        if ('/' !== $request->getPathInfo()) {
+        if ($request->getPathInfo() !== '/') {
             return;
         }
 
         // Ignore requests from referrers with the same HTTP host in order to prevent
         // changing language for users who possibly already selected it for this application.
         $referer = $request->headers->get('referer');
-        if ($referer !== null && 0 === stripos($referer, $request->getSchemeAndHttpHost())) {
+        if ($referer !== null && stripos($referer, $request->getSchemeAndHttpHost()) === 0) {
             return;
         }
 
@@ -59,7 +61,9 @@ final class RedirectToLocaleSubscriber implements EventSubscriberInterface
 
         $preferredLanguage = $request->getPreferredLanguage(array_unique($allLanguages));
 
-        $response = new RedirectResponse($this->urlGenerator->generate('homepage', ['_locale' => $preferredLanguage]));
+        $response = new RedirectResponse($this->urlGenerator->generate('homepage', [
+            '_locale' => $preferredLanguage,
+        ]));
         $event->setResponse($response);
     }
 }

@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Model;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Application\Model\Statistic\StatisticDate;
+use App\User\Domain\Entity\User;
 use DateTime;
 use DateTimeInterface;
 
@@ -36,40 +36,6 @@ final class MonthlyStatistic implements DateStatisticInterface
     public function getUser(): User
     {
         return $this->user;
-    }
-
-    private function setupYears(): void
-    {
-        if (!empty($this->years)) {
-            return;
-        }
-
-        $years = [];
-        $begin = DateTime::createFromInterface($this->begin);
-        $begin->setTime(0, 0, 0);
-
-        $tmp = clone $begin;
-        $day = (int) $begin->format('d');
-
-        while ($tmp < $this->end) {
-            $curYear = $tmp->format('Y');
-            if (!isset($years[$curYear])) {
-                $year = [];
-                for ($i = 1; $i < 13; $i++) {
-                    $date = clone $begin;
-                    // financial years do NOT start at the first of the month, do not reset day to 1
-                    $date->setDate((int) $curYear, $i, $day);
-                    $date->setTime(0, 0, 0);
-                    if ($date < $begin || $date > $this->end) {
-                        continue;
-                    }
-                    $year[$i] = new StatisticDate($date);
-                }
-                $years[$curYear] = $year;
-            }
-            $tmp->modify('+1 month');
-        }
-        $this->years = $years;
     }
 
     /**
@@ -133,7 +99,7 @@ final class MonthlyStatistic implements DateStatisticInterface
     {
         $this->setupYears();
 
-        $month = (int) $month;
+        $month = (int)$month;
 
         if (!isset($this->years[$year]) || !isset($this->years[$year][$month])) {
             return null;
@@ -157,5 +123,39 @@ final class MonthlyStatistic implements DateStatisticInterface
         }
 
         return $all;
+    }
+
+    private function setupYears(): void
+    {
+        if (!empty($this->years)) {
+            return;
+        }
+
+        $years = [];
+        $begin = DateTime::createFromInterface($this->begin);
+        $begin->setTime(0, 0, 0);
+
+        $tmp = clone $begin;
+        $day = (int)$begin->format('d');
+
+        while ($tmp < $this->end) {
+            $curYear = $tmp->format('Y');
+            if (!isset($years[$curYear])) {
+                $year = [];
+                for ($i = 1; $i < 13; $i++) {
+                    $date = clone $begin;
+                    // financial years do NOT start at the first of the month, do not reset day to 1
+                    $date->setDate((int)$curYear, $i, $day);
+                    $date->setTime(0, 0, 0);
+                    if ($date < $begin || $date > $this->end) {
+                        continue;
+                    }
+                    $year[$i] = new StatisticDate($date);
+                }
+                $years[$curYear] = $year;
+            }
+            $tmp->modify('+1 month');
+        }
+        $this->years = $years;
     }
 }

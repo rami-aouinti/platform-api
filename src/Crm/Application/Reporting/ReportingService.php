@@ -11,19 +11,20 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Reporting;
 
-use App\User\Domain\Entity\User;
 use App\Event\ReportingEvent;
+use App\User\Domain\Entity\User;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 final class ReportingService
 {
-    public function __construct(private EventDispatcherInterface $dispatcher, private AuthorizationCheckerInterface $security)
-    {
+    public function __construct(
+        private EventDispatcherInterface $dispatcher,
+        private AuthorizationCheckerInterface $security
+    ) {
     }
 
     /**
-     * @param User $user
      * @return ReportInterface[]
      */
     public function getAvailableReports(User $user): array

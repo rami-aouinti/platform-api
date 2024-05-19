@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Model;
 
-use App\Crm\Domain\Entity\EntityWithBudget;
 use App\Crm\Application\Model\Statistic\BudgetStatistic;
+use App\Crm\Domain\Entity\EntityWithBudget;
 
 /**
  * Object used to unify the access to budget data in charts.
@@ -24,8 +24,9 @@ class BudgetStatisticModel implements BudgetStatisticModelInterface
     private ?BudgetStatistic $statistic = null;
     private ?BudgetStatistic $statisticTotal = null;
 
-    public function __construct(private EntityWithBudget $entity)
-    {
+    public function __construct(
+        private EntityWithBudget $entity
+    ) {
     }
 
     public function getEntity(): EntityWithBudget

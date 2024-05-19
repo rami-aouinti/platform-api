@@ -13,9 +13,6 @@ namespace App\Crm\Domain\Entity;
 
 use App\User\Domain\Entity\User;
 
-/**
- *
- */
 interface CommentInterface
 {
     public function getId(): ?int;

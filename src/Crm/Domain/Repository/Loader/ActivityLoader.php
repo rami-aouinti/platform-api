@@ -18,15 +18,15 @@ use App\Crm\Domain\Entity\Team;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * Class ActivityLoader
- *
  * @package App\Crm\Domain\Repository\Loader
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class ActivityLoader implements LoaderInterface
 {
-    public function __construct(private EntityManagerInterface $entityManager, private bool $fullyHydrated = false)
-    {
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private bool $fullyHydrated = false
+    ) {
     }
 
     /**
@@ -72,7 +72,7 @@ final class ActivityLoader implements LoaderInterface
         // global activities don't have projects
         if (!empty($activities)) {
             $projectIds = array_unique(array_map(function (Activity $activity) {
-                if (null === $activity->getProject()) {
+                if ($activity->getProject() === null) {
                     return null;
                 }
 
@@ -88,7 +88,7 @@ final class ActivityLoader implements LoaderInterface
                 ->execute();
 
             $customerIds = array_unique(array_map(function (Activity $activity) {
-                if (null === $activity->getProject()) {
+                if ($activity->getProject() === null) {
                     return null;
                 }
 

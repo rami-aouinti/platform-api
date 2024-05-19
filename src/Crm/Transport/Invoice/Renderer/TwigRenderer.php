@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Invoice\Renderer;
 
-use App\Crm\Transport\Invoice\InvoiceModel;
 use App\Crm\Application\Model\InvoiceDocument;
+use App\Crm\Transport\Invoice\InvoiceModel;
 use Symfony\Component\HttpFoundation\Response;
 
 final class TwigRenderer extends AbstractTwigRenderer

@@ -12,8 +12,6 @@ declare(strict_types=1);
 namespace App\Crm\Application\Reporting;
 
 /**
- * Class Report
- *
  * @package App\Crm\Application\Reporting
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

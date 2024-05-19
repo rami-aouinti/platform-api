@@ -12,15 +12,14 @@ declare(strict_types=1);
 namespace App\Crm\Application\Configuration;
 
 /**
- * Class LdapConfiguration
- *
  * @package App\Crm\Application\Configuration
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class LdapConfiguration
 {
-    public function __construct(private SystemConfiguration $configuration)
-    {
+    public function __construct(
+        private SystemConfiguration $configuration
+    ) {
     }
 
     public function isActivated(): bool

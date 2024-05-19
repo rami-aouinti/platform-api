@@ -19,15 +19,16 @@ final class InvoiceModelCustomerHydrator implements InvoiceModelHydrator
 {
     use BudgetHydratorTrait;
 
-    public function __construct(private CustomerStatisticService $customerStatisticService)
-    {
+    public function __construct(
+        private CustomerStatisticService $customerStatisticService
+    ) {
     }
 
     public function hydrate(InvoiceModel $model): array
     {
         $customer = $model->getCustomer();
 
-        if (null === $customer) {
+        if ($customer === null) {
             return [];
         }
 

@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Controller\Api\v1\Reporting;
 
-use App\Crm\Transport\Controller\Api\v1\AbstractController;
-use App\Crm\Transport\Project\ProjectStatisticService;
 use App\Crm\Application\Reporting\ProjectInactive\ProjectInactiveForm;
 use App\Crm\Application\Reporting\ProjectInactive\ProjectInactiveQuery;
+use App\Crm\Transport\Controller\Api\v1\AbstractController;
+use App\Crm\Transport\Project\ProjectStatisticService;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,8 +22,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * Class ProjectInactiveController
- *
  * @package App\Crm\Transport\Controller\Api\v1\Reporting
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -40,7 +38,7 @@ final class ProjectInactiveController extends AbstractController
 
         $query = new ProjectInactiveQuery($dateFactory->createDateTime('-1 year'), $user);
         $form = $this->createFormForGetRequest(ProjectInactiveForm::class, $query, [
-            'timezone' => $user->getTimezone()
+            'timezone' => $user->getTimezone(),
         ]);
         $form->submit($request->query->all(), false);
 
@@ -51,7 +49,10 @@ final class ProjectInactiveController extends AbstractController
         foreach ($entries as $entry) {
             $customer = $entry->getProject()->getCustomer();
             if (!isset($byCustomer[$customer->getId()])) {
-                $byCustomer[$customer->getId()] = ['customer' => $customer, 'projects' => []];
+                $byCustomer[$customer->getId()] = [
+                    'customer' => $customer,
+                    'projects' => [],
+                ];
             }
             $byCustomer[$customer->getId()]['projects'][] = $entry;
         }

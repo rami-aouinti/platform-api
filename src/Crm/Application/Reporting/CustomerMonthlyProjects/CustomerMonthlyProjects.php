@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Reporting\CustomerMonthlyProjects;
 
-use App\Crm\Domain\Entity\Customer;
 use App\Crm\Application\Reporting\AbstractUserList;
+use App\Crm\Domain\Entity\Customer;
 
 final class CustomerMonthlyProjects extends AbstractUserList
 {

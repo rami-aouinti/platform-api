@@ -23,24 +23,18 @@ final class PaginationExtension extends AbstractExtension
 {
     private ?ViewInterface $view = null;
 
-    public function __construct(private UrlGeneratorInterface $router)
-    {
+    public function __construct(
+        private UrlGeneratorInterface $router
+    ) {
     }
 
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('pagination', [$this, 'renderPagination'], ['is_safe' => ['html']]),
+            new TwigFunction('pagination', [$this, 'renderPagination'], [
+                'is_safe' => ['html'],
+            ]),
         ];
-    }
-
-    private function getView(): ViewInterface
-    {
-        if (null === $this->view) {
-            $this->view = new PaginationView();
-        }
-
-        return $this->view;
     }
 
     public function renderPagination(Pagerfanta|Pagination $pager, array $options = []): string
@@ -54,6 +48,15 @@ final class PaginationExtension extends AbstractExtension
         return $this->getView()->render($pager, $routeGenerator, $options);
     }
 
+    private function getView(): ViewInterface
+    {
+        if ($this->view === null) {
+            $this->view = new PaginationView();
+        }
+
+        return $this->view;
+    }
+
     private function createRouteGenerator(array $options = []): \Closure
     {
         $options = array_replace([
@@ -64,7 +67,7 @@ final class PaginationExtension extends AbstractExtension
 
         $router = $this->router;
 
-        if (null === $options['routeName']) {
+        if ($options['routeName'] === null) {
             throw new \Exception('Pagination is missing the "routeName" option');
         }
 

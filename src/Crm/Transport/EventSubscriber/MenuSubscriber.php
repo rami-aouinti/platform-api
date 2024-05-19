@@ -11,16 +11,14 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\EventSubscriber;
 
-use App\User\Domain\Entity\User;
-use App\Crm\Transport\Event\ConfigureMainMenuEvent;
 use App\Crm\Application\Utils\MenuItemModel;
+use App\Crm\Transport\Event\ConfigureMainMenuEvent;
+use App\User\Domain\Entity\User;
 use KevinPapst\TablerBundle\Helper\ContextHelper;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Class MenuSubscriber
- *
  * @package App\Crm\Transport\EventSubscriber
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -29,8 +27,7 @@ final readonly class MenuSubscriber implements EventSubscriberInterface
     public function __construct(
         private Security $security,
         private ContextHelper $helper
-    )
-    {
+    ) {
     }
 
     public static function getSubscribedEvents(): array
@@ -38,13 +35,6 @@ final readonly class MenuSubscriber implements EventSubscriberInterface
         return [
             ConfigureMainMenuEvent::class => ['onMainMenuConfigure', 100],
         ];
-    }
-
-    private function addDivider(MenuItemModel $menu): void
-    {
-        if ($this->helper->isBoxedLayout()) {
-            $menu->addChild(MenuItemModel::createDivider());
-        }
     }
 
     public function onMainMenuConfigure(ConfigureMainMenuEvent $event): void
@@ -213,5 +203,12 @@ final readonly class MenuSubscriber implements EventSubscriberInterface
         }
 
         $this->addDivider($menu);
+    }
+
+    private function addDivider(MenuItemModel $menu): void
+    {
+        if ($this->helper->isBoxedLayout()) {
+            $menu->addChild(MenuItemModel::createDivider());
+        }
     }
 }

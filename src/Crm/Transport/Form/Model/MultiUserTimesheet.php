@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Form\Model;
 
+use App\Crm\Application\Validator\Constraints as Constraints;
 use App\Crm\Domain\Entity\Team;
 use App\Crm\Domain\Entity\Timesheet;
 use App\User\Domain\Entity\User;
-use App\Crm\Application\Validator\Constraints as Constraints;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 

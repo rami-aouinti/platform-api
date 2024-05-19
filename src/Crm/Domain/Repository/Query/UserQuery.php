@@ -60,7 +60,7 @@ class UserQuery extends BaseQuery implements VisibilityInterface
         return $this->role;
     }
 
-    public function setRole(?string $role): UserQuery
+    public function setRole(?string $role): self
     {
         $this->role = $role;
 

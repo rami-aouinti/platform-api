@@ -11,15 +11,18 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Export\Spreadsheet;
 
-use App\Crm\Transport\Event\MetaDisplayEventInterface;
 use App\Crm\Application\Export\Spreadsheet\Extractor\AnnotationExtractor;
 use App\Crm\Application\Export\Spreadsheet\Extractor\MetaFieldExtractor;
+use App\Crm\Transport\Event\MetaDisplayEventInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 final class EntityWithMetaFieldsExporter
 {
-    public function __construct(private SpreadsheetExporter $exporter, private AnnotationExtractor $annotationExtractor, private MetaFieldExtractor $metaFieldExtractor)
-    {
+    public function __construct(
+        private SpreadsheetExporter $exporter,
+        private AnnotationExtractor $annotationExtractor,
+        private MetaFieldExtractor $metaFieldExtractor
+    ) {
     }
 
     public function export(string $class, array $entries, MetaDisplayEventInterface $event): Spreadsheet

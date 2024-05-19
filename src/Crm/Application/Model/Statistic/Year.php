@@ -12,8 +12,6 @@ declare(strict_types=1);
 namespace App\Crm\Application\Model\Statistic;
 
 /**
- * Class Year
- *
  * @package App\Crm\Application\Model\Statistic
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -24,8 +22,9 @@ final class Year
      */
     private array $months = [];
 
-    public function __construct(private string $year)
-    {
+    public function __construct(
+        private string $year
+    ) {
     }
 
     public function getYear(): string
@@ -33,7 +32,7 @@ final class Year
         return $this->year;
     }
 
-    public function setMonth(Month $month): Year
+    public function setMonth(Month $month): self
     {
         $this->months[$month->getMonthNumber()] = $month;
 

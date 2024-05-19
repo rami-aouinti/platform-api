@@ -11,13 +11,9 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\API;
 
+use App\Crm\Application\Utils\SearchTerm;
+use App\Crm\Application\Validator\ValidationFailedException;
 use App\Crm\Domain\Entity\Timesheet;
-use App\User\Domain\Entity\User;
-use App\Crm\Transport\Event\RecentActivityEvent;
-use App\Crm\Transport\Event\TimesheetDuplicatePostEvent;
-use App\Crm\Transport\Event\TimesheetDuplicatePreEvent;
-use App\Crm\Transport\Event\TimesheetMetaDefinitionEvent;
-use App\Crm\Transport\Form\API\TimesheetApiEditForm;
 use App\Crm\Domain\Repository\ActivityRepository;
 use App\Crm\Domain\Repository\CustomerRepository;
 use App\Crm\Domain\Repository\ProjectRepository;
@@ -25,10 +21,14 @@ use App\Crm\Domain\Repository\Query\TimesheetQuery;
 use App\Crm\Domain\Repository\TagRepository;
 use App\Crm\Domain\Repository\TimesheetRepository;
 use App\Crm\Domain\Repository\UserRepository;
+use App\Crm\Transport\Event\RecentActivityEvent;
+use App\Crm\Transport\Event\TimesheetDuplicatePostEvent;
+use App\Crm\Transport\Event\TimesheetDuplicatePreEvent;
+use App\Crm\Transport\Event\TimesheetMetaDefinitionEvent;
+use App\Crm\Transport\Form\API\TimesheetApiEditForm;
 use App\Crm\Transport\Timesheet\TimesheetService;
 use App\Crm\Transport\Timesheet\TrackingMode\TrackingModeInterface;
-use App\Crm\Application\Utils\SearchTerm;
-use App\Crm\Application\Validator\ValidationFailedException;
+use App\User\Domain\Entity\User;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
@@ -61,11 +61,6 @@ final class TimesheetController extends BaseApiController
         private readonly EventDispatcherInterface $dispatcher,
         private readonly TimesheetService $service
     ) {
-    }
-
-    protected function getTrackingMode(): TrackingModeInterface
-    {
-        return $this->service->getActiveTrackingMode();
     }
 
     /**
@@ -106,10 +101,10 @@ final class TimesheetController extends BaseApiController
             $users = $paramFetcher->get('users');
             $userId = $paramFetcher->get('user');
 
-            if ('all' === $userId) {
+            if ($userId === 'all') {
                 $seeAll = true;
             } elseif (\is_string($userId) && $userId !== '') {
-                $users[] = (int) $userId;
+                $users[] = (int)$userId;
             }
 
             if (!$seeAll) {
@@ -172,12 +167,12 @@ final class TimesheetController extends BaseApiController
 
         $page = $paramFetcher->get('page');
         if (\is_string($page) && $page !== '') {
-            $query->setPage((int) $page);
+            $query->setPage((int)$page);
         }
 
         $size = $paramFetcher->get('size');
         if (\is_string($size) && $size !== '') {
-            $query->setPageSize((int) $size);
+            $query->setPageSize((int)$size);
         }
 
         /** @var array<string> $tags */
@@ -213,7 +208,7 @@ final class TimesheetController extends BaseApiController
 
         $active = $paramFetcher->get('active');
         if (\is_string($active) && $active !== '') {
-            $active = (int) $active;
+            $active = (int)$active;
             if ($active === 1) {
                 $query->setState(TimesheetQuery::STATE_RUNNING);
             } elseif ($active === 0) {
@@ -223,7 +218,7 @@ final class TimesheetController extends BaseApiController
 
         $billable = $paramFetcher->get('billable');
         if (\is_string($billable) && $billable !== '') {
-            $billable = (int) $billable;
+            $billable = (int)$billable;
             if ($billable === 1) {
                 $query->setBillable(true);
             } elseif ($billable === 0) {
@@ -233,7 +228,7 @@ final class TimesheetController extends BaseApiController
 
         $exported = $paramFetcher->get('exported');
         if (\is_string($exported) && $exported !== '') {
-            $exported = (int) $exported;
+            $exported = (int)$exported;
             if ($exported === 1) {
                 $query->setExported(TimesheetQuery::STATE_EXPORTED);
             } elseif ($exported === 0) {
@@ -252,7 +247,7 @@ final class TimesheetController extends BaseApiController
 
         $query->setIsApiCall(true);
         $data = $this->repository->getPagerfantaForQuery($query);
-        $results = (array) $data->getCurrentPageResults();
+        $results = (array)$data->getCurrentPageResults();
 
         $view = new View($results, 200);
         $this->addPagination($view, $data);
@@ -273,7 +268,9 @@ final class TimesheetController extends BaseApiController
     #[IsGranted('view', 'timesheet')]
     #[OA\Response(response: 200, description: 'Returns one timesheet record. Be aware that the datetime fields are given in the users local time including the timezone offset via ISO 8601.', content: new OA\JsonContent(ref: '#/components/schemas/TimesheetEntity'))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Timesheet record ID to fetch', required: true)]
-    #[Route(methods: ['GET'], path: '/{id}', name: 'get_timesheet', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['GET'], path: '/{id}', name: 'get_timesheet', requirements: [
+        'id' => '\d+',
+    ])]
     public function getAction(Timesheet $timesheet): Response
     {
         $view = new View($timesheet, 200);
@@ -317,7 +314,7 @@ final class TimesheetController extends BaseApiController
 
                 $view = new View($timesheet, 200);
 
-                if (null !== $paramFetcher->get('full')) {
+                if ($paramFetcher->get('full') !== null) {
                     $view->getContext()->setGroups(self::GROUPS_ENTITY_FULL);
                 } else {
                     $view->getContext()->setGroups(self::GROUPS_ENTITY);
@@ -342,7 +339,9 @@ final class TimesheetController extends BaseApiController
     #[OA\Patch(description: 'Update an existing timesheet record, you can pass all or just a subset of the attributes.', responses: [new OA\Response(response: 200, description: 'Returns the updated timesheet', content: new OA\JsonContent(ref: '#/components/schemas/TimesheetEntity'))])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Timesheet record ID to update', required: true)]
     #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/TimesheetEditForm'))]
-    #[Route(methods: ['PATCH'], path: '/{id}', name: 'patch_timesheet', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['PATCH'], path: '/{id}', name: 'patch_timesheet', requirements: [
+        'id' => '\d+',
+    ])]
     public function patchAction(Request $request, Timesheet $timesheet): Response
     {
         $event = new TimesheetMetaDefinitionEvent($timesheet);
@@ -363,7 +362,7 @@ final class TimesheetController extends BaseApiController
         $form->setData($timesheet);
         $form->submit($request->request->all(), false);
 
-        if (false === $form->isValid()) {
+        if ($form->isValid() === false) {
             $view = new View($form, Response::HTTP_OK);
             $view->getContext()->setGroups(self::GROUPS_FORM);
 
@@ -384,7 +383,9 @@ final class TimesheetController extends BaseApiController
     #[IsGranted('delete', 'timesheet')]
     #[OA\Delete(responses: [new OA\Response(response: 204, description: 'Delete one timesheet record')])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Timesheet record ID to delete', required: true)]
-    #[Route(methods: ['DELETE'], path: '/{id}', name: 'delete_timesheet', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['DELETE'], path: '/{id}', name: 'delete_timesheet', requirements: [
+        'id' => '\d+',
+    ])]
     public function deleteAction(Timesheet $timesheet): Response
     {
         $this->service->deleteTimesheet($timesheet);
@@ -410,7 +411,7 @@ final class TimesheetController extends BaseApiController
 
         $reqLimit = $paramFetcher->get('size');
         if (\is_string($reqLimit) && $reqLimit !== '') {
-            $limit = (int) $reqLimit;
+            $limit = (int)$reqLimit;
         }
 
         if (null !== ($reqBegin = $paramFetcher->get('begin'))) {
@@ -456,8 +457,12 @@ final class TimesheetController extends BaseApiController
     #[IsGranted('stop', 'timesheet')]
     #[OA\Response(response: 200, description: 'Stops an active timesheet record and returns it afterwards.', content: new OA\JsonContent(ref: '#/components/schemas/TimesheetEntity'))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Timesheet record ID to stop', required: true)]
-    #[Route(methods: ['GET'], path: '/{id}/stop', name: 'stop_timesheet_get', requirements: ['id' => '\d+'])]
-    #[Route(methods: ['PATCH'], path: '/{id}/stop', name: 'stop_timesheet', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['GET'], path: '/{id}/stop', name: 'stop_timesheet_get', requirements: [
+        'id' => '\d+',
+    ])]
+    #[Route(methods: ['PATCH'], path: '/{id}/stop', name: 'stop_timesheet', requirements: [
+        'id' => '\d+',
+    ])]
     public function stopAction(Timesheet $timesheet): Response
     {
         $this->service->stopTimesheet($timesheet);
@@ -474,8 +479,12 @@ final class TimesheetController extends BaseApiController
     #[IsGranted('start', 'timesheet')]
     #[OA\Response(response: 200, description: 'Restarts a timesheet record for the same customer, project, activity combination. The current user will be the owner of the new record. Kimai tries to stop running records, which is expected to fail depending on the configured rules. Data will be copied from the original record if requested.', content: new OA\JsonContent(ref: '#/components/schemas/TimesheetEntity'))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Timesheet record ID to restart', required: true)]
-    #[Route(methods: ['GET'], path: '/{id}/restart', name: 'restart_timesheet_get', requirements: ['id' => '\d+'])]
-    #[Route(methods: ['PATCH'], path: '/{id}/restart', name: 'restart_timesheet', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['GET'], path: '/{id}/restart', name: 'restart_timesheet_get', requirements: [
+        'id' => '\d+',
+    ])]
+    #[Route(methods: ['PATCH'], path: '/{id}/restart', name: 'restart_timesheet', requirements: [
+        'id' => '\d+',
+    ])]
     #[Rest\RequestParam(name: 'copy', requirements: 'all', strict: true, nullable: true, description: 'Whether data should be copied to the new entry. Allowed values: all (default: nothing is copied)')]
     #[Rest\RequestParam(name: 'begin', requirements: [new Constraints\DateTime(format: 'Y-m-d\TH:i:s')], strict: true, nullable: true, description: 'Changes the restart date to the given one (default: now)')]
     public function restartAction(Timesheet $timesheet, ParamFetcherInterface $paramFetcher): Response
@@ -535,7 +544,9 @@ final class TimesheetController extends BaseApiController
     #[IsGranted('duplicate', 'timesheet')]
     #[OA\Response(response: 200, description: 'Duplicates a timesheet record, resetting the export state only.', content: new OA\JsonContent(ref: '#/components/schemas/TimesheetEntity'))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Timesheet record ID to duplicate', required: true)]
-    #[Route(methods: ['PATCH'], path: '/{id}/duplicate', name: 'duplicate_timesheet', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['PATCH'], path: '/{id}/duplicate', name: 'duplicate_timesheet', requirements: [
+        'id' => '\d+',
+    ])]
     public function duplicateAction(Timesheet $timesheet): Response
     {
         $copyTimesheet = clone $timesheet;
@@ -556,7 +567,9 @@ final class TimesheetController extends BaseApiController
     #[IsGranted('edit_export', 'timesheet')]
     #[OA\Response(response: 200, description: 'Switches the exported state on the record and therefor locks / unlocks it for further updates. Needs edit_export_*_timesheet permission.', content: new OA\JsonContent(ref: '#/components/schemas/TimesheetEntity'))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Timesheet record ID to switch export state', required: true)]
-    #[Route(methods: ['PATCH'], path: '/{id}/export', name: 'export_timesheet', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['PATCH'], path: '/{id}/export', name: 'export_timesheet', requirements: [
+        'id' => '\d+',
+    ])]
     public function exportAction(Timesheet $timesheet): Response
     {
         if ($timesheet->isExported() && !$this->isGranted('edit_exported_timesheet')) {
@@ -579,7 +592,9 @@ final class TimesheetController extends BaseApiController
     #[IsGranted('edit', 'timesheet')]
     #[OA\Response(response: 200, description: 'Sets the value of an existing/configured meta-field. You cannot create unknown meta-fields, if the given name is not a configured meta-field, this will return an exception.', content: new OA\JsonContent(ref: '#/components/schemas/TimesheetEntity'))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Timesheet record ID to set the meta-field value for', required: true)]
-    #[Route(methods: ['PATCH'], path: '/{id}/meta', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['PATCH'], path: '/{id}/meta', requirements: [
+        'id' => '\d+',
+    ])]
     #[Rest\RequestParam(name: 'name', strict: true, nullable: false, description: 'The meta-field name')]
     #[Rest\RequestParam(name: 'value', strict: true, nullable: false, description: 'The meta-field value')]
     public function metaAction(Timesheet $timesheet, ParamFetcherInterface $paramFetcher): Response
@@ -601,5 +616,10 @@ final class TimesheetController extends BaseApiController
         $view->getContext()->setGroups(self::GROUPS_ENTITY);
 
         return $this->viewHandler->handle($view);
+    }
+
+    protected function getTrackingMode(): TrackingModeInterface
+    {
+        return $this->service->getActiveTrackingMode();
     }
 }

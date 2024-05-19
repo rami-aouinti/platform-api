@@ -12,25 +12,23 @@ declare(strict_types=1);
 namespace App\Crm\Transport\Controller\Api\v1;
 
 use App\Crm\Constants;
-use App\Crm\Application\Utils\PageSetup;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
- * Class AboutController
- *
  * @package App\Crm\Transport\Controller\Api\v1
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
-#[Route(path: '/about')]
+#[Route(path: '/v1/about')]
 final class AboutController extends AbstractController
 {
-    public function __construct(private readonly string $projectDirectory)
-    {
+    public function __construct(
+        private readonly string $projectDirectory
+    ) {
     }
 
     #[Route(path: '', name: 'about', methods: ['GET'])]
-    public function license(): Response
+    public function license(): JsonResponse
     {
         $filename = $this->projectDirectory . '/LICENSE';
 
@@ -41,14 +39,11 @@ final class AboutController extends AbstractController
             $license = false;
         }
 
-        if (false === $license) {
+        if ($license === false) {
             $license = 'Failed reading license file: ' . $filename . '. ' .
                 'Check this instead: ' . Constants::GITHUB . 'blob/main/LICENSE';
         }
 
-        return $this->render('about/license.html.twig', [
-            'page_setup' => new PageSetup('about.title'),
-            'license' => $license
-        ]);
+        return new JsonResponse($license);
     }
 }

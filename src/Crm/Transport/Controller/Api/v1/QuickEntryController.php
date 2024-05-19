@@ -11,14 +11,14 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Controller\Api\v1;
 
-use App\Crm\Transport\Configuration\SystemConfiguration;
-use App\Crm\Transport\Form\QuickEntryForm;
 use App\Crm\Application\Model\QuickEntryWeek;
+use App\Crm\Application\Utils\PageSetup;
 use App\Crm\Domain\Repository\Query\TimesheetQuery;
 use App\Crm\Domain\Repository\TimesheetRepository;
+use App\Crm\Transport\Configuration\SystemConfiguration;
+use App\Crm\Transport\Form\QuickEntryForm;
 use App\Crm\Transport\Timesheet\FavoriteRecordService;
 use App\Crm\Transport\Timesheet\TimesheetService;
-use App\Crm\Application\Utils\PageSetup;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -36,8 +36,7 @@ final class QuickEntryController extends AbstractController
         private readonly TimesheetService $timesheetService,
         private readonly TimesheetRepository $repository,
         private readonly FavoriteRecordService $favoriteRecordService
-    )
-    {
+    ) {
     }
 
     #[Route(path: '/{begin}', name: 'quick_entry', methods: ['GET', 'POST'])]
@@ -65,7 +64,9 @@ final class QuickEntryController extends AbstractController
         $week = [];
         while ($tmpDay < $endWeek) {
             $nextDay = clone $tmpDay;
-            $week[$nextDay->format('Y-m-d')] = ['day' => $nextDay];
+            $week[$nextDay->format('Y-m-d')] = [
+                'day' => $nextDay,
+            ];
             $tmpDay = $tmpDay->modify('+1 day');
         }
 
@@ -92,7 +93,7 @@ final class QuickEntryController extends AbstractController
                 $rows[$id] = [
                     'days' => $week,
                     'project' => $timesheet->getProject(),
-                    'activity' => $timesheet->getActivity()
+                    'activity' => $timesheet->getActivity(),
                 ];
             }
 
@@ -130,14 +131,14 @@ final class QuickEntryController extends AbstractController
                 $rows[$id] = [
                     'days' => $week,
                     'project' => $timesheet->getProject(),
-                    'activity' => $timesheet->getActivity()
+                    'activity' => $timesheet->getActivity(),
                 ];
             }
         }
 
         $defaultBegin = $factory->createDateTime($this->configuration->getTimesheetDefaultBeginTime());
-        $defaultHour = (int) $defaultBegin->format('H');
-        $defaultMinute = (int) $defaultBegin->format('i');
+        $defaultHour = (int)$defaultBegin->format('H');
+        $defaultMinute = (int)$defaultBegin->format('i');
 
         $formModel = new QuickEntryWeek($startWeek);
 
@@ -237,7 +238,9 @@ final class QuickEntryController extends AbstractController
                 if ($saved) {
                     $this->flashSuccess('action.update.success');
 
-                    return $this->redirectToRoute('quick_entry', ['begin' => $begin->format('Y-m-d')]);
+                    return $this->redirectToRoute('quick_entry', [
+                        'begin' => $begin->format('Y-m-d'),
+                    ]);
                 }
             } catch (\Exception $ex) {
                 $this->flashUpdateException($ex);

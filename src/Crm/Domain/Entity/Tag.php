@@ -19,8 +19,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class Tag
- *
  * @package App\Crm\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -32,6 +30,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Serializer\ExclusionPolicy('all')]
 class Tag
 {
+    use ColorTrait;
+
     /**
      * Internal Tag ID
      */
@@ -51,13 +51,13 @@ class Tag
     #[Serializer\Expose]
     #[Serializer\Groups(['Default'])]
     private ?string $name = null;
-    #[ORM\Column(name: 'visible', type: 'boolean', nullable: false, options: ['default' => true])]
+    #[ORM\Column(name: 'visible', type: 'boolean', nullable: false, options: [
+        'default' => true,
+    ])]
     #[Assert\NotNull]
     #[Serializer\Expose]
     #[Serializer\Groups(['Default'])]
     private bool $visible = true;
-
-    use ColorTrait;
 
     /**
      * This is ONLY here, so we can count the amount of timesheets.
@@ -72,12 +72,17 @@ class Tag
         $this->timesheets = new ArrayCollection();
     }
 
+    public function __toString(): string
+    {
+        return $this->getName();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setName(?string $tagName): Tag
+    public function setName(?string $tagName): self
     {
         $this->name = $tagName;
 
@@ -97,10 +102,5 @@ class Tag
     public function setVisible(bool $visible): void
     {
         $this->visible = $visible;
-    }
-
-    public function __toString(): string
-    {
-        return $this->getName();
     }
 }

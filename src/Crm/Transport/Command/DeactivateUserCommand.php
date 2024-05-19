@@ -18,16 +18,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Class DeactivateUserCommand
- *
  * @package App\Crm\Transport\Command
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 #[AsCommand(name: 'kimai:user:deactivate')]
 final class DeactivateUserCommand extends Command
 {
-    public function __construct(private readonly UserService $userService)
-    {
+    public function __construct(
+        private readonly UserService $userService
+    ) {
         parent::__construct();
     }
 

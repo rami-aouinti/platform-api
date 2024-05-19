@@ -16,9 +16,6 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 interface CellFormatterInterface
 {
     /**
-     * @param Worksheet $sheet
-     * @param int $column
-     * @param int $row
      * @param mixed $value
      * @throws \InvalidArgumentException
      */

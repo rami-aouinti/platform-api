@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Form\Type;
 
-use App\Crm\Transport\Form\DataTransformer\DurationStringToSecondsTransformer;
 use App\Crm\Application\Validator\Constraints\Duration as DurationConstraint;
+use App\Crm\Transport\Form\DataTransformer\DurationStringToSecondsTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -48,8 +48,8 @@ final class DurationType extends AbstractType
         $view->vars['toggle'] = $options['toggle'];
 
         if ($options['preset_hours'] !== null && $options['preset_minutes'] !== null) {
-            $intervalMinutes = (int) $options['preset_minutes'];
-            $maxHours = (int) $options['preset_hours'];
+            $intervalMinutes = (int)$options['preset_minutes'];
+            $maxHours = (int)$options['preset_hours'];
 
             if ($intervalMinutes < 1 || $maxHours < 1) {
                 return;
@@ -64,7 +64,7 @@ final class DurationType extends AbstractType
             $presets = [];
 
             for ($minutes = $intervalMinutes; $minutes <= $maxMinutes; $minutes += $intervalMinutes) {
-                $h = (int) ($minutes / 60);
+                $h = (int)($minutes / 60);
                 $m = $minutes % 60;
                 $interval = new \DateInterval('PT' . $h . 'H' . $m . 'M');
                 $presets[] = $interval->format('%h:%I');

@@ -11,8 +11,6 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Controller\Api\v1\Reporting;
 
-use App\Crm\Transport\Configuration\SystemConfiguration;
-use App\Crm\Transport\Controller\Api\v1\AbstractController;
 use App\Crm\Application\Export\Spreadsheet\Writer\BinaryFileResponseWriter;
 use App\Crm\Application\Export\Spreadsheet\Writer\XlsxWriter;
 use App\Crm\Application\Model\MonthlyStatistic;
@@ -21,8 +19,10 @@ use App\Crm\Application\Reporting\YearlyUserList\YearlyUserListForm;
 use App\Crm\Domain\Repository\Query\TimesheetStatisticQuery;
 use App\Crm\Domain\Repository\Query\UserQuery;
 use App\Crm\Domain\Repository\Query\VisibilityInterface;
-use App\User\Infrastructure\Repository\UserRepository;
+use App\Crm\Transport\Configuration\SystemConfiguration;
+use App\Crm\Transport\Controller\Api\v1\AbstractController;
 use App\Crm\Transport\Timesheet\TimesheetStatisticService;
+use App\User\Infrastructure\Repository\UserRepository;
 use PhpOffice\PhpSpreadsheet\Reader\Html;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,8 +30,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * Class ReportUsersYearController
- *
  * @package App\Crm\Transport\Controller\Api\v1\Reporting
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -45,8 +43,7 @@ final class ReportUsersYearController extends AbstractController
         SystemConfiguration $systemConfiguration,
         TimesheetStatisticService $statisticService,
         UserRepository $userRepository
-    ): Response
-    {
+    ): Response {
         return $this->render(
             'reporting/report_user_list_monthly.html.twig',
             $this->getData($request, $systemConfiguration, $statisticService, $userRepository)

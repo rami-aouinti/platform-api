@@ -18,8 +18,9 @@ use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
 
 final class ApiTokenMigratingListener implements EventSubscriberInterface
 {
-    public function __construct(private PasswordHasherFactoryInterface $hasherFactory)
-    {
+    public function __construct(
+        private PasswordHasherFactoryInterface $hasherFactory
+    ) {
     }
 
     public function onLoginSuccess(LoginSuccessEvent $event): void
@@ -33,7 +34,7 @@ final class ApiTokenMigratingListener implements EventSubscriberInterface
         $badge = $passport->getBadge(ApiTokenUpgradeBadge::class);
         $plaintextApiToken = $badge->getAndErasePlaintextApiToken();
 
-        if ('' === $plaintextApiToken) {
+        if ($plaintextApiToken === '') {
             return;
         }
 
@@ -42,7 +43,7 @@ final class ApiTokenMigratingListener implements EventSubscriberInterface
             return;
         }
 
-        if (null === $user->getApiToken()) {
+        if ($user->getApiToken() === null) {
             return;
         }
 
@@ -56,6 +57,8 @@ final class ApiTokenMigratingListener implements EventSubscriberInterface
 
     public static function getSubscribedEvents(): array
     {
-        return [LoginSuccessEvent::class => 'onLoginSuccess'];
+        return [
+            LoginSuccessEvent::class => 'onLoginSuccess',
+        ];
     }
 }

@@ -14,8 +14,6 @@ namespace App\Crm\Application\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 
 /**
- * Class Activity
- *
  * @package App\Crm\Application\Validator\Constraints
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

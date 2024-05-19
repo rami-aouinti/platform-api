@@ -11,9 +11,6 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Calendar;
 
-/**
- *
- */
 interface DragAndDropEntry
 {
     /**
@@ -25,22 +22,16 @@ interface DragAndDropEntry
 
     /**
      * Returns the title for this entry.
-     *
-     * @return string
      */
     public function getTitle(): string;
 
     /**
      * Returns the color for this entry.
-     *
-     * @return string
      */
     public function getColor(): string;
 
     /**
      * The block to use for rendering the entry.
-     *
-     * @return string|null
      */
     public function getBlockName(): ?string;
 }

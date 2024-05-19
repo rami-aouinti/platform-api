@@ -43,7 +43,7 @@ final class ProjectDuplicationService
             $newProject->setMetaField($newMetaField);
         }
 
-        if (null !== $project->getEnd()) {
+        if ($project->getEnd() !== null) {
             $newProject->setStart(clone $project->getEnd());
             $newProject->setEnd(null);
         }

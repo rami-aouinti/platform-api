@@ -19,8 +19,9 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 abstract class AbstractTimesheetEvent extends Event
 {
-    public function __construct(private Timesheet $timesheet)
-    {
+    public function __construct(
+        private Timesheet $timesheet
+    ) {
     }
 
     public function getTimesheet(): Timesheet

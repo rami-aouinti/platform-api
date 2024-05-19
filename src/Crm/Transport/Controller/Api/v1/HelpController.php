@@ -11,12 +11,12 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Controller\Api\v1;
 
-use App\Crm\Transport\Configuration\LocaleService;
-use App\Crm\Domain\Repository\Query\BaseQuery;
 use App\Crm\Application\Utils\DataTable;
 use App\Crm\Application\Utils\LocaleFormatter;
 use App\Crm\Application\Utils\PageSetup;
 use App\Crm\Application\Utils\Pagination;
+use App\Crm\Domain\Repository\Query\BaseQuery;
+use App\Crm\Transport\Configuration\LocaleService;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,16 +32,49 @@ final class HelpController extends AbstractController
     public function helpLocale(Request $request, LocaleService $service): Response
     {
         $table = new DataTable('help_locales', new BaseQuery());
-        $table->addColumn('name', ['class' => 'alwaysVisible', 'orderBy' => false]);
-        $table->addColumn('description', ['class' => 'd-none', 'orderBy' => false]);
-        $table->addColumn('language', ['class' => 'd-none w-min', 'orderBy' => false]);
-        $table->addColumn('date', ['class' => 'alwaysVisible w-min', 'orderBy' => false]);
-        $table->addColumn('time', ['class' => 'alwaysVisible w-min text-center', 'orderBy' => false]);
-        $table->addColumn('duration', ['class' => 'd-none w-min text-end', 'orderBy' => false]);
-        $table->addColumn('decimal', ['class' => 'd-none w-min text-end', 'orderBy' => false, 'title' => 'Decimal']);
-        $table->addColumn('money', ['class' => 'w-min text-end', 'orderBy' => false, 'title' => 'rate']);
-        $table->addColumn('hour_24', ['class' => 'alwaysVisible w-min text-center', 'orderBy' => false]);
-        $table->addColumn('rtl', ['class' => 'd-none w-min text-center', 'orderBy' => false, 'title' => 'RTL']);
+        $table->addColumn('name', [
+            'class' => 'alwaysVisible',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('description', [
+            'class' => 'd-none',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('language', [
+            'class' => 'd-none w-min',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('date', [
+            'class' => 'alwaysVisible w-min',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('time', [
+            'class' => 'alwaysVisible w-min text-center',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('duration', [
+            'class' => 'd-none w-min text-end',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('decimal', [
+            'class' => 'd-none w-min text-end',
+            'orderBy' => false,
+            'title' => 'Decimal',
+        ]);
+        $table->addColumn('money', [
+            'class' => 'w-min text-end',
+            'orderBy' => false,
+            'title' => 'rate',
+        ]);
+        $table->addColumn('hour_24', [
+            'class' => 'alwaysVisible w-min text-center',
+            'orderBy' => false,
+        ]);
+        $table->addColumn('rtl', [
+            'class' => 'd-none w-min text-center',
+            'orderBy' => false,
+            'title' => 'RTL',
+        ]);
 
         $page = new PageSetup('help_locales');
         $page->setDataTable($table);
@@ -59,8 +92,6 @@ final class HelpController extends AbstractController
     }
 
     /**
-     * @param Request $request
-     * @param LocaleService $service
      * @return array<string, array<string, string|bool|null>>
      */
     private function buildLocales(Request $request, LocaleService $service): array

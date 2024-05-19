@@ -17,8 +17,10 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class UserLoader implements LoaderInterface
 {
-    public function __construct(private EntityManagerInterface $entityManager, private bool $fullyHydrated = false)
-    {
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private bool $fullyHydrated = false
+    ) {
     }
 
     /**

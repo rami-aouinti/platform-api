@@ -20,18 +20,11 @@ interface RendererInterface
 {
     /**
      * Checks whether the given InvoiceDocument can be rendered.
-     *
-     * @param InvoiceDocument $document
-     * @return bool
      */
     public function supports(InvoiceDocument $document): bool;
 
     /**
      * Render the given InvoiceDocument with the data from the InvoiceModel.
-     *
-     * @param InvoiceDocument $document
-     * @param InvoiceModel $model
-     * @return Response
      */
     public function render(InvoiceDocument $document, InvoiceModel $model): Response;
 }

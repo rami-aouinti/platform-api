@@ -18,7 +18,7 @@ final class BooleanFormatter implements CellFormatterInterface
 {
     public function setFormattedValue(Worksheet $sheet, int $column, int $row, $value): void
     {
-        if (null === $value) {
+        if ($value === null) {
             $sheet->setCellValue(CellAddress::fromColumnAndRow($column, $row), '');
 
             return;

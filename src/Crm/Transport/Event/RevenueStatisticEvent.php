@@ -23,8 +23,10 @@ final class RevenueStatisticEvent extends Event
      */
     private array $revenue = [];
 
-    public function __construct(private ?\DateTimeInterface $begin, private ?\DateTimeInterface $end)
-    {
+    public function __construct(
+        private ?\DateTimeInterface $begin,
+        private ?\DateTimeInterface $end
+    ) {
     }
 
     public function getBegin(): ?\DateTimeInterface

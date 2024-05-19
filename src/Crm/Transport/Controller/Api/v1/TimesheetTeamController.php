@@ -11,17 +11,17 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Controller\Api\v1;
 
+use App\Crm\Application\Export\ServiceExport;
+use App\Crm\Application\Utils\PageSetup;
 use App\Crm\Domain\Entity\Tag;
 use App\Crm\Domain\Entity\Team;
 use App\Crm\Domain\Entity\Timesheet;
-use App\User\Domain\Entity\User;
+use App\Crm\Domain\Repository\Query\TimesheetQuery;
 use App\Crm\Transport\Event\TimesheetMetaDisplayEvent;
-use App\Crm\Application\Export\ServiceExport;
 use App\Crm\Transport\Form\Model\MultiUserTimesheet;
 use App\Crm\Transport\Form\TimesheetAdminEditForm;
 use App\Crm\Transport\Form\TimesheetMultiUserEditForm;
-use App\Crm\Domain\Repository\Query\TimesheetQuery;
-use App\Crm\Application\Utils\PageSetup;
+use App\User\Domain\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,8 +40,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route(path: '/team/timesheet')]
 final class TimesheetTeamController extends TimesheetAbstractController
 {
-    #[Route(path: '/', defaults: ['page' => 1], name: 'admin_timesheet', methods: ['GET'])]
-    #[Route(path: '/page/{page}', requirements: ['page' => '[1-9]\d*'], name: 'admin_timesheet_paginated', methods: ['GET'])]
+    #[Route(path: '/', defaults: [
+        'page' => 1,
+    ], name: 'admin_timesheet', methods: ['GET'])]
+    #[Route(path: '/page/{page}', requirements: [
+        'page' => '[1-9]\d*',
+    ], name: 'admin_timesheet_paginated', methods: ['GET'])]
     #[IsGranted('view_other_timesheet')]
     public function indexAction(int $page, Request $request): Response
     {
@@ -140,6 +144,20 @@ final class TimesheetTeamController extends TimesheetAbstractController
         ]);
     }
 
+    #[Route(path: '/multi-update', name: 'admin_timesheet_multi_update', methods: ['POST'])]
+    #[IsGranted('edit_other_timesheet')]
+    public function multiUpdateAction(Request $request): Response
+    {
+        return $this->multiUpdate($request);
+    }
+
+    #[Route(path: '/multi-delete', name: 'admin_timesheet_multi_delete', methods: ['POST'])]
+    #[IsGranted('delete_other_timesheet')]
+    public function multiDeleteAction(Request $request): Response
+    {
+        return $this->multiDelete($request);
+    }
+
     protected function getMultiUserCreateForm(MultiUserTimesheet $entry): FormInterface
     {
         $mode = $this->getTrackingMode();
@@ -159,20 +177,6 @@ final class TimesheetTeamController extends TimesheetAbstractController
         ]);
     }
 
-    #[Route(path: '/multi-update', name: 'admin_timesheet_multi_update', methods: ['POST'])]
-    #[IsGranted('edit_other_timesheet')]
-    public function multiUpdateAction(Request $request): Response
-    {
-        return $this->multiUpdate($request);
-    }
-
-    #[Route(path: '/multi-delete', name: 'admin_timesheet_multi_delete', methods: ['POST'])]
-    #[IsGranted('delete_other_timesheet')]
-    public function multiDeleteAction(Request $request): Response
-    {
-        return $this->multiDelete($request);
-    }
-
     protected function prepareQuery(TimesheetQuery $query): void
     {
         $query->setCurrentUser($this->getUser());
@@ -185,7 +189,9 @@ final class TimesheetTeamController extends TimesheetAbstractController
 
     protected function getDuplicateForm(Timesheet $entry, Timesheet $original): FormInterface
     {
-        return $this->generateCreateForm($entry, TimesheetAdminEditForm::class, $this->generateUrl('admin_timesheet_duplicate', ['id' => $original->getId()]));
+        return $this->generateCreateForm($entry, TimesheetAdminEditForm::class, $this->generateUrl('admin_timesheet_duplicate', [
+            'id' => $original->getId(),
+        ]));
     }
 
     protected function getPermissionEditExport(): string

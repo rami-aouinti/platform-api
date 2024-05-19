@@ -18,8 +18,6 @@ use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\TokenType;
 
 /**
- * Class Year
- *
  * @package App\Crm\Domain\Doctrine\Extensions
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

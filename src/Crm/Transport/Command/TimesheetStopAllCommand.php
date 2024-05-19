@@ -24,8 +24,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(name: 'kimai:timesheet:stop-all')]
 final class TimesheetStopAllCommand extends Command
 {
-    public function __construct(private TimesheetService $timesheetService)
-    {
+    public function __construct(
+        private TimesheetService $timesheetService
+    ) {
         parent::__construct();
     }
 

@@ -11,23 +11,30 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Controller\Api\v1;
 
-use App\User\Domain\Entity\User;
-use App\Crm\Transport\Event\WorkContractDetailControllerEvent;
-use App\Crm\Transport\Form\ContractByUserForm;
 use App\Crm\Application\Reporting\YearByUser\YearByUser;
 use App\Crm\Application\Utils\PageSetup;
+use App\Crm\Transport\Event\WorkContractDetailControllerEvent;
+use App\Crm\Transport\Form\ContractByUserForm;
 use App\Crm\Transport\WorkingTime\Model\BoxConfiguration;
 use App\Crm\Transport\WorkingTime\WorkingTimeService;
+use App\User\Domain\Entity\User;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
- * Users can control their working time statistics
+ * @package App\Crm\Transport\Controller\Api\v1
+ * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class ContractController extends AbstractController
 {
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     #[Route(path: '/contract', name: 'user_contract', methods: ['GET', 'POST'])]
     public function __invoke(Request $request, WorkingTimeService $workingTimeService, EventDispatcherInterface $eventDispatcher): Response
     {
@@ -70,7 +77,10 @@ final class ContractController extends AbstractController
         $page = new PageSetup('work_times');
         $page->setHelp('contract.html');
         $page->setActionName('contract');
-        $page->setActionPayload(['profile' => $profile, 'year' => $yearDate]);
+        $page->setActionPayload([
+            'profile' => $profile,
+            'year' => $yearDate,
+        ]);
         $page->setPaginationForm($form);
 
         // additional boxes by plugins

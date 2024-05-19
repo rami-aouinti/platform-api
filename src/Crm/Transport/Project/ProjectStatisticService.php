@@ -11,13 +11,6 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Project;
 
-use App\Crm\Domain\Entity\Activity;
-use App\Crm\Domain\Entity\Project;
-use App\Crm\Domain\Entity\Timesheet;
-use App\User\Domain\Entity\User;
-use App\Crm\Transport\Event\ProjectBudgetStatisticEvent;
-use App\Crm\Transport\Event\ProjectStatisticEvent;
-use App\Crm\Transport\Form\Model\DateRange;
 use App\Crm\Application\Model\ActivityStatistic;
 use App\Crm\Application\Model\ProjectBudgetStatisticModel;
 use App\Crm\Application\Model\ProjectStatistic;
@@ -30,12 +23,19 @@ use App\Crm\Application\Reporting\ProjectDetails\ProjectDetailsQuery;
 use App\Crm\Application\Reporting\ProjectInactive\ProjectInactiveQuery;
 use App\Crm\Application\Reporting\ProjectView\ProjectViewModel;
 use App\Crm\Application\Reporting\ProjectView\ProjectViewQuery;
+use App\Crm\Domain\Entity\Activity;
+use App\Crm\Domain\Entity\Project;
+use App\Crm\Domain\Entity\Timesheet;
 use App\Crm\Domain\Repository\ActivityRepository;
 use App\Crm\Domain\Repository\Loader\ProjectLoader;
 use App\Crm\Domain\Repository\ProjectRepository;
 use App\Crm\Domain\Repository\TimesheetRepository;
-use App\User\Infrastructure\Repository\UserRepository;
+use App\Crm\Transport\Event\ProjectBudgetStatisticEvent;
+use App\Crm\Transport\Event\ProjectStatisticEvent;
+use App\Crm\Transport\Form\Model\DateRange;
 use App\Crm\Transport\Timesheet\DateTimeFactory;
+use App\User\Domain\Entity\User;
+use App\User\Infrastructure\Repository\UserRepository;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
@@ -52,8 +52,7 @@ readonly class ProjectStatisticService
         private TimesheetRepository $timesheetRepository,
         private EventDispatcherInterface $dispatcher,
         private UserRepository $userRepository
-    )
-    {
+    ) {
     }
 
     /**
@@ -347,7 +346,7 @@ readonly class ProjectStatisticService
 
         $result = $qb->getQuery()->getResult();
 
-        if (null !== $result) {
+        if ($result !== null) {
             foreach ($result as $resultRow) {
                 $statistic = $statistics[$resultRow['id']];
                 $statistic->setDuration($statistic->getDuration() + $resultRow['duration']);
@@ -376,10 +375,6 @@ readonly class ProjectStatisticService
         return $statistics;
     }
 
-    /**
-     * @param ProjectDetailsQuery $query
-     * @return ProjectDetailsModel
-     */
     public function getProjectsDetails(ProjectDetailsQuery $query): ProjectDetailsModel
     {
         $project = $query->getProject();
@@ -522,11 +517,11 @@ readonly class ProjectStatisticService
                 $end = clone $project->getEnd();
             } else {
                 $end = clone $query->getToday();
-                $end->setDate((int) $end->format('Y'), 12, 31);
+                $end->setDate((int)$end->format('Y'), 12, 31);
             }
 
             $start = clone $project->getStart();
-            $start->setDate((int) $start->format('Y'), (int) $start->format('m'), 1);
+            $start->setDate((int)$start->format('Y'), (int)$start->format('m'), 1);
             $start->setTime(0, 0, 0);
 
             while ($start !== false && $start < $end) {
@@ -636,7 +631,6 @@ readonly class ProjectStatisticService
     }
 
     /**
-     * @param ProjectViewQuery $query
      * @return Project[]
      */
     public function findProjectsForView(ProjectViewQuery $query): array

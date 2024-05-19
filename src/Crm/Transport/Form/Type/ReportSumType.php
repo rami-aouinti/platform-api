@@ -19,8 +19,9 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 final class ReportSumType extends AbstractType
 {
-    public function __construct(private AuthorizationCheckerInterface $authorizationChecker)
-    {
+    public function __construct(
+        private AuthorizationCheckerInterface $authorizationChecker
+    ) {
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -32,7 +33,9 @@ final class ReportSumType extends AbstractType
         ]);
 
         $resolver->setDefault('choices', function (Options $options) {
-            $choices = ['stats.durationTotal' => 'duration'];
+            $choices = [
+                'stats.durationTotal' => 'duration',
+            ];
 
             if ($this->authorizationChecker->isGranted('view_rate_other_timesheet')) {
                 $choices['stats.amountTotal'] = 'rate';

@@ -35,7 +35,11 @@ final class DashboardSubscriber extends AbstractActionsSubscriber
         } else {
             $ids = [];
 
-            $event->addAction('save', ['title' => 'action.save', 'onclick' => 'saveDashboard(); return false;', 'icon' => 'save']);
+            $event->addAction('save', [
+                'title' => 'action.save',
+                'onclick' => 'saveDashboard(); return false;',
+                'icon' => 'save',
+            ]);
 
             foreach ($widgets as $widget) {
                 $ids[] = $widget->getId();
@@ -69,10 +73,24 @@ final class DashboardSubscriber extends AbstractActionsSubscriber
                     continue;
                 }
 
-                $event->addActionToSubmenu('widget_add', $widget->getId(), ['url' => $this->path('dashboard_add', ['widget' => $widget->getId()]), 'title' => $widget->getTitle(), 'translation_domain' => $widget->getTranslationDomain()]);
+                $event->addActionToSubmenu('widget_add', $widget->getId(), [
+                    'url' => $this->path('dashboard_add', [
+                        'widget' => $widget->getId(),
+                    ]),
+                    'title' => $widget->getTitle(),
+                    'translation_domain' => $widget->getTranslationDomain(),
+                ]);
             }
 
-            $event->addAction('reset', ['title' => 'action.reset', 'url' => $this->path('dashboard_reset'), 'icon' => 'delete', 'class' => 'confirmation-link', 'attr' => ['data-question' => 'confirm.delete']]);
+            $event->addAction('reset', [
+                'title' => 'action.reset',
+                'url' => $this->path('dashboard_reset'),
+                'icon' => 'delete',
+                'class' => 'confirmation-link',
+                'attr' => [
+                    'data-question' => 'confirm.delete',
+                ],
+            ]);
         }
     }
 }

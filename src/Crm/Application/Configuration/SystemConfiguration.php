@@ -12,8 +12,6 @@ declare(strict_types=1);
 namespace App\Crm\Application\Configuration;
 
 /**
- * Class SystemConfiguration
- *
  * @package App\Crm\Application\Configuration
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -21,21 +19,10 @@ final class SystemConfiguration
 {
     private bool $initialized = false;
 
-    public function __construct(private ConfigLoaderInterface $repository, private array $settings = [])
-    {
-    }
-
-    private function prepare(): void
-    {
-        if ($this->initialized) {
-            return;
-        }
-
-        foreach ($this->repository->getConfigurations() as $key => $value) {
-            $this->set($key, $value);
-        }
-
-        $this->initialized = true;
+    public function __construct(
+        private ConfigLoaderInterface $repository,
+        private array $settings = []
+    ) {
     }
 
     /**
@@ -48,18 +35,14 @@ final class SystemConfiguration
     {
         if (\array_key_exists($key, $this->settings)) {
             if (\is_bool($this->settings[$key])) {
-                $value = (bool) $value;
+                $value = (bool)$value;
             } elseif (\is_int($this->settings[$key])) {
-                $value = (int) $value;
+                $value = (int)$value;
             }
         }
         $this->settings[$key] = $value;
     }
 
-    /**
-     * @param string $key
-     * @return string|int|bool|float|null
-     */
     public function find(string $key): string|int|bool|float|null
     {
         $this->prepare();
@@ -75,8 +58,6 @@ final class SystemConfiguration
      * This method should be avoided if possible, use plain keys instead.
      *
      * @see https://github.com/divineomega/array_undot
-     * @param string $key
-     * @return array
      */
     public function findArray(string $key): array
     {
@@ -89,9 +70,9 @@ final class SystemConfiguration
         $replaced = [];
         foreach ($result as $settingName => $value) {
             if (\is_bool($this->settings[$settingName])) {
-                $value = (bool) $value;
+                $value = (bool)$value;
             } elseif (\is_int($this->settings[$settingName])) {
-                $value = (int) $value;
+                $value = (int)$value;
             }
 
             $baseName = str_replace($key . '.', '', $settingName);
@@ -173,7 +154,7 @@ final class SystemConfiguration
             return true;
         }
 
-        return (bool) $this->find('user.login');
+        return (bool)$this->find('user.login');
     }
 
     public function isSelfRegistrationActive(): bool
@@ -182,17 +163,17 @@ final class SystemConfiguration
             return false;
         }
 
-        return (bool) $this->find('user.registration');
+        return (bool)$this->find('user.registration');
     }
 
     public function getPasswordResetTokenLifetime(): int
     {
-        return (int) $this->find('user.password_reset_token_ttl');
+        return (int)$this->find('user.password_reset_token_ttl');
     }
 
     public function getPasswordResetRetryLifetime(): int
     {
-        return (int) $this->find('user.password_reset_retry_ttl');
+        return (int)$this->find('user.password_reset_retry_ttl');
     }
 
     public function isPasswordResetActive(): bool
@@ -201,17 +182,17 @@ final class SystemConfiguration
             return false;
         }
 
-        return (bool) $this->find('user.password_reset');
+        return (bool)$this->find('user.password_reset');
     }
 
     public function isSamlActive(): bool
     {
-        return (bool) $this->find('saml.activate');
+        return (bool)$this->find('saml.activate');
     }
 
     public function getSamlTitle(): string
     {
-        return (string) $this->find('saml.title');
+        return (string)$this->find('saml.title');
     }
 
     public function getSamlProvider(): ?string
@@ -221,7 +202,7 @@ final class SystemConfiguration
 
     public function isSamlRolesResetOnLogin(): bool
     {
-        return (bool) $this->find('saml.roles.resetOnLogin');
+        return (bool)$this->find('saml.roles.resetOnLogin');
     }
 
     /**
@@ -255,49 +236,49 @@ final class SystemConfiguration
             return null;
         }
 
-        return (string) $attr;
+        return (string)$attr;
     }
 
     public function isLdapActive(): bool
     {
-        return (bool) $this->find('ldap.activate');
+        return (bool)$this->find('ldap.activate');
     }
 
     // ========== Calendar configurations ==========
 
     public function getCalendarBusinessTimeBegin(): string
     {
-        return (string) $this->find('calendar.businessHours.begin');
+        return (string)$this->find('calendar.businessHours.begin');
     }
 
     public function getCalendarBusinessTimeEnd(): string
     {
-        return (string) $this->find('calendar.businessHours.end');
+        return (string)$this->find('calendar.businessHours.end');
     }
 
     public function getCalendarTimeframeBegin(): string
     {
-        return (string) $this->find('calendar.visibleHours.begin');
+        return (string)$this->find('calendar.visibleHours.begin');
     }
 
     public function getCalendarTimeframeEnd(): string
     {
-        return (string) $this->find('calendar.visibleHours.end');
+        return (string)$this->find('calendar.visibleHours.end');
     }
 
     public function getCalendarDayLimit(): int
     {
-        return (int) $this->find('calendar.day_limit');
+        return (int)$this->find('calendar.day_limit');
     }
 
     public function isCalendarShowWeekNumbers(): bool
     {
-        return (bool) $this->find('calendar.week_numbers');
+        return (bool)$this->find('calendar.week_numbers');
     }
 
     public function isCalendarShowWeekends(): bool
     {
-        return (bool) $this->find('calendar.weekends');
+        return (bool)$this->find('calendar.weekends');
     }
 
     public function getCalendarGoogleApiKey(): ?string
@@ -312,17 +293,17 @@ final class SystemConfiguration
 
     public function getCalendarSlotDuration(): string
     {
-        return (string) $this->find('calendar.slot_duration');
+        return (string)$this->find('calendar.slot_duration');
     }
 
     public function getCalendarDragAndDropMaxEntries(): int
     {
-        return (int) $this->find('calendar.dragdrop_amount');
+        return (int)$this->find('calendar.dragdrop_amount');
     }
 
     public function isCalendarDragAndDropCopyData(): bool
     {
-        return (bool) $this->find('calendar.dragdrop_data');
+        return (bool)$this->find('calendar.dragdrop_data');
     }
 
     // ========== Customer configurations ==========
@@ -374,32 +355,32 @@ final class SystemConfiguration
     */
     public function getTimesheetLongRunningDuration(): int
     {
-        return (int) $this->find('timesheet.rules.long_running_duration');
+        return (int)$this->find('timesheet.rules.long_running_duration');
     }
 
     public function getTimesheetDefaultBeginTime(): string
     {
-        return (string) $this->find('timesheet.default_begin');
+        return (string)$this->find('timesheet.default_begin');
     }
 
     public function isTimesheetAllowFutureTimes(): bool
     {
-        return (bool) $this->find('timesheet.rules.allow_future_times');
+        return (bool)$this->find('timesheet.rules.allow_future_times');
     }
 
     public function isTimesheetAllowZeroDuration(): bool
     {
-        return (bool) $this->find('timesheet.rules.allow_zero_duration');
+        return (bool)$this->find('timesheet.rules.allow_zero_duration');
     }
 
     public function isTimesheetAllowOverbookingBudget(): bool
     {
-        return (bool) $this->find('timesheet.rules.allow_overbooking_budget');
+        return (bool)$this->find('timesheet.rules.allow_overbooking_budget');
     }
 
     public function isTimesheetAllowOverlappingRecords(): bool
     {
-        return (bool) $this->find('timesheet.rules.allow_overlapping_records');
+        return (bool)$this->find('timesheet.rules.allow_overlapping_records');
     }
 
     public function getTimesheetTrackingMode(): string
@@ -409,42 +390,42 @@ final class SystemConfiguration
 
     public function isTimesheetMarkdownEnabled(): bool
     {
-        return (bool) $this->find('timesheet.markdown_content');
+        return (bool)$this->find('timesheet.markdown_content');
     }
 
     public function isTimesheetRequiresActivity(): bool
     {
-        return (bool) $this->find('timesheet.rules.require_activity');
+        return (bool)$this->find('timesheet.rules.require_activity');
     }
 
     public function getTimesheetActiveEntriesHardLimit(): int
     {
-        return (int) $this->find('timesheet.active_entries.hard_limit');
+        return (int)$this->find('timesheet.active_entries.hard_limit');
     }
 
     public function getTimesheetDefaultRoundingDays(): string
     {
-        return (string) $this->find('timesheet.rounding.default.days');
+        return (string)$this->find('timesheet.rounding.default.days');
     }
 
     public function getTimesheetDefaultRoundingMode(): string
     {
-        return (string) $this->find('timesheet.rounding.default.mode');
+        return (string)$this->find('timesheet.rounding.default.mode');
     }
 
     public function getTimesheetDefaultRoundingBegin(): int
     {
-        return (int) $this->find('timesheet.rounding.default.begin');
+        return (int)$this->find('timesheet.rounding.default.begin');
     }
 
     public function getTimesheetDefaultRoundingEnd(): int
     {
-        return (int) $this->find('timesheet.rounding.default.end');
+        return (int)$this->find('timesheet.rounding.default.end');
     }
 
     public function getTimesheetDefaultRoundingDuration(): int
     {
-        return (int) $this->find('timesheet.rounding.default.duration');
+        return (int)$this->find('timesheet.rounding.default.duration');
     }
 
     public function getTimesheetIncrementDuration(): int
@@ -472,19 +453,19 @@ final class SystemConfiguration
             return null;
         }
 
-        return (string) $start;
+        return (string)$start;
     }
 
     // ========== Theme configurations ==========
 
     public function isShowAbout(): bool
     {
-        return (bool) $this->find('theme.show_about');
+        return (bool)$this->find('theme.show_about');
     }
 
     public function isThemeAllowAvatarUrls(): bool
     {
-        return (bool) $this->find('theme.avatar_url');
+        return (bool)$this->find('theme.avatar_url');
     }
 
     public function getThemeColorChoices(): string
@@ -504,6 +485,19 @@ final class SystemConfiguration
         return $this->find('project.copy_teams_on_create') === true;
     }
 
+    private function prepare(): void
+    {
+        if ($this->initialized) {
+            return;
+        }
+
+        foreach ($this->repository->getConfigurations() as $key => $value) {
+            $this->set($key, $value);
+        }
+
+        $this->initialized = true;
+    }
+
     // ========== Helper functions ==========
 
     private function getIncrement(string $key, int $fallback, int $min = 1): int
@@ -514,7 +508,7 @@ final class SystemConfiguration
             return $fallback;
         }
 
-        $config = (int) $config;
+        $config = (int)$config;
 
         return max($config, $min);
     }
@@ -527,7 +521,7 @@ final class SystemConfiguration
             return $fallback;
         }
 
-        $config = (string) $config;
+        $config = (string)$config;
 
         if (trim($config) === '') {
             return $fallback;

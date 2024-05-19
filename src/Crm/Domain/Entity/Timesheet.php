@@ -11,8 +11,9 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Entity;
 
-use App\Crm\Domain\Doctrine\ModifiedAt;
 use App\Crm\Application\Validator\Constraints as Constraints;
+use App\Crm\Domain\Doctrine\ModifiedAt;
+use App\User\Domain\Entity\User;
 use DateTime;
 use DateTimeZone;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -22,7 +23,6 @@ use Exception;
 use JMS\Serializer\Annotation as Serializer;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\User\Domain\Entity\User;
 
 /**
  * Internal docs:
@@ -175,12 +175,16 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
     #[Serializer\Expose]
     #[Serializer\Groups(['Entity'])]
     private ?float $hourlyRate = null;
-    #[ORM\Column(name: 'exported', type: 'boolean', nullable: false, options: ['default' => false])]
+    #[ORM\Column(name: 'exported', type: 'boolean', nullable: false, options: [
+        'default' => false,
+    ])]
     #[Assert\NotNull]
     #[Serializer\Expose]
     #[Serializer\Groups(['Default'])]
     private bool $exported = false;
-    #[ORM\Column(name: 'billable', type: 'boolean', nullable: false, options: ['default' => true])]
+    #[ORM\Column(name: 'billable', type: 'boolean', nullable: false, options: [
+        'default' => true,
+    ])]
     #[Assert\NotNull]
     #[Serializer\Expose]
     #[Serializer\Groups(['Default'])]
@@ -190,7 +194,9 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
      */
     #[Assert\NotNull]
     private ?string $billableMode = self::BILLABLE_DEFAULT;
-    #[ORM\Column(name: 'category', type: 'string', length: 10, nullable: false, options: ['default' => 'work'])]
+    #[ORM\Column(name: 'category', type: 'string', length: 10, nullable: false, options: [
+        'default' => 'work',
+    ])]
     #[Assert\NotNull]
     private ?string $category = self::WORK;
     #[ORM\Column(name: 'modified_at', type: 'datetime_immutable', nullable: true)]
@@ -229,37 +235,39 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
         $this->modifiedAt = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
     }
 
+    public function __clone()
+    {
+        if ($this->id) {
+            $this->id = null;
+        }
+
+        // field will not be set, if it contains a value
+        $this->modifiedAt = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        $this->exported = false;
+
+        $currentMeta = $this->meta;
+        $this->meta = new ArrayCollection();
+        /** @var TimesheetMeta $meta */
+        foreach ($currentMeta as $meta) {
+            $newMeta = clone $meta;
+            $newMeta->setEntity($this);
+            $this->setMetaField($newMeta);
+        }
+
+        $currentTags = $this->tags;
+        $this->tags = new ArrayCollection();
+        /** @var Tag $tag */
+        foreach ($currentTags as $tag) {
+            $this->addTag($tag);
+        }
+    }
+
     /**
      * Get entry id, returns null for new entities which were not persisted.
-     *
-     * @return int|null
      */
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    /**
-     * Make sure begin and end date have the correct timezone.
-     * This will be called once for each item after being loaded from the database.
-     *
-     * @throws Exception
-     */
-    protected function localizeDates(): void
-    {
-        if ($this->localized) {
-            return;
-        }
-
-        if (null !== $this->begin) {
-            $this->begin->setTimezone(new DateTimeZone($this->timezone));
-        }
-
-        if (null !== $this->end) {
-            $this->end->setTimezone(new DateTimeZone($this->timezone));
-        }
-
-        $this->localized = true;
     }
 
     /**
@@ -275,7 +283,7 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
     /**
      * @throws Exception
      */
-    public function setBegin(DateTime $begin): Timesheet
+    public function setBegin(DateTime $begin): self
     {
         $this->begin = $begin;
         $this->timezone = $begin->getTimezone()->getName();
@@ -300,16 +308,11 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
         return $this->end === null;
     }
 
-    /**
-     * @param DateTime|null $end
-     *
-     * @return Timesheet
-     */
-    public function setEnd(?DateTime $end): Timesheet
+    public function setEnd(?DateTime $end): self
     {
         $this->end = $end;
 
-        if (null === $end) {
+        if ($end === null) {
             $this->duration = 0;
             $this->rate = 0.00;
         } else {
@@ -319,11 +322,7 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
         return $this;
     }
 
-    /**
-     * @param int|null $duration
-     * @return Timesheet
-     */
-    public function setDuration(?int $duration): Timesheet
+    public function setDuration(?int $duration): self
     {
         $this->duration = $duration;
 
@@ -332,9 +331,6 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
 
     /**
      * Do not rely on the results of this method for running records.
-     *
-     * @param bool $calculate
-     * @return int|null
      */
     public function getDuration(bool $calculate = true): ?int
     {
@@ -355,7 +351,7 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
         return null;
     }
 
-    public function setUser(?User $user): Timesheet
+    public function setUser(?User $user): self
     {
         $this->user = $user;
 
@@ -367,7 +363,7 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
         return $this->user;
     }
 
-    public function setActivity(?Activity $activity): Timesheet
+    public function setActivity(?Activity $activity): self
     {
         $this->activity = $activity;
 
@@ -384,14 +380,14 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
         return $this->project;
     }
 
-    public function setProject(?Project $project): Timesheet
+    public function setProject(?Project $project): self
     {
         $this->project = $project;
 
         return $this;
     }
 
-    public function setDescription(?string $description): Timesheet
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
 
@@ -405,9 +401,8 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
 
     /**
      * @param float $rate
-     * @return Timesheet
      */
-    public function setRate($rate): Timesheet
+    public function setRate($rate): self
     {
         $this->rate = $rate;
 
@@ -419,7 +414,7 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
         return $this->rate;
     }
 
-    public function setInternalRate(?float $rate): Timesheet
+    public function setInternalRate(?float $rate): self
     {
         $this->internalRate = $rate;
 
@@ -431,7 +426,7 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
         return $this->internalRate;
     }
 
-    public function addTag(Tag $tag): Timesheet
+    public function addTag(Tag $tag): self
     {
         if ($this->tags->contains($tag)) {
             return $this;
@@ -467,34 +462,24 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
 
         return array_map(
             function ($element) {
-                return (string) $element->getName();
+                return (string)$element->getName();
             },
             $tags
         );
     }
 
-    /**
-     * @return bool
-     */
     public function isExported(): bool
     {
         return $this->exported;
     }
 
-    /**
-     * @param bool $exported
-     * @return Timesheet
-     */
-    public function setExported(bool $exported): Timesheet
+    public function setExported(bool $exported): self
     {
         $this->exported = $exported;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getTimezone(): ?string
     {
         return $this->timezone;
@@ -505,10 +490,8 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
      * It is reserved for some very rare use-cases.
      *
      * @internal
-     * @param string $timezone
-     * @return Timesheet
      */
-    public function setTimezone(string $timezone): Timesheet
+    public function setTimezone(string $timezone): self
     {
         $this->timezone = $timezone;
 
@@ -517,8 +500,6 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
 
     /**
      * This method returns ALWAYS: "timesheet"
-     *
-     * @return string
      */
     public function getType(): string
     {
@@ -535,7 +516,7 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
         return $this->category;
     }
 
-    public function setCategory(string $category): Timesheet
+    public function setCategory(string $category): self
     {
         $allowed = [self::WORK, self::HOLIDAY, self::SICKNESS, self::PARENTAL, self::OVERTIME];
 
@@ -558,7 +539,7 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
         return $this->billable;
     }
 
-    public function setBillable(bool $billable): Timesheet
+    public function setBillable(bool $billable): self
     {
         $this->billable = $billable;
 
@@ -580,7 +561,7 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
         return $this->fixedRate;
     }
 
-    public function setFixedRate(?float $fixedRate): Timesheet
+    public function setFixedRate(?float $fixedRate): self
     {
         $this->fixedRate = $fixedRate;
 
@@ -592,7 +573,7 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
         return $this->hourlyRate;
     }
 
-    public function setHourlyRate(?float $hourlyRate): Timesheet
+    public function setHourlyRate(?float $hourlyRate): self
     {
         $this->hourlyRate = $hourlyRate;
 
@@ -638,7 +619,7 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
         $this->setInternalRate(null);
         $this->setHourlyRate(null);
         $this->setFixedRate(null);
-        $this->setBillableMode(Timesheet::BILLABLE_AUTOMATIC);
+        $this->setBillableMode(self::BILLABLE_AUTOMATIC);
     }
 
     public function getMetaField(string $name): ?MetaTableTypeInterface
@@ -666,15 +647,15 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
         return $this;
     }
 
-    public function createCopy(?Timesheet $timesheet = null): Timesheet
+    public function createCopy(?self $timesheet = null): self
     {
-        if (null === $timesheet) {
-            $timesheet = new Timesheet();
+        if ($timesheet === null) {
+            $timesheet = new self();
         }
 
         $values = get_object_vars($this);
         foreach ($values as $k => $v) {
-            $timesheet->$k = $v;
+            $timesheet->{$k} = $v;
         }
 
         $timesheet->meta = new ArrayCollection();
@@ -694,30 +675,26 @@ class Timesheet implements EntityWithMetaFields, ExportableItem, ModifiedAt
         return $timesheet;
     }
 
-    public function __clone()
+    /**
+     * Make sure begin and end date have the correct timezone.
+     * This will be called once for each item after being loaded from the database.
+     *
+     * @throws Exception
+     */
+    protected function localizeDates(): void
     {
-        if ($this->id) {
-            $this->id = null;
+        if ($this->localized) {
+            return;
         }
 
-        // field will not be set, if it contains a value
-        $this->modifiedAt = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
-        $this->exported = false;
-
-        $currentMeta = $this->meta;
-        $this->meta = new ArrayCollection();
-        /** @var TimesheetMeta $meta */
-        foreach ($currentMeta as $meta) {
-            $newMeta = clone $meta;
-            $newMeta->setEntity($this);
-            $this->setMetaField($newMeta);
+        if ($this->begin !== null) {
+            $this->begin->setTimezone(new DateTimeZone($this->timezone));
         }
 
-        $currentTags = $this->tags;
-        $this->tags = new ArrayCollection();
-        /** @var Tag $tag */
-        foreach ($currentTags as $tag) {
-            $this->addTag($tag);
+        if ($this->end !== null) {
+            $this->end->setTimezone(new DateTimeZone($this->timezone));
         }
+
+        $this->localized = true;
     }
 }

@@ -31,8 +31,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 final class UserPreferenceType extends AbstractType
 {
-    public function __construct(private TranslatorInterface $translator)
-    {
+    public function __construct(
+        private TranslatorInterface $translator
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -48,12 +49,14 @@ final class UserPreferenceType extends AbstractType
 
                 $required = true;
                 if (\array_key_exists('required', $options)) {
-                    $required = (bool) $options['required'];
+                    $required = (bool)$options['required'];
                     unset($options['required']);
                 }
 
                 if (\in_array($preference->getType(), [TextType::class, TextareaType::class])) {
-                    $constraints[] = new Length(['max' => 255]);
+                    $constraints[] = new Length([
+                        'max' => 255,
+                    ]);
                 }
 
                 if (\in_array($preference->getType(), [CheckboxType::class, YesNoType::class])) {

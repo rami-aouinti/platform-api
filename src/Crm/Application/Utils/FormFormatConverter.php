@@ -37,9 +37,9 @@ final class FormFormatConverter
         'mm' => 'i',    // ICU 2 letter minutes
         'a' => 'A',     // uppercase AM/PM, Luxon only supports uppercase
         'HH' => 'H',    // H = 24-hour format of an hour with leading zeros
-        'h' => 'g',     // g = 12-hour format of an hour without leading zeros	1 through 12
-        'H' => 'G',     // G = 24-hour format of an hour without leading zeros	0 through 23
-                        // h = 12-hour format of an hour with leading zeros	01 through 12
+        'h' => 'g',     // g = 12-hour format of an hour without leading zeros  1 through 12
+        'H' => 'G',     // G = 24-hour format of an hour without leading zeros  0 through 23
+        // h = 12-hour format of an hour with leading zeros 01 through 12
     ];
 
     public function convert(string $format): string

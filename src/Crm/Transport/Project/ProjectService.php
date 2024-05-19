@@ -11,26 +11,23 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Project;
 
-use App\Crm\Transport\Configuration\SystemConfiguration;
+use App\Crm\Application\Utils\Context;
+use App\Crm\Application\Utils\NumberGenerator;
+use App\Crm\Application\Validator\ValidationFailedException;
 use App\Crm\Domain\Entity\Customer;
 use App\Crm\Domain\Entity\Project;
+use App\Crm\Domain\Repository\ProjectRepository;
+use App\Crm\Transport\Configuration\SystemConfiguration;
 use App\Crm\Transport\Event\ProjectCreateEvent;
 use App\Crm\Transport\Event\ProjectCreatePostEvent;
 use App\Crm\Transport\Event\ProjectCreatePreEvent;
 use App\Crm\Transport\Event\ProjectMetaDefinitionEvent;
 use App\Crm\Transport\Event\ProjectUpdatePostEvent;
 use App\Crm\Transport\Event\ProjectUpdatePreEvent;
-use App\Crm\Domain\Repository\ProjectRepository;
-use App\Crm\Application\Utils\Context;
-use App\Crm\Application\Utils\NumberGenerator;
-use App\Crm\Application\Validator\ValidationFailedException;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-/**
- * @final
- */
 final class ProjectService
 {
     public function __construct(
@@ -38,8 +35,7 @@ final class ProjectService
         private readonly SystemConfiguration $configuration,
         private readonly EventDispatcherInterface $dispatcher,
         private readonly ValidatorInterface $validator
-    )
-    {
+    ) {
     }
 
     public function createNewProject(?Customer $customer = null): Project
@@ -59,7 +55,7 @@ final class ProjectService
 
     public function saveNewProject(Project $project, ?Context $context = null): Project
     {
-        if (null !== $project->getId()) {
+        if ($project->getId() !== null) {
             throw new InvalidArgumentException('Cannot create project, already persisted');
         }
 
@@ -79,20 +75,6 @@ final class ProjectService
         return $project;
     }
 
-    /**
-     * @param Project $project
-     * @param string[] $groups
-     * @throws ValidationFailedException
-     */
-    private function validateProject(Project $project, array $groups = []): void
-    {
-        $errors = $this->validator->validate($project, null, $groups);
-
-        if ($errors->count() > 0) {
-            throw new ValidationFailedException($errors, 'Validation Failed');
-        }
-    }
-
     public function updateProject(Project $project): Project
     {
         $this->validateProject($project);
@@ -106,12 +88,29 @@ final class ProjectService
 
     public function findProjectByName(string $name): ?Project
     {
-        return $this->repository->findOneBy(['name' => $name]);
+        return $this->repository->findOneBy([
+            'name' => $name,
+        ]);
     }
 
     public function findProjectByNumber(string $number): ?Project
     {
-        return $this->repository->findOneBy(['number' => $number]);
+        return $this->repository->findOneBy([
+            'number' => $number,
+        ]);
+    }
+
+    /**
+     * @param string[] $groups
+     * @throws ValidationFailedException
+     */
+    private function validateProject(Project $project, array $groups = []): void
+    {
+        $errors = $this->validator->validate($project, null, $groups);
+
+        if ($errors->count() > 0) {
+            throw new ValidationFailedException($errors, 'Validation Failed');
+        }
     }
 
     private function calculateNextProjectNumber(): ?string

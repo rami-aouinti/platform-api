@@ -20,15 +20,14 @@ final class AccessTokenHandler implements AccessTokenHandlerInterface
 {
     public function __construct(
         private readonly AccessTokenRepository $accessTokenRepository
-    )
-    {
+    ) {
     }
 
     public function getUserBadgeFrom(string $accessToken): UserBadge
     {
         $accessToken = $this->accessTokenRepository->findByToken($accessToken);
 
-        if (null === $accessToken) {
+        if ($accessToken === null) {
             throw new BadCredentialsException('Invalid credentials.');
         }
 

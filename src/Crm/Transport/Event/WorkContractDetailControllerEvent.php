@@ -26,8 +26,9 @@ final class WorkContractDetailControllerEvent extends Event
      */
     private array $controller = [];
 
-    public function __construct(private Year $year)
-    {
+    public function __construct(
+        private Year $year
+    ) {
     }
 
     public function getYear(): Year

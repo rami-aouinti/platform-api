@@ -19,9 +19,6 @@ use App\Crm\Transport\Form\Type\YesNoType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-/**
- *
- */
 trait EntityFormTrait
 {
     use ColorTrait;

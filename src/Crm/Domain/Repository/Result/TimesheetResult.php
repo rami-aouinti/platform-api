@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Repository\Result;
 
+use App\Crm\Application\Utils\Pagination;
 use App\Crm\Domain\Entity\Timesheet;
 use App\Crm\Domain\Repository\Loader\TimesheetLoader;
 use App\Crm\Domain\Repository\Paginator\LoaderPaginator;
 use App\Crm\Domain\Repository\Query\TimesheetQuery;
-use App\Crm\Application\Utils\Pagination;
 use Doctrine\ORM\QueryBuilder;
 
 final class TimesheetResult
@@ -30,8 +30,10 @@ final class TimesheetResult
     /**
      * @internal
      */
-    public function __construct(private TimesheetQuery $query, private QueryBuilder $queryBuilder)
-    {
+    public function __construct(
+        private TimesheetQuery $query,
+        private QueryBuilder $queryBuilder
+    ) {
     }
 
     public function getStatistic(): TimesheetResultStatistic
@@ -66,7 +68,6 @@ final class TimesheetResult
     }
 
     /**
-     * @param bool $fullyHydrated
      * @return array<Timesheet>
      */
     public function getResults(bool $fullyHydrated = false): array

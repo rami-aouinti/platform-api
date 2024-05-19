@@ -38,13 +38,13 @@ class TeamEditForm extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'name',
                 'attr' => [
-                    'autofocus' => 'autofocus'
+                    'autofocus' => 'autofocus',
                 ],
                 'documentation' => [
                     'type' => 'string',
                     'description' => 'Name of the team',
                 ],
-        ]);
+            ]);
 
         $this->addColor($builder);
 
@@ -52,7 +52,7 @@ class TeamEditForm extends AbstractType
             'entry_type' => TeamMemberType::class,
             'entry_options' => [
                 'label' => false,
-                'include_users' => $users
+                'include_users' => $users,
             ],
             'allow_add' => true,
             'by_reference' => false,
@@ -72,7 +72,7 @@ class TeamEditForm extends AbstractType
                             'type' => 'boolean',
                             'description' => 'Whether the user is a teamlead',
                         ],
-                    ]
+                    ],
                 ],
                 'description' => 'All team members',
             ],
@@ -85,7 +85,7 @@ class TeamEditForm extends AbstractType
             'multiple' => false,
             'expanded' => false,
             'required' => false,
-            'ignore_users' => $team !== null ? $team->getUsers() : []
+            'ignore_users' => $team !== null ? $team->getUsers() : [],
         ]);
     }
 
@@ -97,7 +97,7 @@ class TeamEditForm extends AbstractType
             'csrf_field_name' => '_token',
             'csrf_token_id' => 'admin_team_edit',
             'attr' => [
-                'data-form-event' => 'kimai.teamUpdate'
+                'data-form-event' => 'kimai.teamUpdate',
             ],
         ]);
     }

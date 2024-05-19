@@ -11,17 +11,17 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\API;
 
+use App\Crm\Application\Utils\SearchTerm;
 use App\Crm\Domain\Entity\Activity;
 use App\Crm\Domain\Entity\ActivityRate;
-use App\User\Domain\Entity\User;
-use App\Crm\Transport\Event\ActivityMetaDefinitionEvent;
-use App\Crm\Transport\Form\API\ActivityApiEditForm;
-use App\Crm\Transport\Form\API\ActivityRateApiForm;
 use App\Crm\Domain\Repository\ActivityRateRepository;
 use App\Crm\Domain\Repository\ActivityRepository;
 use App\Crm\Domain\Repository\ProjectRepository;
 use App\Crm\Domain\Repository\Query\ActivityQuery;
-use App\Crm\Application\Utils\SearchTerm;
+use App\Crm\Transport\Event\ActivityMetaDefinitionEvent;
+use App\Crm\Transport\Form\API\ActivityApiEditForm;
+use App\Crm\Transport\Form\API\ActivityRateApiForm;
+use App\User\Domain\Entity\User;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
@@ -82,7 +82,7 @@ final class ActivityController extends BaseApiController
             $query->setOrderBy($orderBy);
         }
 
-        if (null !== $paramFetcher->get('globals')) {
+        if ($paramFetcher->get('globals') !== null) {
             $query->setGlobalsOnly(true);
         }
 
@@ -103,7 +103,7 @@ final class ActivityController extends BaseApiController
 
         $visible = $paramFetcher->get('visible');
         if (\is_string($visible) && $visible !== '') {
-            $query->setVisibility((int) $visible);
+            $query->setVisibility((int)$visible);
         }
 
         $term = $paramFetcher->get('term');
@@ -124,7 +124,9 @@ final class ActivityController extends BaseApiController
      */
     #[OA\Response(response: 200, description: 'Returns one activity entity', content: new OA\JsonContent(ref: '#/components/schemas/ActivityEntity'))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Activity ID to fetch', required: true)]
-    #[Route(methods: ['GET'], path: '/{id}', name: 'get_activity', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['GET'], path: '/{id}', name: 'get_activity', requirements: [
+        'id' => '\d+',
+    ])]
     #[IsGranted('view', 'activity')]
     public function getAction(Activity $activity): Response
     {
@@ -180,7 +182,9 @@ final class ActivityController extends BaseApiController
     #[OA\Patch(description: 'Update an existing activity, you can pass all or just a subset of all attributes', responses: [new OA\Response(response: 200, description: 'Returns the updated activity', content: new OA\JsonContent(ref: '#/components/schemas/ActivityEntity'))])]
     #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/ActivityEditForm'))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Activity ID to update', required: true)]
-    #[Route(methods: ['PATCH'], path: '/{id}', name: 'patch_activity', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['PATCH'], path: '/{id}', name: 'patch_activity', requirements: [
+        'id' => '\d+',
+    ])]
     public function patchAction(Request $request, Activity $activity): Response
     {
         $event = new ActivityMetaDefinitionEvent($activity);
@@ -194,7 +198,7 @@ final class ActivityController extends BaseApiController
         $form->setData($activity);
         $form->submit($request->request->all(), false);
 
-        if (false === $form->isValid()) {
+        if ($form->isValid() === false) {
             $view = new View($form, Response::HTTP_OK);
             $view->getContext()->setGroups(self::GROUPS_FORM);
 
@@ -215,7 +219,9 @@ final class ActivityController extends BaseApiController
     #[IsGranted('edit', 'activity')]
     #[OA\Response(response: 200, description: 'Sets the value of an existing/configured meta-field. You cannot create unknown meta-fields, if the given name is not a configured meta-field, this will return an exception.', content: new OA\JsonContent(ref: '#/components/schemas/ActivityEntity'))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Activity record ID to set the meta-field value for', required: true)]
-    #[Route(methods: ['PATCH'], path: '/{id}/meta', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['PATCH'], path: '/{id}/meta', requirements: [
+        'id' => '\d+',
+    ])]
     #[Rest\RequestParam(name: 'name', strict: true, nullable: false, description: 'The meta-field name')]
     #[Rest\RequestParam(name: 'value', strict: true, nullable: false, description: 'The meta-field value')]
     public function metaAction(Activity $activity, ParamFetcherInterface $paramFetcher): Response
@@ -246,7 +252,9 @@ final class ActivityController extends BaseApiController
     #[IsGranted('edit', 'activity')]
     #[OA\Response(response: 200, description: 'Returns a collection of activity rate entities', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/ActivityRate')))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The activity whose rates will be returned', required: true)]
-    #[Route(methods: ['GET'], path: '/{id}/rates', name: 'get_activity_rates', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['GET'], path: '/{id}/rates', name: 'get_activity_rates', requirements: [
+        'id' => '\d+',
+    ])]
     public function getRatesAction(Activity $activity): Response
     {
         $rates = $this->activityRateRepository->getRatesForActivity($activity);
@@ -264,8 +272,13 @@ final class ActivityController extends BaseApiController
     #[OA\Delete(responses: [new OA\Response(response: 204, description: 'Returns no content: 204 on successful delete')])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The activity whose rate will be removed', required: true)]
     #[OA\Parameter(name: 'rateId', in: 'path', description: 'The rate to remove', required: true)]
-    #[Route(methods: ['DELETE'], path: '/{id}/rates/{rateId}', name: 'delete_activity_rate', requirements: ['id' => '\d+', 'rateId' => '\d+'])]
-    public function deleteRateAction(Activity $activity, #[MapEntity(mapping: ['rateId' => 'id'])] ActivityRate $rate): Response
+    #[Route(methods: ['DELETE'], path: '/{id}/rates/{rateId}', name: 'delete_activity_rate', requirements: [
+        'id' => '\d+',
+        'rateId' => '\d+',
+    ])]
+    public function deleteRateAction(Activity $activity, #[MapEntity(mapping: [
+        'rateId' => 'id',
+    ])] ActivityRate $rate): Response
     {
         if ($rate->getActivity() !== $activity) {
             throw $this->createNotFoundException();
@@ -285,7 +298,9 @@ final class ActivityController extends BaseApiController
     #[OA\Post(responses: [new OA\Response(response: 200, description: 'Returns the new created rate', content: new OA\JsonContent(ref: '#/components/schemas/ActivityRate'))])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The activity to add the rate for', required: true)]
     #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/ActivityRateForm'))]
-    #[Route(methods: ['POST'], path: '/{id}/rates', name: 'post_activity_rate', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['POST'], path: '/{id}/rates', name: 'post_activity_rate', requirements: [
+        'id' => '\d+',
+    ])]
     public function postRateAction(Activity $activity, Request $request): Response
     {
         $rate = new ActivityRate();
@@ -298,7 +313,7 @@ final class ActivityController extends BaseApiController
         $form->setData($rate);
         $form->submit($request->request->all(), false);
 
-        if (false === $form->isValid()) {
+        if ($form->isValid() === false) {
             $view = new View($form, Response::HTTP_OK);
             $view->getContext()->setGroups(self::GROUPS_RATE);
 

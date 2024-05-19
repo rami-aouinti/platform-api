@@ -12,11 +12,11 @@ declare(strict_types=1);
 namespace App\Crm\Transport\Form\Type;
 
 use App\Crm\Domain\Entity\Project;
-use App\Crm\Transport\Form\Helper\CustomerHelper;
-use App\Crm\Transport\Form\Helper\ProjectHelper;
 use App\Crm\Domain\Repository\ProjectRepository;
 use App\Crm\Domain\Repository\Query\ActivityQuery;
 use App\Crm\Domain\Repository\Query\ProjectFormTypeQuery;
+use App\Crm\Transport\Form\Helper\CustomerHelper;
+use App\Crm\Transport\Form\Helper\ProjectHelper;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormInterface;
@@ -29,8 +29,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 final class ProjectType extends AbstractType
 {
-    public function __construct(private ProjectHelper $projectHelper, private CustomerHelper $customerHelper)
-    {
+    public function __construct(
+        private ProjectHelper $projectHelper,
+        private CustomerHelper $customerHelper
+    ) {
     }
 
     public function getChoiceLabel(Project $project): string
@@ -39,7 +41,6 @@ final class ProjectType extends AbstractType
     }
 
     /**
-     * @param Project $project
      * @param string $key
      * @param mixed $value
      * @return array<string, string|int|null>
@@ -47,7 +48,10 @@ final class ProjectType extends AbstractType
     public function getChoiceAttributes(Project $project, $key, $value): array
     {
         if (null !== ($customer = $project->getCustomer())) {
-            return ['data-customer' => $customer->getId(), 'data-currency' => $customer->getCurrency()];
+            return [
+                'data-customer' => $customer->getId(),
+                'data-currency' => $customer->getCurrency(),
+            ];
         }
 
         return [];
@@ -93,11 +97,11 @@ final class ProjectType extends AbstractType
         $resolver->setDefault('query_builder', function (Options $options) {
             return function (ProjectRepository $repo) use ($options) {
                 $query = new ProjectFormTypeQuery($options['projects'], $options['customers']);
-                if (true === $options['query_builder_for_user']) {
+                if ($options['query_builder_for_user'] === true) {
                     $query->setUser($options['user']);
                 }
 
-                if (true === $options['ignore_date']) {
+                if ($options['ignore_date'] === true) {
                     $query->setIgnoreDate(true);
                 } else {
                     if ($options['project_date_start'] !== null) {
@@ -108,11 +112,11 @@ final class ProjectType extends AbstractType
                     }
                 }
 
-                if (true === $options['join_customer']) {
+                if ($options['join_customer'] === true) {
                     $query->setWithCustomer(true);
                 }
 
-                if (null !== $options['ignore_project']) {
+                if ($options['ignore_project'] !== null) {
                     $query->setProjectToIgnore($options['ignore_project']);
                 }
 
@@ -121,14 +125,20 @@ final class ProjectType extends AbstractType
         });
 
         $resolver->setDefault('api_data', function (Options $options) {
-            if (false !== $options['activity_enabled']) {
+            if ($options['activity_enabled'] !== false) {
                 $name = \is_string($options['activity_enabled']) ? $options['activity_enabled'] : 'project';
 
                 return [
                     'select' => $options['activity_select'],
                     'route' => 'get_activities',
-                    'route_params' => [$name => '%' . $name . '%', 'visible' => $options['activity_visibility']],
-                    'empty_route_params' => ['globals' => 'true', 'visible' => $options['activity_visibility']],
+                    'route_params' => [
+                        $name => '%' . $name . '%',
+                        'visible' => $options['activity_visibility'],
+                    ],
+                    'empty_route_params' => [
+                        'globals' => 'true',
+                        'visible' => $options['activity_visibility'],
+                    ],
                 ];
             }
 

@@ -33,8 +33,9 @@ class SpreadsheetExporter
      */
     private array $formatter = [];
 
-    public function __construct(private readonly TranslatorInterface $translator)
-    {
+    public function __construct(
+        private readonly TranslatorInterface $translator
+    ) {
         $this->registerCellFormatter('datetime', new DateTimeFormatter());
         $this->registerCellFormatter('date', new DateFormatter());
         $this->registerCellFormatter('time', new TimeFormatter());
@@ -51,8 +52,6 @@ class SpreadsheetExporter
 
     /**
      * @param ColumnDefinition[] $columns
-     * @param array $entries
-     * @return Spreadsheet
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
     public function export(array $columns, array $entries): Spreadsheet

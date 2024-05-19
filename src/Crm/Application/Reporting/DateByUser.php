@@ -14,8 +14,6 @@ namespace App\Crm\Application\Reporting;
 use App\User\Domain\Entity\User;
 
 /**
- * Class DateByUser
- *
  * @package App\Crm\Application\Reporting
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

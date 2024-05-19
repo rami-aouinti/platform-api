@@ -54,15 +54,18 @@ class ConfigurationRepository extends EntityRepository
 
         try {
             foreach ($model->getConfiguration() as $configuration) {
-                $entity = $this->findOneBy(['name' => $configuration->getName()]);
+                $entity = $this->findOneBy([
+                    'name' => $configuration->getName(),
+                ]);
                 $value = $configuration->getValue();
 
-                if (null === $value && null !== $entity) {
+                if ($value === null && $entity !== null) {
                     $em->remove($entity);
+
                     continue;
                 }
 
-                if (null === $entity) {
+                if ($entity === null) {
                     $entity = new Configuration();
                     $entity->setName($configuration->getName());
                 }
@@ -81,6 +84,7 @@ class ConfigurationRepository extends EntityRepository
             $em->commit();
         } catch (ORMException $ex) {
             $em->rollback();
+
             throw $ex;
         }
     }

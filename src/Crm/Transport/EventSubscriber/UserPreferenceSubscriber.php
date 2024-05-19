@@ -11,9 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\EventSubscriber;
 
-use App\Crm\Transport\Configuration\SystemConfiguration;
-use App\User\Domain\Entity\User;
 use App\Crm\Domain\Entity\UserPreference;
+use App\Crm\Transport\Configuration\SystemConfiguration;
 use App\Crm\Transport\Event\PrepareUserEvent;
 use App\Crm\Transport\Event\UserPreferenceEvent;
 use App\Crm\Transport\Form\Type\CalendarViewType;
@@ -25,6 +24,7 @@ use App\Crm\Transport\Form\Type\TimezoneType;
 use App\Crm\Transport\Form\Type\UserLanguageType;
 use App\Crm\Transport\Form\Type\UserLocaleType;
 use App\Crm\Transport\Form\Type\YesNoType;
+use App\User\Domain\Entity\User;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
@@ -33,32 +33,32 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Range;
 
 /**
- * Class UserPreferenceSubscriber
- *
  * @package App\Crm\Transport\EventSubscriber
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class UserPreferenceSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private EventDispatcherInterface $eventDispatcher, private AuthorizationCheckerInterface $voter, private SystemConfiguration $systemConfiguration)
-    {
+    public function __construct(
+        private EventDispatcherInterface $eventDispatcher,
+        private AuthorizationCheckerInterface $voter,
+        private SystemConfiguration $systemConfiguration
+    ) {
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            PrepareUserEvent::class => ['loadUserPreferences', 200]
+            PrepareUserEvent::class => ['loadUserPreferences', 200],
         ];
     }
 
     /**
-     * @param User $user
      * @return UserPreference[]
      */
     public function getDefaultPreferences(User $user): array
     {
         $timezone = $this->systemConfiguration->getUserDefaultTimezone();
-        if (null === $timezone) {
+        if ($timezone === null) {
             $timezone = date_default_timezone_get();
         }
 
@@ -67,7 +67,9 @@ final class UserPreferenceSubscriber implements EventSubscriberInterface
 
         if ($this->voter->isGranted('hourly-rate', $user)) {
             $enableHourlyRate = true;
-            $hourlyRateOptions = ['currency' => $this->systemConfiguration->getUserDefaultCurrency()];
+            $hourlyRateOptions = [
+                'currency' => $this->systemConfiguration->getUserDefaultCurrency(),
+            ];
         }
 
         return [
@@ -76,16 +78,25 @@ final class UserPreferenceSubscriber implements EventSubscriberInterface
                 ->setSection('rate')
                 ->setType(MoneyType::class)
                 ->setEnabled($enableHourlyRate)
-                ->setOptions(array_merge($hourlyRateOptions, ['label' => 'hourlyRate']))
-                ->addConstraint(new Range(['min' => 0])),
+                ->setOptions(array_merge($hourlyRateOptions, [
+                    'label' => 'hourlyRate',
+                ]))
+                ->addConstraint(new Range([
+                    'min' => 0,
+                ])),
 
             (new UserPreference(UserPreference::INTERNAL_RATE, null))
                 ->setOrder(101)
                 ->setSection('rate')
                 ->setType(MoneyType::class)
                 ->setEnabled($enableHourlyRate)
-                ->setOptions(array_merge($hourlyRateOptions, ['label' => 'internalRate', 'required' => false]))
-                ->addConstraint(new Range(['min' => 0])),
+                ->setOptions(array_merge($hourlyRateOptions, [
+                    'label' => 'internalRate',
+                    'required' => false,
+                ]))
+                ->addConstraint(new Range([
+                    'min' => 0,
+                ])),
 
             (new UserPreference(UserPreference::TIMEZONE, $timezone))
                 ->setOrder(200)
@@ -130,8 +141,12 @@ final class UserPreferenceSubscriber implements EventSubscriberInterface
             (new UserPreference('favorite_routes', ''))
                 ->setOrder(710)
                 ->setSection('behaviour')
-                ->setOptions(['required' => false])
-                ->addConstraint(new Length(['max' => 150]))
+                ->setOptions([
+                    'required' => false,
+                ])
+                ->addConstraint(new Length([
+                    'max' => 150,
+                ]))
                 ->setType(FavoriteMenuType::class),
 
             (new UserPreference('daily_stats', false))
@@ -155,7 +170,7 @@ final class UserPreferenceSubscriber implements EventSubscriberInterface
 
         foreach ($event->getPreferences() as $preference) {
             $userPref = $user->getPreference($preference->getName());
-            if (null !== $userPref) {
+            if ($userPref !== null) {
                 $userPref
                     ->setType($preference->getType())
                     ->setConstraints($preference->getConstraints())

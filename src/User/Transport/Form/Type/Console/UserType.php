@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\User\Transport\Form\Type\Console;
 
+use App\Blog\Application\DTO\Post\User as UserDto;
 use App\General\Domain\Enum\Language;
 use App\General\Domain\Enum\Locale;
 use App\General\Transport\Form\Type\Interfaces\FormTypeLabelInterface;
 use App\General\Transport\Form\Type\Traits\AddBasicFieldToForm;
 use App\Tool\Application\Service\LocalizationService;
 use App\Tool\Domain\Service\Interfaces\LocalizationServiceInterface;
-use App\Blog\Application\DTO\Post\User as UserDto;
 use App\User\Application\Resource\UserGroupResource;
 use App\User\Domain\Entity\Enum\SexEnum;
 use App\User\Transport\Form\DataTransformer\UserGroupTransformer;

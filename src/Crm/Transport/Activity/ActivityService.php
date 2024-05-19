@@ -11,18 +11,18 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Activity;
 
-use App\Crm\Transport\Configuration\SystemConfiguration;
+use App\Crm\Application\Utils\NumberGenerator;
+use App\Crm\Application\Validator\ValidationFailedException;
 use App\Crm\Domain\Entity\Activity;
 use App\Crm\Domain\Entity\Project;
+use App\Crm\Domain\Repository\ActivityRepository;
+use App\Crm\Transport\Configuration\SystemConfiguration;
 use App\Crm\Transport\Event\ActivityCreateEvent;
 use App\Crm\Transport\Event\ActivityCreatePostEvent;
 use App\Crm\Transport\Event\ActivityCreatePreEvent;
 use App\Crm\Transport\Event\ActivityMetaDefinitionEvent;
 use App\Crm\Transport\Event\ActivityUpdatePostEvent;
 use App\Crm\Transport\Event\ActivityUpdatePreEvent;
-use App\Crm\Domain\Repository\ActivityRepository;
-use App\Crm\Application\Utils\NumberGenerator;
-use App\Crm\Application\Validator\ValidationFailedException;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -37,8 +37,7 @@ readonly class ActivityService
         private SystemConfiguration $configuration,
         private EventDispatcherInterface $dispatcher,
         private ValidatorInterface $validator
-    )
-    {
+    ) {
     }
 
     public function createNewActivity(?Project $project = null): Activity
@@ -58,7 +57,7 @@ readonly class ActivityService
 
     public function saveNewActivity(Activity $activity): Activity
     {
-        if (null !== $activity->getId()) {
+        if ($activity->getId() !== null) {
             throw new InvalidArgumentException('Cannot create activity, already persisted');
         }
 
@@ -69,20 +68,6 @@ readonly class ActivityService
         $this->dispatcher->dispatch(new ActivityCreatePostEvent($activity));
 
         return $activity;
-    }
-
-    /**
-     * @param Activity $activity
-     * @param string[] $groups
-     * @throws ValidationFailedException
-     */
-    private function validateActivity(Activity $activity, array $groups = []): void
-    {
-        $errors = $this->validator->validate($activity, null, $groups);
-
-        if ($errors->count() > 0) {
-            throw new ValidationFailedException($errors, 'Validation Failed');
-        }
     }
 
     public function updateActivity(Activity $activity): Activity
@@ -98,12 +83,30 @@ readonly class ActivityService
 
     public function findActivityByName(string $name, ?Project $project = null): ?Activity
     {
-        return $this->repository->findOneBy(['project' => $project?->getId(), 'name' => $name]);
+        return $this->repository->findOneBy([
+            'project' => $project?->getId(),
+            'name' => $name,
+        ]);
     }
 
     public function findActivityByNumber(string $number): ?Activity
     {
-        return $this->repository->findOneBy(['number' => $number]);
+        return $this->repository->findOneBy([
+            'number' => $number,
+        ]);
+    }
+
+    /**
+     * @param string[] $groups
+     * @throws ValidationFailedException
+     */
+    private function validateActivity(Activity $activity, array $groups = []): void
+    {
+        $errors = $this->validator->validate($activity, null, $groups);
+
+        if ($errors->count() > 0) {
+            throw new ValidationFailedException($errors, 'Validation Failed');
+        }
     }
 
     private function calculateNextActivityNumber(): ?string

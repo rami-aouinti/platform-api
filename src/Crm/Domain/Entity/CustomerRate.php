@@ -31,7 +31,7 @@ class CustomerRate implements RateInterface
     #[Assert\NotNull]
     private ?Customer $customer = null;
 
-    public function setCustomer(?Customer $customer): CustomerRate
+    public function setCustomer(?Customer $customer): self
     {
         $this->customer = $customer;
 

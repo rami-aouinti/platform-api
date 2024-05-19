@@ -21,7 +21,7 @@ final class DateUserInvoiceCalculator extends AbstractSumInvoiceCalculator imple
 {
     public function getIdentifiers(ExportableItem $invoiceItem): array
     {
-        if (null === $invoiceItem->getBegin()) {
+        if ($invoiceItem->getBegin() === null) {
             throw new \Exception('Cannot handle invoice items without start date');
         }
 
@@ -31,7 +31,7 @@ final class DateUserInvoiceCalculator extends AbstractSumInvoiceCalculator imple
 
         return [
             $invoiceItem->getBegin()->format('Y-m-d'),
-            $invoiceItem->getUser()->getId()
+            $invoiceItem->getUser()->getId(),
         ];
     }
 

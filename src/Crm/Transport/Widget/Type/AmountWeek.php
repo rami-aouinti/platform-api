@@ -21,7 +21,9 @@ final class AmountWeek extends AbstractAmountPeriod
      */
     public function getOptions(array $options = []): array
     {
-        return array_merge(['color' => WidgetInterface::COLOR_WEEK], parent::getOptions($options));
+        return array_merge([
+            'color' => WidgetInterface::COLOR_WEEK,
+        ], parent::getOptions($options));
     }
 
     public function getId(): string

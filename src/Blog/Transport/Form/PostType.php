@@ -52,7 +52,9 @@ final class PostType extends AbstractType
 
         $builder
             ->add('title', null, [
-                'attr' => ['autofocus' => true],
+                'attr' => [
+                    'autofocus' => true,
+                ],
                 'label' => 'label.title',
             ])
             ->add('summary', TextareaType::class, [
@@ -60,7 +62,9 @@ final class PostType extends AbstractType
                 'label' => 'label.summary',
             ])
             ->add('content', null, [
-                'attr' => ['rows' => 20],
+                'attr' => [
+                    'rows' => 20,
+                ],
                 'help' => 'help.post_content',
                 'label' => 'label.content',
             ])
@@ -78,7 +82,7 @@ final class PostType extends AbstractType
             ->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
                 /** @var Post $post */
                 $post = $event->getData();
-                if (null === $post->getSlug() && null !== $post->getTitle()) {
+                if ($post->getSlug() === null && $post->getTitle() !== null) {
                     $post->setSlug($this->slugger->slug($post->getTitle())->lower());
                 }
             })

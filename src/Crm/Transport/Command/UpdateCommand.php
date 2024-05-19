@@ -27,8 +27,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(name: 'kimai:update')]
 final class UpdateCommand extends Command
 {
-    public function __construct(private Connection $connection, private string $kernelEnvironment)
-    {
+    public function __construct(
+        private Connection $connection,
+        private string $kernelEnvironment
+    ) {
         parent::__construct();
     }
 
@@ -74,9 +76,11 @@ final class UpdateCommand extends Command
         // execute latest doctrine migrations
         try {
             $command = $this->getApplication()->find('doctrine:migrations:migrate');
-            $cmdInput = new ArrayInput(['--allow-no-migration' => true]);
+            $cmdInput = new ArrayInput([
+                '--allow-no-migration' => true,
+            ]);
             $cmdInput->setInteractive(false);
-            if (0 !== $command->run($cmdInput, $output)) {
+            if ($command->run($cmdInput, $output) !== 0) {
                 throw new \RuntimeException('CRITICAL: problem when migrating database');
             }
 
@@ -96,7 +100,7 @@ final class UpdateCommand extends Command
                     sprintf('Updated %s to version %s but the cache could not be rebuilt.', Constants::SOFTWARE, Constants::VERSION),
                     'Please run the cache commands manually:',
                     'bin/console cache:clear --env=' . $environment . PHP_EOL .
-                    'bin/console cache:warmup --env=' . $environment
+                    'bin/console cache:warmup --env=' . $environment,
                 ]
             );
         } else {
@@ -113,8 +117,13 @@ final class UpdateCommand extends Command
         $io->text('Rebuilding your cache, please be patient ...');
 
         $command = $this->getApplication()->find('cache:clear');
+
         try {
-            if (0 !== $command->run(new ArrayInput(['--env' => $environment]), $output)) {
+            if (
+                $command->run(new ArrayInput([
+                '--env' => $environment,
+                ]), $output) !== 0
+            ) {
                 throw new \RuntimeException('Could not clear cache, missing permissions?');
             }
         } catch (\Exception $ex) {
@@ -124,8 +133,13 @@ final class UpdateCommand extends Command
         }
 
         $command = $this->getApplication()->find('cache:warmup');
+
         try {
-            if (0 !== $command->run(new ArrayInput(['--env' => $environment]), $output)) {
+            if (
+                $command->run(new ArrayInput([
+                '--env' => $environment,
+                ]), $output) !== 0
+            ) {
                 throw new \RuntimeException('Could not warmup cache, missing permissions?');
             }
         } catch (\Exception $ex) {

@@ -17,33 +17,32 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class XlsxRenderer extends AbstractSpreadsheetRenderer
 {
-    protected function isTotalRowSupported(): bool
-    {
-        return true;
-    }
-
     public function getFileExtension(): string
     {
         return '.xlsx';
     }
 
-    /**
-     * @return string
-     */
+    public function getId(): string
+    {
+        return 'xlsx';
+    }
+    protected function isTotalRowSupported(): bool
+    {
+        return true;
+    }
+
     protected function getContentType(): string
     {
         return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
     }
 
     /**
-     * @param Spreadsheet $spreadsheet
-     * @return string
      * @throws \Exception
      */
     protected function saveSpreadsheet(Spreadsheet $spreadsheet): string
     {
         $filename = @tempnam(sys_get_temp_dir(), 'kimai-export-xlsx');
-        if (false === $filename) {
+        if ($filename === false) {
             throw new \Exception('Could not open temporary file');
         }
 
@@ -75,7 +74,7 @@ class XlsxRenderer extends AbstractSpreadsheetRenderer
             $col = $sheet->getColumnDimension($columnName);
 
             // If no other width is specified (which defaults to -1)
-            if ((int) $col->getWidth() === -1) {
+            if ((int)$col->getWidth() === -1) {
                 $col->setAutoSize(true);
             }
         }
@@ -86,10 +85,5 @@ class XlsxRenderer extends AbstractSpreadsheetRenderer
             ->getAlignment()
             ->setVertical(Alignment::VERTICAL_TOP)
             ->setHorizontal(Alignment::HORIZONTAL_LEFT);
-    }
-
-    public function getId(): string
-    {
-        return 'xlsx';
     }
 }

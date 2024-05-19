@@ -13,17 +13,17 @@ namespace App\Crm\Domain\Repository;
 
 use App\Crm\Domain\Entity\ExportableItem;
 use App\Crm\Domain\Entity\Timesheet;
-use App\Crm\Transport\Invoice\InvoiceItemRepositoryInterface;
 use App\Crm\Domain\Repository\Query\InvoiceQuery;
+use App\Crm\Transport\Invoice\InvoiceItemRepositoryInterface;
 
 final class TimesheetInvoiceItemRepository implements InvoiceItemRepositoryInterface
 {
-    public function __construct(private TimesheetRepository $repository)
-    {
+    public function __construct(
+        private TimesheetRepository $repository
+    ) {
     }
 
     /**
-     * @param InvoiceQuery $query
      * @return ExportableItem[]
      */
     public function getInvoiceItemsForQuery(InvoiceQuery $query): iterable

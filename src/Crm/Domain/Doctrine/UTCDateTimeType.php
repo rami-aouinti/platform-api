@@ -18,21 +18,15 @@ use Doctrine\DBAL\Types\DateTimeType;
 use Doctrine\DBAL\Types\Types;
 
 /**
- * Class UTCDateTimeType
- *
  * @package App\Crm\Domain\Doctrine
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class UTCDateTimeType extends DateTimeType
 {
-    /**
-     * @var DateTimeZone|null
-     */
     private static ?DateTimeZone $utc = null;
 
     /**
      * @param T $value
-     * @param AbstractPlatform $platform
      * @return (T is null ? null : string)
      * @template T<\DateTime>
      * @throws ConversionException
@@ -62,7 +56,7 @@ final class UTCDateTimeType extends DateTimeType
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?\DateTime
     {
-        if (null === $value || $value instanceof \DateTime) {
+        if ($value === null || $value instanceof \DateTime) {
             return $value;
         }
 

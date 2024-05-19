@@ -20,7 +20,7 @@ final class DurationFormatter implements CellFormatterInterface
 
     public function setFormattedValue(Worksheet $sheet, int $column, int $row, $value): void
     {
-        if (null === $value) {
+        if ($value === null) {
             $value = 0;
         }
 

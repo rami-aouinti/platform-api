@@ -13,14 +13,18 @@ namespace App\Crm\Application\Model;
 
 class PermissionSection implements PermissionSectionInterface
 {
-    /** @var array<string> */
+    /**
+     * @var array<string>
+     */
     private array $filter;
 
     /**
      * @param string|array<string> $filter
      */
-    public function __construct(private string $title, string|array $filter)
-    {
+    public function __construct(
+        private string $title,
+        string|array $filter
+    ) {
         if (!\is_array($filter)) {
             $filter = [$filter];
         }

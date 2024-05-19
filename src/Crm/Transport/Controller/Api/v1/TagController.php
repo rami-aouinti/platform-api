@@ -11,15 +11,15 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Controller\Api\v1;
 
+use App\Crm\Application\Utils\DataTable;
+use App\Crm\Application\Utils\PageSetup;
 use App\Crm\Domain\Entity\Tag;
+use App\Crm\Domain\Repository\Query\TagQuery;
+use App\Crm\Domain\Repository\TagRepository;
 use App\Crm\Transport\Form\MultiUpdate\MultiUpdateTable;
 use App\Crm\Transport\Form\MultiUpdate\MultiUpdateTableDTO;
 use App\Crm\Transport\Form\TagEditForm;
 use App\Crm\Transport\Form\Toolbar\TagToolbarForm;
-use App\Crm\Domain\Repository\Query\TagQuery;
-use App\Crm\Domain\Repository\TagRepository;
-use App\Crm\Application\Utils\DataTable;
-use App\Crm\Application\Utils\PageSetup;
 use Exception;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,8 +28,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * Class TagController
- *
  * @package App\Crm\Transport\Controller\Api\v1
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -38,15 +36,16 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class TagController extends AbstractController
 {
     /**
-     * @param TagRepository $repository
-     * @param Request       $request
      * @param int           $page
      *
      * @throws Exception
-     * @return Response
      */
-    #[Route(path: '/', name: 'tags', defaults: ['page' => 1], methods: ['GET'])]
-    #[Route(path: '/page/{page}', name: 'tags_paginated', requirements: ['page' => '[1-9]\d*'], methods: ['GET'])]
+    #[Route(path: '/', name: 'tags', defaults: [
+        'page' => 1,
+    ], methods: ['GET'])]
+    #[Route(path: '/page/{page}', name: 'tags_paginated', requirements: [
+        'page' => '[1-9]\d*',
+    ], methods: ['GET'])]
     public function listTags(TagRepository $repository, Request $request, $page): Response
     {
         $query = new TagQuery();
@@ -68,13 +67,26 @@ final class TagController extends AbstractController
         $table->setBatchForm($multiUpdateForm);
 
         if ($multiUpdateForm !== null) {
-            $table->addColumn('id', ['class' => 'alwaysVisible multiCheckbox', 'orderBy' => false, 'title' => false, 'batchUpdate' => true]);
+            $table->addColumn('id', [
+                'class' => 'alwaysVisible multiCheckbox',
+                'orderBy' => false,
+                'title' => false,
+                'batchUpdate' => true,
+            ]);
         }
 
-        $table->addColumn('name', ['class' => 'alwaysVisible']);
-        $table->addColumn('amount', ['class' => 'text-center w-min']);
-        $table->addColumn('visible', ['class' => 'd-none text-center w-min']);
-        $table->addColumn('actions', ['class' => 'actions']);
+        $table->addColumn('name', [
+            'class' => 'alwaysVisible',
+        ]);
+        $table->addColumn('amount', [
+            'class' => 'text-center w-min',
+        ]);
+        $table->addColumn('visible', [
+            'class' => 'd-none text-center w-min',
+        ]);
+        $table->addColumn('actions', [
+            'class' => 'actions',
+        ]);
 
         $page = new PageSetup('tags');
         $page->setActionName('tags');
@@ -92,7 +104,9 @@ final class TagController extends AbstractController
     public function editAction(Tag $tag, TagRepository $repository, Request $request): Response
     {
         $editForm = $this->createForm(TagEditForm::class, $tag, [
-            'action' => $this->generateUrl('tags_edit', ['id' => $tag->getId()]),
+            'action' => $this->generateUrl('tags_edit', [
+                'id' => $tag->getId(),
+            ]),
             'method' => 'POST',
         ]);
 
@@ -115,7 +129,7 @@ final class TagController extends AbstractController
         return $this->render('tags/edit.html.twig', [
             'page_setup' => $page,
             'tag' => $tag,
-            'form' => $editForm->createView()
+            'form' => $editForm->createView(),
         ]);
     }
 
@@ -149,7 +163,7 @@ final class TagController extends AbstractController
         return $this->render('tags/edit.html.twig', [
             'page_setup' => $page,
             'tag' => $tag,
-            'form' => $editForm->createView()
+            'form' => $editForm->createView(),
         ]);
     }
 

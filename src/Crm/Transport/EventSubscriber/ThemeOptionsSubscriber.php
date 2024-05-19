@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\EventSubscriber;
 
-use App\Crm\Transport\Configuration\LocaleService;
 use App\Crm\Constants;
-use App\User\Domain\Entity\User;
 use App\Crm\Domain\Entity\UserPreference;
+use App\Crm\Transport\Configuration\LocaleService;
+use App\User\Domain\Entity\User;
 use KevinPapst\TablerBundle\Helper\ContextHelper;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
@@ -30,14 +30,13 @@ final readonly class ThemeOptionsSubscriber implements EventSubscriberInterface
         private TokenStorageInterface $storage,
         private ContextHelper $helper,
         private LocaleService $localeService
-    )
-    {
+    ) {
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::CONTROLLER => ['setThemeOptions', 100]
+            KernelEvents::CONTROLLER => ['setThemeOptions', 100],
         ];
     }
 
@@ -48,14 +47,14 @@ final readonly class ThemeOptionsSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->helper->setAssetVersion((string) Constants::VERSION_ID);
+        $this->helper->setAssetVersion((string)Constants::VERSION_ID);
 
         if ($this->localeService->isRightToLeft($event->getRequest()->getLocale())) {
             $this->helper->setIsRightToLeft(true);
         }
 
         // ignore events like the toolbar where we do not have a token
-        if (null === $this->storage->getToken()) {
+        if ($this->storage->getToken() === null) {
             return;
         }
 

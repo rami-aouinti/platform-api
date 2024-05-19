@@ -15,14 +15,15 @@ namespace App\Blog\Transport\Controller\Api\v1\Blog;
 
 use App\Blog\Domain\Entity\Comment;
 use App\Blog\Domain\Entity\Post;
-use App\General\Domain\Utils\JSON;
-use App\User\Domain\Entity\User;
-use App\Blog\Transport\Event\CommentCreatedEvent;
-use App\Blog\Transport\Form\CommentType;
 use App\Blog\Domain\Repository\PostRepository;
 use App\Blog\Domain\Repository\TagRepository;
+use App\Blog\Transport\Event\CommentCreatedEvent;
+use App\Blog\Transport\Form\CommentType;
+use App\General\Domain\Utils\JSON;
+use App\User\Domain\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Attributes as OA;
 use OpenApi\Attributes\JsonContent;
 use OpenApi\Attributes\Property;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -38,7 +39,6 @@ use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
-use OpenApi\Attributes as OA;
 
 /**
  * Controller used to manage blog contents in the public part of the site.
@@ -51,8 +51,7 @@ final class BlogController extends AbstractController
 {
     public function __construct(
         private readonly SerializerInterface $serializer,
-    )
-    {
+    ) {
     }
 
     /**
@@ -62,10 +61,20 @@ final class BlogController extends AbstractController
      * See https://symfony.com/doc/current/routing.html#special-parameters
      *
      * @throws \JsonException
-*/
-    #[Route('/', name: 'blog_index', defaults: ['page' => '1', '_format' => 'html'], methods: ['GET'])]
-    #[Route('/rss.xml', name: 'blog_rss', defaults: ['page' => '1', '_format' => 'xml'], methods: ['GET'])]
-    #[Route('/page/{page}', name: 'blog_index_paginated', requirements: ['page' => Requirement::POSITIVE_INT], defaults: ['_format' => 'html'], methods: ['GET'])]
+     */
+    #[Route('/', name: 'blog_index', defaults: [
+        'page' => '1',
+        '_format' => 'html',
+    ], methods: ['GET'])]
+    #[Route('/rss.xml', name: 'blog_rss', defaults: [
+        'page' => '1',
+        '_format' => 'xml',
+    ], methods: ['GET'])]
+    #[Route('/page/{page}', name: 'blog_index_paginated', requirements: [
+        'page' => Requirement::POSITIVE_INT,
+    ], defaults: [
+        '_format' => 'html',
+    ], methods: ['GET'])]
     #[Cache(smaxage: 10)]
     #[IsGranted(AuthenticatedVoter::IS_AUTHENTICATED_FULLY)]
     #[OA\Response(
@@ -109,12 +118,20 @@ final class BlogController extends AbstractController
             ],
         ),
     )]
-    public function index(Request $request, int $page, string $_format, PostRepository $posts, TagRepository $tags, User $loggedInUser): JsonResponse
-    {
+    public function index(
+        Request $request,
+        int $page,
+        string $_format,
+        PostRepository $posts,
+        TagRepository $tags,
+        User $loggedInUser
+    ): JsonResponse {
         $tag = null;
 
         if ($request->query->has('tag')) {
-            $tag = $tags->findOneBy(['name' => $request->query->get('tag')]);
+            $tag = $tags->findOneBy([
+                'name' => $request->query->get('tag'),
+            ]);
         }
 
         $latestPosts = $posts->findLatest($page, $tag);
@@ -145,7 +162,9 @@ final class BlogController extends AbstractController
      *
      * See https://symfony.com/doc/current/doctrine.html#automatically-fetching-objects-entityvalueresolver
      */
-    #[Route('/posts/{slug}', name: 'blog_post', requirements: ['slug' => Requirement::ASCII_SLUG], methods: ['GET'])]
+    #[Route('/posts/{slug}', name: 'blog_post', requirements: [
+        'slug' => Requirement::ASCII_SLUG,
+    ], methods: ['GET'])]
     public function postShow(Post $post): Response
     {
         // Symfony's 'dump()' function is an improved version of PHP's 'var_dump()' but
@@ -162,7 +181,9 @@ final class BlogController extends AbstractController
         // You can also leverage Symfony's 'dd()' function that dumps and
         // stops the execution
 
-        return $this->render('blog/post_show.html.twig', ['post' => $post]);
+        return $this->render('blog/post_show.html.twig', [
+            'post' => $post,
+        ]);
     }
 
     /**
@@ -171,12 +192,18 @@ final class BlogController extends AbstractController
      *
      * See https://symfony.com/doc/current/doctrine.html#doctrine-entity-value-resolver
      */
-    #[Route('/comment/{postSlug}/new', name: 'comment_new', requirements: ['postSlug' => Requirement::ASCII_SLUG], methods: ['POST'])]
+    #[Route('/comment/{postSlug}/new', name: 'comment_new', requirements: [
+        'postSlug' => Requirement::ASCII_SLUG,
+    ], methods: ['POST'])]
     #[IsGranted('IS_AUTHENTICATED')]
     public function commentNew(
-        #[CurrentUser] User $user,
+        #[CurrentUser]
+        User $user,
         Request $request,
-        #[MapEntity(mapping: ['postSlug' => 'slug'])] Post $post,
+        #[MapEntity(mapping: [
+            'postSlug' => 'slug',
+        ])]
+        Post $post,
         EventDispatcherInterface $eventDispatcher,
         EntityManagerInterface $entityManager,
     ): Response {
@@ -202,7 +229,9 @@ final class BlogController extends AbstractController
             // See https://symfony.com/doc/current/messenger.html
             $eventDispatcher->dispatch(new CommentCreatedEvent($comment));
 
-            return $this->redirectToRoute('blog_post', ['slug' => $post->getSlug()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('blog_post', [
+                'slug' => $post->getSlug(),
+            ], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('blog/comment_form_error.html.twig', [
@@ -234,6 +263,8 @@ final class BlogController extends AbstractController
     #[Route('/search', name: 'blog_search', methods: ['GET'])]
     public function search(Request $request): Response
     {
-        return $this->render('blog/search.html.twig', ['query' => (string) $request->query->get('q', '')]);
+        return $this->render('blog/search.html.twig', [
+            'query' => (string)$request->query->get('q', ''),
+        ]);
     }
 }

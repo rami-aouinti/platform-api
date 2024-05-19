@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\EventSubscriber;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Transport\Event\PrepareUserEvent;
+use App\User\Domain\Entity\User;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
@@ -20,21 +20,21 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class UserProfileSubscriber
- *
  * @package App\Crm\Transport\EventSubscriber
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class UserProfileSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private readonly EventDispatcherInterface $eventDispatcher, private TokenStorageInterface $storage)
-    {
+    public function __construct(
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private TokenStorageInterface $storage
+    ) {
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::CONTROLLER => ['prepareUserProfile', 200]
+            KernelEvents::CONTROLLER => ['prepareUserProfile', 200],
         ];
     }
 

@@ -26,18 +26,18 @@ final class Color
         '#006b75', '#009688', '#00bb32', '#4CAF50', '#3D9970', '#2ECC40', '#01FF70',
         '#8BC34A', '#CDDC39', '#FFDC00', '#FFC107', '#FF851B', '#FF9800', '#FF5722',
         '#f41a00', '#E91E63', '#85144b', '#b60205', '#FF4136', '#cc317c', '#F012BE',
-        '#d82d80', '#B10DC9', '#e135f4', '#2d3748', '#4a5568', '#718096'
+        '#d82d80', '#B10DC9', '#e135f4', '#2d3748', '#4a5568', '#718096',
     ];
 
     public function getTimesheetColor(Timesheet $timesheet): string
     {
         $activity = $timesheet->getActivity();
-        if (null !== $activity && $activity->hasColor()) {
+        if ($activity !== null && $activity->hasColor()) {
             return $activity->getColor();
         }
 
         $project = $timesheet->getProject();
-        if (null !== $project) {
+        if ($project !== null) {
             if ($project->hasColor()) {
                 return $project->getColor();
             }
@@ -66,7 +66,7 @@ final class Color
                 return $entity->getColor();
             }
 
-            if (null !== $entity->getProject()) {
+            if ($entity->getProject() !== null) {
                 $entity = $entity->getProject();
             }
         }

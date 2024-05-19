@@ -25,8 +25,7 @@ final class ActivityBudgetStatisticEvent
         private readonly array $models,
         ?\DateTimeInterface $begin = null,
         ?\DateTimeInterface $end = null
-    )
-    {
+    ) {
         if ($begin !== null) {
             $begin = \DateTime::createFromInterface($begin);
         }

@@ -20,10 +20,6 @@ use Symfony\Component\Validator\Constraints\Length;
 
 final class SearchTermType extends AbstractType
 {
-    /**
-     * @param FormBuilderInterface $builder
-     * @param array $options
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addModelTransformer(new SearchTermTransformer());
@@ -38,7 +34,9 @@ final class SearchTermType extends AbstractType
                 'placeholder' => 'search',
             ],
             'constraints' => [
-                new Length(['min' => 2])
+                new Length([
+                    'min' => 2,
+                ]),
             ],
         ]);
     }

@@ -27,9 +27,15 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 abstract class AbstractResetCommand extends Command
 {
-    public function __construct(private string $kernelEnvironment)
-    {
+    public function __construct(
+        private string $kernelEnvironment
+    ) {
         parent::__construct();
+    }
+
+    public function isEnabled(): bool
+    {
+        return $this->kernelEnvironment !== 'prod';
     }
 
     protected function configure(): void
@@ -45,11 +51,6 @@ abstract class AbstractResetCommand extends Command
         ;
     }
 
-    public function isEnabled(): bool
-    {
-        return $this->kernelEnvironment !== 'prod';
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -57,7 +58,9 @@ abstract class AbstractResetCommand extends Command
         if ($this->askConfirmation($input, $output, 'Do you want to create the database y/N ?')) {
             try {
                 $command = $this->getApplication()->find('doctrine:database:create');
-                $options = ['--if-not-exists' => true];
+                $options = [
+                    '--if-not-exists' => true,
+                ];
                 $command->run(new ArrayInput($options), $output);
             } catch (Exception $ex) {
                 $io->error('Failed to create database: ' . $ex->getMessage());
@@ -93,6 +96,7 @@ abstract class AbstractResetCommand extends Command
 
         if (!$input->getOption('no-cache')) {
             $command = $this->getApplication()->find('cache:clear');
+
             try {
                 $command->run(new ArrayInput([]), $output);
             } catch (Exception $ex) {
@@ -109,7 +113,9 @@ abstract class AbstractResetCommand extends Command
     {
         try {
             $command = $this->getApplication()->find('doctrine:schema:drop');
-            $command->run(new ArrayInput(['--force' => true]), $output);
+            $command->run(new ArrayInput([
+                '--force' => true,
+            ]), $output);
         } catch (Exception $ex) {
             $io->error('Failed to drop database schema: ' . $ex->getMessage());
 
@@ -118,7 +124,9 @@ abstract class AbstractResetCommand extends Command
 
         try {
             $command = $this->getApplication()->find('doctrine:query:sql');
-            $command->run(new ArrayInput(['sql' => 'DROP TABLE IF EXISTS migration_versions']), $output);
+            $command->run(new ArrayInput([
+                'sql' => 'DROP TABLE IF EXISTS migration_versions',
+            ]), $output);
         } catch (Exception $ex) {
             $io->error('Failed to drop migration_versions table: ' . $ex->getMessage());
 
@@ -127,7 +135,9 @@ abstract class AbstractResetCommand extends Command
 
         try {
             $command = $this->getApplication()->find('doctrine:query:sql');
-            $command->run(new ArrayInput(['sql' => 'DROP TABLE IF EXISTS kimai2_sessions']), $output);
+            $command->run(new ArrayInput([
+                'sql' => 'DROP TABLE IF EXISTS kimai2_sessions',
+            ]), $output);
         } catch (Exception $ex) {
             $io->error('Failed to drop kimai2_sessions table: ' . $ex->getMessage());
 
@@ -136,6 +146,8 @@ abstract class AbstractResetCommand extends Command
 
         return Command::SUCCESS;
     }
+
+    abstract protected function loadData(InputInterface $input, OutputInterface $output): void;
 
     private function askConfirmation(InputInterface $input, OutputInterface $output, string $question): bool
     {
@@ -149,6 +161,4 @@ abstract class AbstractResetCommand extends Command
 
         return $questionHelper->ask($input, $output, $question);
     }
-
-    abstract protected function loadData(InputInterface $input, OutputInterface $output): void;
 }

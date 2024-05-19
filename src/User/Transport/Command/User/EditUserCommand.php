@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\User\Transport\Command\User;
 
-use App\General\Transport\Command\Traits\SymfonyStyleTrait;
 use App\Blog\Application\DTO\Post\UserUpdate as UserDto;
+use App\General\Transport\Command\Traits\SymfonyStyleTrait;
 use App\User\Application\Resource\UserResource;
 use App\User\Domain\Entity\User as UserEntity;
 use App\User\Transport\Form\Type\Console\UserType;

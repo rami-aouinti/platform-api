@@ -16,8 +16,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class CustomerRateForm
- *
  * @package App\Crm\Transport\Form
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -47,7 +45,7 @@ class CustomerRateForm extends AbstractRateForm
             'csrf_field_name' => '_token',
             'csrf_token_id' => 'admin_customer_rate_edit',
             'attr' => [
-                'data-form-event' => 'kimai.customerUpdate'
+                'data-form-event' => 'kimai.customerUpdate',
             ],
         ]);
     }

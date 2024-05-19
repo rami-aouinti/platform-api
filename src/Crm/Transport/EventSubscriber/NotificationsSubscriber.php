@@ -15,8 +15,6 @@ use KevinPapst\TablerBundle\Event\NotificationEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Class NotificationsSubscriber
- *
  * @package App\Crm\Transport\EventSubscriber
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

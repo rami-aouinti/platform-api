@@ -21,7 +21,9 @@ final class UserAmountTotal extends AbstractUserRevenuePeriod
      */
     public function getOptions(array $options = []): array
     {
-        return array_merge(['color' => WidgetInterface::COLOR_TOTAL], parent::getOptions($options));
+        return array_merge([
+            'color' => WidgetInterface::COLOR_TOTAL,
+        ], parent::getOptions($options));
     }
 
     public function getId(): string

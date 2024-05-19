@@ -16,8 +16,10 @@ use Doctrine\ORM\QueryBuilder;
 
 final class QueryBuilderPaginator implements PaginatorInterface
 {
-    public function __construct(private QueryBuilder $query, private int $results)
-    {
+    public function __construct(
+        private QueryBuilder $query,
+        private int $results
+    ) {
     }
 
     public function getNbResults(): int
@@ -38,6 +40,11 @@ final class QueryBuilderPaginator implements PaginatorInterface
         return $this->getResults($query);
     }
 
+    public function getAll(): iterable
+    {
+        return $this->getResults($this->query->getQuery());
+    }
+
     /**
      * @param Query<null, mixed> $query
      * @return iterable<array-key, iterable<mixed>>
@@ -45,10 +52,5 @@ final class QueryBuilderPaginator implements PaginatorInterface
     private function getResults(Query $query)
     {
         return $query->execute(); // @phpstan-ignore-line
-    }
-
-    public function getAll(): iterable
-    {
-        return $this->getResults($this->query->getQuery());
     }
 }

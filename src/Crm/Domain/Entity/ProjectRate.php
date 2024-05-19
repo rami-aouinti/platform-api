@@ -17,8 +17,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class ProjectRate
- *
  * @package App\Crm\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -37,7 +35,7 @@ class ProjectRate implements RateInterface
     #[Assert\NotNull]
     private ?Project $project = null;
 
-    public function setProject(?Project $project): ProjectRate
+    public function setProject(?Project $project): self
     {
         $this->project = $project;
 

@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Event;
 
-use App\Crm\Domain\Entity\Project;
 use App\Crm\Application\Model\ProjectStatistic;
+use App\Crm\Domain\Entity\Project;
 
 final class ProjectStatisticEvent extends AbstractProjectEvent
 {
@@ -21,8 +21,7 @@ final class ProjectStatisticEvent extends AbstractProjectEvent
         private readonly ProjectStatistic $statistic,
         private readonly ?\DateTimeInterface $begin = null,
         private readonly ?\DateTimeInterface $end = null
-    )
-    {
+    ) {
         parent::__construct($project);
     }
 

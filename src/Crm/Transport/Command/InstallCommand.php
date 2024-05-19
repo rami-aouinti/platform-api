@@ -31,8 +31,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(name: 'kimai:install')]
 final class InstallCommand extends Command
 {
-    public function __construct(private Connection $connection, private string $kernelEnvironment)
-    {
+    public function __construct(
+        private Connection $connection,
+        private string $kernelEnvironment
+    ) {
         parent::__construct();
     }
 
@@ -86,8 +88,11 @@ final class InstallCommand extends Command
         $io->text('Rebuilding your cache, please be patient ...');
 
         $command = $this->getApplication()->find('cache:clear');
+
         try {
-            $command->run(new ArrayInput(['--env' => $environment]), $output);
+            $command->run(new ArrayInput([
+                '--env' => $environment,
+            ]), $output);
         } catch (\Exception $ex) {
             $io->error('Failed to clear cache: ' . $ex->getMessage());
 
@@ -95,8 +100,11 @@ final class InstallCommand extends Command
         }
 
         $command = $this->getApplication()->find('cache:warmup');
+
         try {
-            $command->run(new ArrayInput(['--env' => $environment]), $output);
+            $command->run(new ArrayInput([
+                '--env' => $environment,
+            ]), $output);
         } catch (\Exception $ex) {
             $io->error('Failed to warmup cache: ' . $ex->getMessage());
 
@@ -109,7 +117,9 @@ final class InstallCommand extends Command
     private function importMigrations(SymfonyStyle $io, OutputInterface $output): void
     {
         $command = $this->getApplication()->find('doctrine:migrations:migrate');
-        $cmdInput = new ArrayInput(['--allow-no-migration' => true]);
+        $cmdInput = new ArrayInput([
+            '--allow-no-migration' => true,
+        ]);
         $cmdInput->setInteractive(false);
         $command->run($cmdInput, $output);
 
@@ -133,22 +143,21 @@ final class InstallCommand extends Command
             // changed the behavior: in previous version this code did not throw an exception.
         }
 
-        $options = ['--if-not-exists' => true];
+        $options = [
+            '--if-not-exists' => true,
+        ];
 
         $command = $this->getApplication()->find('doctrine:database:create');
         $result = $command->run(new ArrayInput($options), $output);
 
-        if (0 !== $result) {
+        if ($result !== 0) {
             throw new \Exception('Failed creating database. Check your credentials in DATABASE_URL');
         }
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
      * @param string $question
      * @param bool $default
-     * @return bool
      */
     private function askConfirmation(InputInterface $input, OutputInterface $output, $question, $default = false): bool
     {

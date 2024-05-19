@@ -28,6 +28,9 @@ final class PluginSubscriber extends AbstractActionsSubscriber
         /** @var Plugin $plugin */
         $plugin = $payload['plugin'];
 
-        $event->addAction('home', ['url' => $plugin->getMetadata()->getHomepage(), 'target' => '_blank']);
+        $event->addAction('home', [
+            'url' => $plugin->getMetadata()->getHomepage(),
+            'target' => '_blank',
+        ]);
     }
 }

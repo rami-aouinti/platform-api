@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Validator\Constraints;
 
-use App\Crm\Transport\Form\MultiUpdate\TimesheetMultiUpdateDTO;
 use App\Crm\Application\Validator\Constraints\TimesheetMultiUpdate as TimesheetMultiUpdateConstraint;
+use App\Crm\Transport\Form\MultiUpdate\TimesheetMultiUpdateDTO;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -22,7 +22,6 @@ final class TimesheetMultiUpdateValidator extends ConstraintValidator
 {
     /**
      * @param TimesheetMultiUpdateDTO|mixed $value
-     * @param Constraint $constraint
      */
     public function validate(mixed $value, Constraint $constraint): void
     {
@@ -36,7 +35,7 @@ final class TimesheetMultiUpdateValidator extends ConstraintValidator
 
         $this->validateActivityAndProject($value, $this->context);
 
-        if (null !== $value->getFixedRate() && null !== $value->getHourlyRate()) {
+        if ($value->getFixedRate() !== null && $value->getHourlyRate() !== null) {
             $this->context->buildViolation('Cannot set hourly rate and fixed rate at the same time.')
                 ->atPath('fixedRate')
                 ->setTranslationDomain('validators')
@@ -51,17 +50,13 @@ final class TimesheetMultiUpdateValidator extends ConstraintValidator
         }
     }
 
-    /**
-     * @param TimesheetMultiUpdateDTO $dto
-     * @param ExecutionContextInterface $context
-     */
     protected function validateActivityAndProject(TimesheetMultiUpdateDTO $dto, ExecutionContextInterface $context): void
     {
         $activity = $dto->getActivity();
         $project = $dto->getProject();
 
         // non global activity without project
-        if (null !== $activity && null !== $activity->getProject() && null === $project) {
+        if ($activity !== null && $activity->getProject() !== null && $project === null) {
             $context->buildViolation('Missing project.')
                 ->atPath('project')
                 ->setTranslationDomain('validators')
@@ -72,7 +67,7 @@ final class TimesheetMultiUpdateValidator extends ConstraintValidator
         }
 
         // only project was chosen
-        if (null === $activity && null !== $project) {
+        if ($activity === null && $project !== null) {
             $context->buildViolation('You need to choose an activity, if the project should be changed.')
                 ->atPath('activity')
                 ->setTranslationDomain('validators')
@@ -82,8 +77,8 @@ final class TimesheetMultiUpdateValidator extends ConstraintValidator
             return;
         }
 
-        if (null !== $activity) {
-            if (null !== $activity->getProject() && $activity->getProject() !== $project) {
+        if ($activity !== null) {
+            if ($activity->getProject() !== null && $activity->getProject() !== $project) {
                 $context->buildViolation('Project mismatch, project specific activity and timesheet project are different.')
                     ->atPath('project')
                     ->setTranslationDomain('validators')
@@ -102,7 +97,7 @@ final class TimesheetMultiUpdateValidator extends ConstraintValidator
             }
         }
 
-        if (null !== $project) {
+        if ($project !== null) {
             if (!$project->isVisible()) {
                 $context->buildViolation('Cannot assign a disabled project.')
                     ->atPath('project')

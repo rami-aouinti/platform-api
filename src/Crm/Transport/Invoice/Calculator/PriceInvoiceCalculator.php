@@ -21,7 +21,7 @@ final class PriceInvoiceCalculator extends AbstractSumInvoiceCalculator implemen
 {
     public function getIdentifiers(ExportableItem $invoiceItem): array
     {
-        if (null !== $invoiceItem->getFixedRate()) {
+        if ($invoiceItem->getFixedRate() !== null) {
             return ['fixed_' . $invoiceItem->getFixedRate()];
         }
 

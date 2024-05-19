@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Form\Type;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Application\Model\QuickEntryModel;
 use App\Crm\Application\Validator\Constraints\QuickEntryTimesheet;
+use App\User\Domain\Entity\User;
 use DateTime;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
@@ -107,7 +107,9 @@ final class QuickEntryWeekType extends AbstractType
             'allow_add' => true,
             'constraints' => [
                 // having "new Valid()," here will trigger constraint violations on activity and project for completely empty rows
-                new All(['constraints' => [new QuickEntryTimesheet()]])
+                new All([
+                    'constraints' => [new QuickEntryTimesheet()],
+                ]),
             ],
         ]);
 

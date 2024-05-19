@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace App\Blog\Transport\Form\Type;
 
-use App\Blog\Transport\Form\DataTransformer\TagArrayToStringTransformer;
 use App\Blog\Domain\Repository\TagRepository;
+use App\Blog\Transport\Form\DataTransformer\TagArrayToStringTransformer;
 use Symfony\Bridge\Doctrine\Form\DataTransformer\CollectionToArrayTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -49,21 +49,11 @@ final class TagsInputType extends AbstractType
         ;
     }
 
-    /**
-     * @param FormView      $view
-     * @param FormInterface $form
-     * @param array         $options
-     *
-     * @return void
-     */
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars['tags'] = $this->tags->findAll();
     }
 
-    /**
-     * @return string|null
-     */
     public function getParent(): ?string
     {
         return TextType::class;

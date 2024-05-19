@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\EventSubscriber\Actions;
 
-use App\Crm\Transport\Event\PageActionsEvent;
 use App\Crm\Application\Model\InvoiceDocument;
+use App\Crm\Transport\Event\PageActionsEvent;
 
 final class InvoiceDocumentSubscriber extends AbstractActionsSubscriber
 {
@@ -45,10 +45,17 @@ final class InvoiceDocumentSubscriber extends AbstractActionsSubscriber
         /** @var string $token */
         $token = \array_key_exists('token', $payload) ? $payload['token'] : null;
 
-        $event->addAction('download', ['url' => $this->path('admin_invoice_document_download', ['document' => $document->getId()])]);
+        $event->addAction('download', [
+            'url' => $this->path('admin_invoice_document_download', [
+                'document' => $document->getId(),
+            ]),
+        ]);
 
         if (!$inUse) {
-            $event->addDelete($this->path('invoice_document_delete', ['id' => $document->getId(), 'token' => $token]), false);
+            $event->addDelete($this->path('invoice_document_delete', [
+                'id' => $document->getId(),
+                'token' => $token,
+            ]), false);
         }
     }
 }

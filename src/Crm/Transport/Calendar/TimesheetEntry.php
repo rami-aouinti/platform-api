@@ -20,8 +20,11 @@ use App\Crm\Domain\Entity\Timesheet;
  */
 final readonly class TimesheetEntry implements DragAndDropEntry
 {
-    public function __construct(private Timesheet $timesheet, private string $color, private bool $copy = false)
-    {
+    public function __construct(
+        private Timesheet $timesheet,
+        private string $color,
+        private bool $copy = false
+    ) {
     }
 
     public function getData(): array

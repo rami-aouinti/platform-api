@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Controller\Api\v1;
 
+use App\Crm\Application\Utils\ProfileManager;
 use App\Crm\Domain\Entity\Bookmark;
 use App\Crm\Domain\Repository\BookmarkRepository;
-use App\Crm\Application\Utils\ProfileManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -32,8 +32,10 @@ final class BookmarkController extends AbstractController
     public const PARAM_DATATABLE = 'datatable_name';
     public const PARAM_PROFILE = 'datatable_profile';
 
-    public function __construct(private BookmarkRepository $bookmarkRepository, private ProfileManager $profileManager)
-    {
+    public function __construct(
+        private BookmarkRepository $bookmarkRepository,
+        private ProfileManager $profileManager
+    ) {
     }
 
     #[Route(path: '/datatable/profile', name: 'bookmark_profile', methods: ['POST'])]

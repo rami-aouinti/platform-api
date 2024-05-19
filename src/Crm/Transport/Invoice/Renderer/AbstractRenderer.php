@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Invoice\Renderer;
 
+use App\Crm\Application\Model\InvoiceDocument;
 use App\Crm\Transport\Invoice\InvoiceFilename;
 use App\Crm\Transport\Invoice\InvoiceModel;
-use App\Crm\Application\Model\InvoiceDocument;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
@@ -22,13 +22,6 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 abstract class AbstractRenderer
 {
-    /**
-     * @return string[]
-     */
-    abstract protected function getFileExtensions(): array;
-
-    abstract protected function getContentType(): string;
-
     public function supports(InvoiceDocument $document): bool
     {
         foreach ($this->getFileExtensions() as $extension) {
@@ -39,10 +32,16 @@ abstract class AbstractRenderer
 
         return false;
     }
+    /**
+     * @return string[]
+     */
+    abstract protected function getFileExtensions(): array;
+
+    abstract protected function getContentType(): string;
 
     protected function buildFilename(InvoiceModel $model): string
     {
-        return (string) new InvoiceFilename($model);
+        return (string)new InvoiceFilename($model);
     }
 
     protected function getFileResponse(mixed $file, string $filename): BinaryFileResponse

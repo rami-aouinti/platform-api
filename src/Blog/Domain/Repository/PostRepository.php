@@ -13,11 +13,12 @@ declare(strict_types=1);
 
 namespace App\Blog\Domain\Repository;
 
+use App\Blog\Application\Pagination\Paginator;
 use App\Blog\Domain\Entity\Post;
 use App\Blog\Domain\Entity\Tag;
-use App\Blog\Application\Pagination\Paginator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+
 use function Symfony\Component\String\u;
 
 /**
@@ -52,7 +53,7 @@ class PostRepository extends ServiceEntityRepository
             ->setParameter('now', new \DateTimeImmutable())
         ;
 
-        if (null !== $tag) {
+        if ($tag !== null) {
             $qb->andWhere(':tag MEMBER OF p.tags')
                 ->setParameter('tag', $tag);
         }
@@ -67,7 +68,7 @@ class PostRepository extends ServiceEntityRepository
     {
         $searchTerms = $this->extractSearchTerms($query);
 
-        if (0 === \count($searchTerms)) {
+        if (\count($searchTerms) === 0) {
             return [];
         }
 
@@ -75,8 +76,8 @@ class PostRepository extends ServiceEntityRepository
 
         foreach ($searchTerms as $key => $term) {
             $queryBuilder
-                ->orWhere('p.title LIKE :t_'.$key)
-                ->setParameter('t_'.$key, '%'.$term.'%')
+                ->orWhere('p.title LIKE :t_' . $key)
+                ->setParameter('t_' . $key, '%' . $term . '%')
             ;
         }
 
@@ -102,7 +103,7 @@ class PostRepository extends ServiceEntityRepository
 
         // ignore the search terms that are too short
         return array_filter($terms, static function ($term) {
-            return 2 <= $term->length();
+            return $term->length() >= 2;
         });
     }
 }

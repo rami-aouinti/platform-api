@@ -17,16 +17,11 @@ use Doctrine\DBAL\Types\DateTimeImmutableType;
 use Doctrine\DBAL\Types\Types;
 
 /**
- * Class UTCDateTimeImmutableType
- *
  * @package App\Crm\Domain\Doctrine
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class UTCDateTimeImmutableType extends DateTimeImmutableType
 {
-    /**
-     * @var \DateTimeZone|null
-     */
     private static ?\DateTimeZone $utc = null;
 
     /**
@@ -60,7 +55,7 @@ final class UTCDateTimeImmutableType extends DateTimeImmutableType
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?\DateTimeImmutable
     {
-        if (null === $value || $value instanceof \DateTimeImmutable) {
+        if ($value === null || $value instanceof \DateTimeImmutable) {
             return $value;
         }
 

@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\WorkingTime\Model;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Application\Model\Month as BaseMonth;
+use App\User\Domain\Entity\User;
 
 /**
  * @method array<Day> getDays()
@@ -20,8 +20,10 @@ use App\Crm\Application\Model\Month as BaseMonth;
  */
 final class Month extends BaseMonth
 {
-    public function __construct(\DateTimeImmutable $month, private User $user)
-    {
+    public function __construct(
+        \DateTimeImmutable $month,
+        private User $user
+    ) {
         parent::__construct($month);
     }
 
@@ -33,8 +35,6 @@ final class Month extends BaseMonth
     /**
      * A month is only locked IF every day is approved.
      * If there is even one day left open, the entire month is not locked.
-     *
-     * @return bool
      */
     public function isLocked(): bool
     {
@@ -69,11 +69,6 @@ final class Month extends BaseMonth
         return null;
     }
 
-    protected function createDay(\DateTimeImmutable $day): Day
-    {
-        return new Day($day);
-    }
-
     public function getExpectedTime(?\DateTimeInterface $until = null): int
     {
         $time = 0;
@@ -101,5 +96,10 @@ final class Month extends BaseMonth
         }
 
         return $time;
+    }
+
+    protected function createDay(\DateTimeImmutable $day): Day
+    {
+        return new Day($day);
     }
 }

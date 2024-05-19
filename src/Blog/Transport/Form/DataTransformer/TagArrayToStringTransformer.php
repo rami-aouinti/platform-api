@@ -16,6 +16,7 @@ namespace App\Blog\Transport\Form\DataTransformer;
 use App\Blog\Domain\Entity\Tag;
 use App\Blog\Domain\Repository\TagRepository;
 use Symfony\Component\Form\DataTransformerInterface;
+
 use function Symfony\Component\String\u;
 
 /**
@@ -36,11 +37,6 @@ final readonly class TagArrayToStringTransformer implements DataTransformerInter
     ) {
     }
 
-    /**
-     * @param $tags
-     *
-     * @return string
-     */
     public function transform($tags): string
     {
         // The value received is an array of Tag objects generated with
@@ -57,7 +53,7 @@ final readonly class TagArrayToStringTransformer implements DataTransformerInter
      */
     public function reverseTransform($string): array
     {
-        if (null === $string || u($string)->isEmpty()) {
+        if ($string === null || u($string)->isEmpty()) {
             return [];
         }
 

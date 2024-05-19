@@ -20,7 +20,6 @@ final class DurationStringToSecondsTransformer implements DataTransformerInterfa
 {
     /**
      * @param int $intToFormat
-     * @return string|null
      */
     public function transform(mixed $intToFormat): ?string
     {
@@ -33,11 +32,10 @@ final class DurationStringToSecondsTransformer implements DataTransformerInterfa
 
     /**
      * @param string|null $formatToInt
-     * @return int|null
      */
     public function reverseTransform(mixed $formatToInt): ?int
     {
-        if (null === $formatToInt) {
+        if ($formatToInt === null) {
             return null;
         }
 

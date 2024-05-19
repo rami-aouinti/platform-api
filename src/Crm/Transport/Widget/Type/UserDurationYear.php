@@ -11,15 +11,17 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Widget\Type;
 
-use App\Crm\Transport\Configuration\SystemConfiguration;
 use App\Crm\Domain\Repository\TimesheetRepository;
+use App\Crm\Transport\Configuration\SystemConfiguration;
 use App\Crm\Transport\Widget\WidgetException;
 use App\Crm\Transport\Widget\WidgetInterface;
 
 final class UserDurationYear extends AbstractCounterYear
 {
-    public function __construct(private TimesheetRepository $repository, SystemConfiguration $systemConfiguration)
-    {
+    public function __construct(
+        private TimesheetRepository $repository,
+        SystemConfiguration $systemConfiguration
+    ) {
         parent::__construct($systemConfiguration);
     }
 

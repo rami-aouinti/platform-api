@@ -11,17 +11,16 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Controller\Api\v1\Reporting;
 
-use App\Crm\Transport\Configuration\SystemConfiguration;
-use App\User\Domain\Entity\User;
 use App\Crm\Application\Export\Spreadsheet\Writer\BinaryFileResponseWriter;
 use App\Crm\Application\Export\Spreadsheet\Writer\XlsxWriter;
 use App\Crm\Application\Model\DateStatisticInterface;
 use App\Crm\Application\Model\MonthlyStatistic;
 use App\Crm\Application\Reporting\YearByUser\YearByUser;
 use App\Crm\Application\Reporting\YearByUser\YearByUserForm;
+use App\Crm\Transport\Configuration\SystemConfiguration;
+use App\User\Domain\Entity\User;
 use DateTime;
 use DateTimeInterface;
-use Exception;
 use PhpOffice\PhpSpreadsheet\Reader\Html;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,8 +29,6 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * Class UserYearController
- *
  * @package App\Crm\Transport\Controller\Api\v1\Reporting
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -39,12 +36,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('report:user')]
 final class UserYearController extends AbstractUserReportController
 {
-    /**
-     * @param Request             $request
-     * @param SystemConfiguration $systemConfiguration
-     *
-     * @return Response
-     */
     #[Route(path: '/year', name: 'report_user_year', methods: ['GET', 'POST'])]
     public function yearByUser(Request $request, SystemConfiguration $systemConfiguration): Response
     {
@@ -64,6 +55,16 @@ final class UserYearController extends AbstractUserReportController
         $writer = new BinaryFileResponseWriter(new XlsxWriter(), 'kimai-export-user-yearly');
 
         return $writer->getFileResponse($spreadsheet);
+    }
+
+    protected function getStatisticDataRaw(DateTimeInterface $begin, DateTimeInterface $end, User $user): array
+    {
+        return $this->statisticService->getMonthlyStatisticsGrouped($begin, $end, [$user]);
+    }
+
+    protected function createStatisticModel(DateTimeInterface $begin, DateTimeInterface $end, User $user): DateStatisticInterface
+    {
+        return new MonthlyStatistic($begin, $end, $user);
     }
 
     private function getData(Request $request, SystemConfiguration $systemConfiguration): array
@@ -135,15 +136,5 @@ final class UserYearController extends AbstractUserReportController
             'end' => $end,
             'export_route' => 'report_user_year_export',
         ];
-    }
-
-    protected function getStatisticDataRaw(DateTimeInterface $begin, DateTimeInterface $end, User $user): array
-    {
-        return $this->statisticService->getMonthlyStatisticsGrouped($begin, $end, [$user]);
-    }
-
-    protected function createStatisticModel(DateTimeInterface $begin, DateTimeInterface $end, User $user): DateStatisticInterface
-    {
-        return new MonthlyStatistic($begin, $end, $user);
     }
 }

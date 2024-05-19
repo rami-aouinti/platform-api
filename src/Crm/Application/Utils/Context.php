@@ -15,8 +15,9 @@ use App\User\Domain\Entity\User;
 
 final class Context
 {
-    public function __construct(private User $user)
-    {
+    public function __construct(
+        private User $user
+    ) {
     }
 
     public function getUser(): User

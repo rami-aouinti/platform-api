@@ -27,8 +27,6 @@ abstract class AbstractBundleInstallerCommand extends Command
 {
     /**
      * Returns the base directory to the Kimai installation.
-     *
-     * @return string
      */
     protected function getRootDirectory(): string
     {
@@ -41,8 +39,6 @@ abstract class AbstractBundleInstallerCommand extends Command
     /**
      * If your bundle ships assets, that need to be available in the public/ directory,
      * then overwrite this method and return: <true>.
-     *
-     * @return bool
      */
     protected function hasAssets(): bool
     {
@@ -51,8 +47,6 @@ abstract class AbstractBundleInstallerCommand extends Command
 
     /**
      * Returns an absolute filename to your doctrine migrations configuration, if you want to install database tables.
-     *
-     * @return string|null
      */
     protected function getMigrationConfigFilename(): ?string
     {
@@ -61,16 +55,12 @@ abstract class AbstractBundleInstallerCommand extends Command
 
     /**
      * Returns the bundle short name for the installer command.
-     *
-     * @return string
      */
     abstract protected function getBundleCommandNamePart(): string;
 
     /**
      * Returns the full name fo this command.
      * Please stick to the standard and overwrite getBundleCommandNamePart() only.
-     *
-     * @return string
      */
     protected function getInstallerCommandName(): string
     {
@@ -79,8 +69,6 @@ abstract class AbstractBundleInstallerCommand extends Command
 
     /**
      * Returns the bundles real name (same as your namespace).
-     *
-     * @return string
      */
     protected function getBundleName(): string
     {
@@ -155,7 +143,7 @@ abstract class AbstractBundleInstallerCommand extends Command
         $command = $this->getApplication()->find('assets:install');
         $cmdInput = new ArrayInput([]);
         $cmdInput->setInteractive(false);
-        if (0 !== $command->run($cmdInput, $output)) {
+        if ($command->run($cmdInput, $output) !== 0) {
             throw new \Exception('Problem occurred while installing assets.');
         }
 
@@ -166,7 +154,7 @@ abstract class AbstractBundleInstallerCommand extends Command
     {
         $config = $this->getMigrationConfigFilename();
 
-        if (null === $config) {
+        if ($config === null) {
             return;
         }
 
@@ -178,9 +166,12 @@ abstract class AbstractBundleInstallerCommand extends Command
         $config = str_replace('/', DIRECTORY_SEPARATOR, $config);
 
         $command = $this->getApplication()->find('doctrine:migrations:migrate');
-        $cmdInput = new ArrayInput(['--allow-no-migration' => true, '--configuration' => $config]);
+        $cmdInput = new ArrayInput([
+            '--allow-no-migration' => true,
+            '--configuration' => $config,
+        ]);
         $cmdInput->setInteractive(false);
-        if (0 !== $command->run($cmdInput, $output)) {
+        if ($command->run($cmdInput, $output) !== 0) {
             throw new \Exception('Problem occurred while executing migrations.');
         }
 

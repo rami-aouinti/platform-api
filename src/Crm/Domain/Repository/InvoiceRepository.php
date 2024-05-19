@@ -11,16 +11,16 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Repository;
 
+use App\Crm\Application\Utils\Pagination;
 use App\Crm\Domain\Entity\Customer;
 use App\Crm\Domain\Entity\Invoice;
 use App\Crm\Domain\Entity\InvoiceMeta;
 use App\Crm\Domain\Entity\Team;
-use App\User\Domain\Entity\User;
 use App\Crm\Domain\Repository\Loader\InvoiceLoader;
 use App\Crm\Domain\Repository\Paginator\LoaderPaginator;
 use App\Crm\Domain\Repository\Paginator\PaginatorInterface;
 use App\Crm\Domain\Repository\Query\InvoiceArchiveQuery;
-use App\Crm\Application\Utils\Pagination;
+use App\User\Domain\Entity\User;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
@@ -54,9 +54,96 @@ class InvoiceRepository extends EntityRepository
             ->setParameter('number', $invoiceNumber)
         ;
 
-        $counter = (int) $qb->getQuery()->getSingleScalarResult();
+        $counter = (int)$qb->getQuery()->getSingleScalarResult();
 
         return $counter > 0;
+    }
+
+    public function getCounterForDay(\DateTimeInterface $date, ?Customer $customer = null, ?User $user = null): int
+    {
+        $date = \DateTime::createFromInterface($date);
+        $start = (clone $date)->setTime(0, 0, 0);
+        $end = (clone $date)->setTime(23, 59, 59);
+
+        return $this->getCounterFor($start, $end, $customer, $user);
+    }
+
+    public function getCounterForMonth(\DateTimeInterface $date, ?Customer $customer = null, ?User $user = null): int
+    {
+        $date = \DateTime::createFromInterface($date);
+        $start = (clone $date)->setDate((int)$date->format('Y'), (int)$date->format('n'), 1)->setTime(0, 0, 0);
+        $end = (clone $date)->setDate((int)$date->format('Y'), (int)$date->format('n'), (int)$date->format('t'))->setTime(23, 59, 59);
+
+        return $this->getCounterFor($start, $end, $customer, $user);
+    }
+
+    public function getCounterForYear(\DateTimeInterface $date, ?Customer $customer = null, ?User $user = null): int
+    {
+        $date = \DateTime::createFromInterface($date);
+        $start = (clone $date)->setDate((int)$date->format('Y'), 1, 1)->setTime(0, 0, 0);
+        $end = (clone $date)->setDate((int)$date->format('Y'), 12, 31)->setTime(23, 59, 59);
+
+        return $this->getCounterFor($start, $end, $customer, $user);
+    }
+
+    public function getCounterForCustomerAllTime(?Customer $customer = null): int
+    {
+        if ($customer !== null) {
+            return $this->count([
+                'customer' => $customer->getId(),
+            ]);
+        }
+
+        return $this->count([]);
+    }
+
+    public function getCounterForUserAllTime(?User $user = null): int
+    {
+        if ($user !== null) {
+            return $this->count([
+                'user' => $user->getId(),
+            ]);
+        }
+
+        return $this->count([]);
+    }
+
+    public function countInvoicesForQuery(InvoiceArchiveQuery $query): int
+    {
+        $qb = $this->getQueryBuilderForQuery($query);
+        $qb
+            ->resetDQLPart('select')
+            ->resetDQLPart('orderBy')
+            ->resetDQLPart('groupBy')
+            ->select($qb->expr()->countDistinct('i.id'))
+        ;
+
+        return (int)$qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @return Invoice[]
+     */
+    public function getInvoicesForQuery(InvoiceArchiveQuery $query): iterable
+    {
+        // this is using the paginator internally, as it will load all joined entities into the working unit
+        // do not "optimize" to use the query directly, as it would results in hundreds of additional lazy queries
+        $paginator = $this->getPaginatorForQuery($query);
+
+        return $paginator->getAll();
+    }
+
+    public function getPagerfantaForQuery(InvoiceArchiveQuery $query): Pagination
+    {
+        return new Pagination($this->getPaginatorForQuery($query), $query);
+    }
+
+    protected function getPaginatorForQuery(InvoiceArchiveQuery $query): PaginatorInterface
+    {
+        $counter = $this->countInvoicesForQuery($query);
+        $qb = $this->getQueryBuilderForQuery($query);
+
+        return new LoaderPaginator(new InvoiceLoader($qb->getEntityManager()), $qb, $counter);
     }
 
     private function getCounterFor(\DateTime $start, \DateTime $end, ?Customer $customer = null, ?User $user = null): int
@@ -70,14 +157,14 @@ class InvoiceRepository extends EntityRepository
             ->setParameter('end', $end)
         ;
 
-        if (null !== $customer) {
+        if ($customer !== null) {
             $qb
                 ->andWhere($qb->expr()->eq('i.customer', ':customer'))
                 ->setParameter('customer', $customer->getId())
             ;
         }
 
-        if (null !== $user) {
+        if ($user !== null) {
             $qb
                 ->andWhere($qb->expr()->eq('i.user', ':user'))
                 ->setParameter('user', $user->getId())
@@ -93,64 +180,19 @@ class InvoiceRepository extends EntityRepository
         return $result['counter'];
     }
 
-    public function getCounterForDay(\DateTimeInterface $date, ?Customer $customer = null, ?User $user = null): int
-    {
-        $date = \DateTime::createFromInterface($date);
-        $start = (clone $date)->setTime(0, 0, 0);
-        $end = (clone $date)->setTime(23, 59, 59);
-
-        return $this->getCounterFor($start, $end, $customer, $user);
-    }
-
-    public function getCounterForMonth(\DateTimeInterface $date, ?Customer $customer = null, ?User $user = null): int
-    {
-        $date = \DateTime::createFromInterface($date);
-        $start = (clone $date)->setDate((int) $date->format('Y'), (int) $date->format('n'), 1)->setTime(0, 0, 0);
-        $end = (clone $date)->setDate((int) $date->format('Y'), (int) $date->format('n'), (int) $date->format('t'))->setTime(23, 59, 59);
-
-        return $this->getCounterFor($start, $end, $customer, $user);
-    }
-
-    public function getCounterForYear(\DateTimeInterface $date, ?Customer $customer = null, ?User $user = null): int
-    {
-        $date = \DateTime::createFromInterface($date);
-        $start = (clone $date)->setDate((int) $date->format('Y'), 1, 1)->setTime(0, 0, 0);
-        $end = (clone $date)->setDate((int) $date->format('Y'), 12, 31)->setTime(23, 59, 59);
-
-        return $this->getCounterFor($start, $end, $customer, $user);
-    }
-
-    public function getCounterForCustomerAllTime(?Customer $customer = null): int
-    {
-        if (null !== $customer) {
-            return $this->count(['customer' => $customer->getId()]);
-        }
-
-        return $this->count([]);
-    }
-
-    public function getCounterForUserAllTime(?User $user = null): int
-    {
-        if (null !== $user) {
-            return $this->count(['user' => $user->getId()]);
-        }
-
-        return $this->count([]);
-    }
-
     private function addPermissionCriteria(QueryBuilder $qb, ?User $user = null, array $teams = [])
     {
         // make sure that all queries without a user see all projects
-        if (null === $user && empty($teams)) {
+        if ($user === null && empty($teams)) {
             return;
         }
 
         // make sure that admins see all projects
-        if (null !== $user && $user->canSeeAllData()) {
+        if ($user !== null && $user->canSeeAllData()) {
             return;
         }
 
-        if (null !== $user) {
+        if ($user !== null) {
             $teams = array_merge($teams, $user->getTeams());
         }
 
@@ -254,44 +296,5 @@ class InvoiceRepository extends EntityRepository
     private function getSearchableFields(): array
     {
         return ['i.comment', 'customer.name', 'customer.company'];
-    }
-
-    public function countInvoicesForQuery(InvoiceArchiveQuery $query): int
-    {
-        $qb = $this->getQueryBuilderForQuery($query);
-        $qb
-            ->resetDQLPart('select')
-            ->resetDQLPart('orderBy')
-            ->resetDQLPart('groupBy')
-            ->select($qb->expr()->countDistinct('i.id'))
-        ;
-
-        return (int) $qb->getQuery()->getSingleScalarResult();
-    }
-
-    /**
-     * @param InvoiceArchiveQuery $query
-     * @return Invoice[]
-     */
-    public function getInvoicesForQuery(InvoiceArchiveQuery $query): iterable
-    {
-        // this is using the paginator internally, as it will load all joined entities into the working unit
-        // do not "optimize" to use the query directly, as it would results in hundreds of additional lazy queries
-        $paginator = $this->getPaginatorForQuery($query);
-
-        return $paginator->getAll();
-    }
-
-    protected function getPaginatorForQuery(InvoiceArchiveQuery $query): PaginatorInterface
-    {
-        $counter = $this->countInvoicesForQuery($query);
-        $qb = $this->getQueryBuilderForQuery($query);
-
-        return new LoaderPaginator(new InvoiceLoader($qb->getEntityManager()), $qb, $counter);
-    }
-
-    public function getPagerfantaForQuery(InvoiceArchiveQuery $query): Pagination
-    {
-        return new Pagination($this->getPaginatorForQuery($query), $query);
     }
 }

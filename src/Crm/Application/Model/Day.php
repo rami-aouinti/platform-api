@@ -14,15 +14,14 @@ namespace App\Crm\Application\Model;
 use DateTimeImmutable;
 
 /**
- * Class Day
- *
  * @package App\Crm\Application\Model
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 class Day
 {
-    public function __construct(private DateTimeImmutable $day)
-    {
+    public function __construct(
+        private DateTimeImmutable $day
+    ) {
     }
 
     public function getDay(): DateTimeImmutable

@@ -33,16 +33,31 @@ final class ActivitySubscriber extends AbstractActionsSubscriber
         }
 
         if (!$event->isView('activity_details') && $this->isGranted('view', $activity)) {
-            $event->addAction('details', ['title' => 'details', 'translation_domain' => 'actions', 'url' => $this->path('activity_details', ['id' => $activity->getId()])]);
+            $event->addAction('details', [
+                'title' => 'details',
+                'translation_domain' => 'actions',
+                'url' => $this->path('activity_details', [
+                    'id' => $activity->getId(),
+                ]),
+            ]);
         }
 
         if ($this->isGranted('edit', $activity)) {
-            $event->addEdit($this->path('admin_activity_edit', ['id' => $activity->getId()]), !$event->isView('edit'));
+            $event->addEdit($this->path('admin_activity_edit', [
+                'id' => $activity->getId(),
+            ]), !$event->isView('edit'));
         }
 
         if ($this->isGranted('permissions', $activity)) {
             $class = $event->isView('permissions') ? '' : 'modal-ajax-form';
-            $event->addAction('permissions', ['title' => 'permissions', 'translation_domain' => 'actions', 'url' => $this->path('admin_activity_permissions', ['id' => $activity->getId()]), 'class' => $class]);
+            $event->addAction('permissions', [
+                'title' => 'permissions',
+                'translation_domain' => 'actions',
+                'url' => $this->path('admin_activity_permissions', [
+                    'id' => $activity->getId(),
+                ]),
+                'class' => $class,
+            ]);
         }
 
         if ($event->countActions() > 0) {
@@ -50,12 +65,18 @@ final class ActivitySubscriber extends AbstractActionsSubscriber
         }
 
         if ($this->isGranted('view_other_timesheet')) {
-            $parameters = ['activities[]' => $activity->getId()];
+            $parameters = [
+                'activities[]' => $activity->getId(),
+            ];
             if (!$activity->isGlobal()) {
                 $parameters['customers[]'] = $activity->getProject()->getCustomer()->getId();
                 $parameters['projects[]'] = $activity->getProject()->getId();
             }
-            $event->addActionToSubmenu('filter', 'timesheet', ['title' => 'timesheet.filter', 'translation_domain' => 'actions', 'url' => $this->path('admin_timesheet', $parameters)]);
+            $event->addActionToSubmenu('filter', 'timesheet', [
+                'title' => 'timesheet.filter',
+                'translation_domain' => 'actions',
+                'url' => $this->path('admin_timesheet', $parameters),
+            ]);
         }
 
         if ($event->hasSubmenu('filter')) {
@@ -63,15 +84,25 @@ final class ActivitySubscriber extends AbstractActionsSubscriber
         }
 
         if ($activity->isVisible() && $this->isGranted('create_other_timesheet')) {
-            $parameters = ['activity' => $activity->getId()];
+            $parameters = [
+                'activity' => $activity->getId(),
+            ];
             if (!$activity->isGlobal()) {
                 $parameters['project'] = $activity->getProject()->getId();
             }
-            $event->addAction('create-timesheet', ['title' => 'create-timesheet', 'translation_domain' => 'actions', 'icon' => 'start', 'url' => $this->path('admin_timesheet_create', $parameters), 'class' => 'modal-ajax-form']);
+            $event->addAction('create-timesheet', [
+                'title' => 'create-timesheet',
+                'translation_domain' => 'actions',
+                'icon' => 'start',
+                'url' => $this->path('admin_timesheet_create', $parameters),
+                'class' => 'modal-ajax-form',
+            ]);
         }
 
         if (($event->isIndexView() || $event->isView('project_details')) && $this->isGranted('delete', $activity)) {
-            $event->addDelete($this->path('admin_activity_delete', ['id' => $activity->getId()]));
+            $event->addDelete($this->path('admin_activity_delete', [
+                'id' => $activity->getId(),
+            ]));
         }
     }
 }

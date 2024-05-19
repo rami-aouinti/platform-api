@@ -24,8 +24,9 @@ final class PageSetup
     private ?DataTable $dataTable = null;
     private ?FormInterface $paginationForm = null;
 
-    public function __construct(private string $title)
-    {
+    public function __construct(
+        private string $title
+    ) {
     }
 
     public function setPaginationForm(FormInterface $paginationForm): void

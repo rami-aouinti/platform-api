@@ -19,8 +19,9 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 abstract class AbstractUserEvent extends Event
 {
-    public function __construct(private User $user)
-    {
+    public function __construct(
+        private User $user
+    ) {
     }
 
     public function getUser(): User

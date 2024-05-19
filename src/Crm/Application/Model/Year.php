@@ -20,8 +20,9 @@ class Year
      */
     private array $months = [];
 
-    public function __construct(private DateTimeInterface $month)
-    {
+    public function __construct(
+        private DateTimeInterface $month
+    ) {
         $monthDate = new \DateTimeImmutable($this->month->format('Y-01-01 01:00:00'), $this->month->getTimezone());
         for ($i = 1; $i < 13; $i++) {
             $tmp = $this->createMonth($monthDate);
@@ -30,19 +31,9 @@ class Year
         }
     }
 
-    protected function createMonth(\DateTimeImmutable $month): Month
-    {
-        return new Month($month);
-    }
-
     public function getYear(): DateTimeInterface
     {
         return $this->month;
-    }
-
-    protected function setMonth(Month $month): void
-    {
-        $this->months['_' . $month->getMonth()->format('m')] = $month;
     }
 
     public function getMonth(\DateTimeInterface $month): Month
@@ -61,5 +52,15 @@ class Year
     public function getMonths(): array
     {
         return array_values($this->months);
+    }
+
+    protected function createMonth(\DateTimeImmutable $month): Month
+    {
+        return new Month($month);
+    }
+
+    protected function setMonth(Month $month): void
+    {
+        $this->months['_' . $month->getMonth()->format('m')] = $month;
     }
 }

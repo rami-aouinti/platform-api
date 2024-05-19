@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Export\Spreadsheet\Extractor;
 
-use App\User\Domain\Entity\User;
-use App\Crm\Transport\Event\UserPreferenceDisplayEvent;
 use App\Crm\Application\Export\Spreadsheet\ColumnDefinition;
+use App\Crm\Transport\Event\UserPreferenceDisplayEvent;
+use App\User\Domain\Entity\User;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -21,8 +21,9 @@ use Psr\EventDispatcher\EventDispatcherInterface;
  */
 final class UserPreferenceExtractor implements ExtractorInterface
 {
-    public function __construct(private EventDispatcherInterface $eventDispatcher)
-    {
+    public function __construct(
+        private EventDispatcherInterface $eventDispatcher
+    ) {
     }
 
     /**
@@ -50,7 +51,7 @@ final class UserPreferenceExtractor implements ExtractorInterface
                 'string',
                 function (User $user) use ($field) {
                     $meta = $user->getPreference($field->getName());
-                    if (null === $meta) {
+                    if ($meta === null) {
                         return null;
                     }
 

@@ -30,7 +30,9 @@ final class InvoiceItem
     private ?User $user = null;
     private ?Activity $activity = null;
     private ?Project $project = null;
-    /** @var array<string, mixed> */
+    /**
+     * @var array<string, mixed>
+     */
     private array $additionalFields = [];
     private ?string $type = null;
     private ?string $category = null;
@@ -39,7 +41,7 @@ final class InvoiceItem
      */
     private array $tags = [];
 
-    public function addAdditionalField(string $name, mixed $value): InvoiceItem
+    public function addAdditionalField(string $name, mixed $value): self
     {
         $this->additionalFields[$name] = $value;
 
@@ -68,7 +70,7 @@ final class InvoiceItem
         return $this->activity;
     }
 
-    public function setActivity(?Activity $activity): InvoiceItem
+    public function setActivity(?Activity $activity): self
     {
         $this->activity = $activity;
 
@@ -80,7 +82,7 @@ final class InvoiceItem
         return $this->project;
     }
 
-    public function setProject(?Project $project): InvoiceItem
+    public function setProject(?Project $project): self
     {
         $this->project = $project;
 
@@ -89,7 +91,7 @@ final class InvoiceItem
 
     public function isFixedRate(): bool
     {
-        return null !== $this->getFixedRate();
+        return $this->getFixedRate() !== null;
     }
 
     public function getFixedRate(): ?float
@@ -97,7 +99,7 @@ final class InvoiceItem
         return $this->fixedRate;
     }
 
-    public function setFixedRate(?float $fixedRate): InvoiceItem
+    public function setFixedRate(?float $fixedRate): self
     {
         $this->fixedRate = $fixedRate;
 
@@ -109,7 +111,7 @@ final class InvoiceItem
         return $this->hourlyRate;
     }
 
-    public function setHourlyRate(float $hourlyRate): InvoiceItem
+    public function setHourlyRate(float $hourlyRate): self
     {
         $this->hourlyRate = $hourlyRate;
 
@@ -121,7 +123,7 @@ final class InvoiceItem
         return $this->rate;
     }
 
-    public function setRate(float $rate): InvoiceItem
+    public function setRate(float $rate): self
     {
         $this->rate = $rate;
 
@@ -133,7 +135,7 @@ final class InvoiceItem
         return $this->rateInternal;
     }
 
-    public function setInternalRate(float $rateInternal): InvoiceItem
+    public function setInternalRate(float $rateInternal): self
     {
         $this->rateInternal = $rateInternal;
 
@@ -145,7 +147,7 @@ final class InvoiceItem
         return $this->amount;
     }
 
-    public function setAmount(float $amount): InvoiceItem
+    public function setAmount(float $amount): self
     {
         $this->amount = $amount;
 
@@ -157,7 +159,7 @@ final class InvoiceItem
         return $this->description;
     }
 
-    public function setDescription(?string $description): InvoiceItem
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
 
@@ -169,7 +171,7 @@ final class InvoiceItem
         return $this->duration;
     }
 
-    public function setDuration(int $duration): InvoiceItem
+    public function setDuration(int $duration): self
     {
         $this->duration = $duration;
 
@@ -181,7 +183,7 @@ final class InvoiceItem
         return $this->begin;
     }
 
-    public function setBegin(\DateTime $begin): InvoiceItem
+    public function setBegin(\DateTime $begin): self
     {
         $this->begin = $begin;
 
@@ -193,7 +195,7 @@ final class InvoiceItem
         return $this->end;
     }
 
-    public function setEnd(?\DateTime $end): InvoiceItem
+    public function setEnd(?\DateTime $end): self
     {
         $this->end = $end;
 
@@ -205,7 +207,7 @@ final class InvoiceItem
         return $this->user;
     }
 
-    public function setUser(?User $user): InvoiceItem
+    public function setUser(?User $user): self
     {
         $this->user = $user;
 
@@ -217,7 +219,7 @@ final class InvoiceItem
         return $this->type;
     }
 
-    public function setType(string $type): InvoiceItem
+    public function setType(string $type): self
     {
         $this->type = $type;
 
@@ -229,7 +231,7 @@ final class InvoiceItem
         return $this->category;
     }
 
-    public function setCategory(string $category): InvoiceItem
+    public function setCategory(string $category): self
     {
         $this->category = $category;
 

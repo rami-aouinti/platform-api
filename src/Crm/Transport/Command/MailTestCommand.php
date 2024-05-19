@@ -22,8 +22,9 @@ use Symfony\Component\Mime\Email;
 #[AsCommand(name: 'kimai:mail:test', description: 'Send a test email')]
 final class MailTestCommand extends Command
 {
-    public function __construct(private readonly EventDispatcherInterface $dispatcher)
-    {
+    public function __construct(
+        private readonly EventDispatcherInterface $dispatcher
+    ) {
         parent::__construct();
     }
 
@@ -36,8 +37,8 @@ final class MailTestCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $message = new Email();
-        $message->to((string) $input->getArgument('to')); // @phpstan-ignore-line
-        $message->from((string) $input->getOption('from')); // @phpstan-ignore-line
+        $message->to((string)$input->getArgument('to')); // @phpstan-ignore-line
+        $message->from((string)$input->getOption('from')); // @phpstan-ignore-line
         $message->subject('Kimai test email');
         $message->text('This is an email for testing the text body.');
 

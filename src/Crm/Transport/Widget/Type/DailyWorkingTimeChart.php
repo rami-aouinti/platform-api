@@ -11,14 +11,14 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Widget\Type;
 
+use App\Crm\Application\Model\Statistic\Day;
 use App\Crm\Domain\Entity\Activity;
 use App\Crm\Domain\Entity\Project;
 use App\Crm\Domain\Entity\Timesheet;
-use App\User\Domain\Entity\User;
-use App\Crm\Application\Model\Statistic\Day;
 use App\Crm\Domain\Repository\TimesheetRepository;
 use App\Crm\Transport\Timesheet\DateTimeFactory;
 use App\Crm\Transport\Widget\WidgetInterface;
+use App\User\Domain\Entity\User;
 use DateTime;
 use DateTimeInterface;
 
@@ -27,8 +27,9 @@ use DateTimeInterface;
  */
 final class DailyWorkingTimeChart extends AbstractWidget
 {
-    public function __construct(private readonly TimesheetRepository $repository)
-    {
+    public function __construct(
+        private readonly TimesheetRepository $repository
+    ) {
     }
 
     public function getWidth(): int
@@ -168,7 +169,7 @@ final class DailyWorkingTimeChart extends AbstractWidget
                     'month' => $beginTmp->format('n'),
                     'year' => $beginTmp->format('Y'),
                     'day' => $beginTmp->format('j'),
-                    'details' => []
+                    'details' => [],
                 ];
             }
             $duration = $result->getDuration() ?? 0;
@@ -218,8 +219,8 @@ final class DailyWorkingTimeChart extends AbstractWidget
 
         // prefill the array
         $tmp = DateTime::createFromInterface($end);
-        $until = (int) $begin->format('Ymd');
-        while ((int) $tmp->format('Ymd') >= $until) {
+        $until = (int)$begin->format('Ymd');
+        while ((int)$tmp->format('Ymd') >= $until) {
             $last = clone $tmp;
             $days[$last->format('Ymd')] = new Day($last, 0, 0.00);
             $tmp->modify('-1 day');
@@ -230,9 +231,9 @@ final class DailyWorkingTimeChart extends AbstractWidget
 
         foreach ($results as $statRow) {
             $dateTime = DateTime::createFromInterface($begin);
-            $dateTime->setDate((int) $statRow['year'], (int) $statRow['month'], (int) $statRow['day']);
+            $dateTime->setDate((int)$statRow['year'], (int)$statRow['month'], (int)$statRow['day']);
             $dateTime->setTime(0, 0, 0);
-            $day = new Day($dateTime, (int) $statRow['duration'], 0.00); // rate is not used in frontend
+            $day = new Day($dateTime, (int)$statRow['duration'], 0.00); // rate is not used in frontend
             $day->setTotalDurationBillable($statRow['billable']);
             $day->setDetails($statRow['details']);
             $dateKey = $dateTime->format('Ymd');

@@ -12,14 +12,12 @@ declare(strict_types=1);
 namespace App\Crm\Application\Configuration;
 
 use App\Crm\Domain\Entity\Configuration;
-use App\Crm\Transport\Form\Model\SystemConfiguration;
 use App\Crm\Domain\Repository\ConfigurationRepository;
+use App\Crm\Transport\Form\Model\SystemConfiguration;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
 /**
- * Class ConfigurationService
- *
  * @package App\Crm\Application\Configuration
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -31,8 +29,10 @@ final class ConfigurationService implements ConfigLoaderInterface
     private static array $cacheAll = [];
     private static bool $initialized = false;
 
-    public function __construct(private ConfigurationRepository $configurationRepository, private CacheInterface $cache)
-    {
+    public function __construct(
+        private ConfigurationRepository $configurationRepository,
+        private CacheInterface $cache
+    ) {
     }
 
     /**
@@ -57,7 +57,9 @@ final class ConfigurationService implements ConfigLoaderInterface
 
     public function getConfiguration(string $name): ?Configuration
     {
-        return $this->configurationRepository->findOneBy(['name' => $name]);
+        return $this->configurationRepository->findOneBy([
+            'name' => $name,
+        ]);
     }
 
     public function clearCache(): void

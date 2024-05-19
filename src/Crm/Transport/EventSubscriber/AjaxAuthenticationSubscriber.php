@@ -22,21 +22,20 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\AuthenticationExpiredException;
 
 /**
- * Class AjaxAuthenticationSubscriber
- *
  * @package App\Crm\Transport\EventSubscriber
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class AjaxAuthenticationSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private Security $security)
-    {
+    public function __construct(
+        private Security $security
+    ) {
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::EXCEPTION => ['onCoreException', 1]
+            KernelEvents::EXCEPTION => ['onCoreException', 1],
         ];
     }
 
@@ -54,11 +53,17 @@ final class AjaxAuthenticationSubscriber implements EventSubscriberInterface
         if ($request->isXmlHttpRequest() || ($header !== null && str_contains(strtolower($header), 'kimai'))) {
             $exception = $event->getThrowable();
             if ($exception instanceof AuthenticationExpiredException) {
-                $event->setResponse(new Response('Session expired', 403, ['Login-Required' => true]));
+                $event->setResponse(new Response('Session expired', 403, [
+                    'Login-Required' => true,
+                ]));
             } elseif ($exception instanceof AuthenticationException) {
-                $event->setResponse(new Response('Authentication problem', 403, ['Login-Required' => true]));
+                $event->setResponse(new Response('Authentication problem', 403, [
+                    'Login-Required' => true,
+                ]));
             } elseif ($exception instanceof AccessDeniedException) {
-                $event->setResponse(new Response('Access denied', 403, ['Login-Required' => true]));
+                $event->setResponse(new Response('Access denied', 403, [
+                    'Login-Required' => true,
+                ]));
             }
         }
     }

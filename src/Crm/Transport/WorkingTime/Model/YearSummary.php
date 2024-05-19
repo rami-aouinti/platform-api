@@ -19,14 +19,11 @@ use App\Crm\Application\Model\Year as BaseYear;
  */
 final class YearSummary extends BaseYear
 {
-    public function __construct(\DateTimeInterface $month, private string $title)
-    {
+    public function __construct(
+        \DateTimeInterface $month,
+        private string $title
+    ) {
         parent::__construct($month);
-    }
-
-    protected function createMonth(\DateTimeInterface $month): MonthSummary
-    {
-        return new MonthSummary($month);
     }
 
     public function getTitle(): string
@@ -52,5 +49,10 @@ final class YearSummary extends BaseYear
         }
 
         return $all;
+    }
+
+    protected function createMonth(\DateTimeInterface $month): MonthSummary
+    {
+        return new MonthSummary($month);
     }
 }

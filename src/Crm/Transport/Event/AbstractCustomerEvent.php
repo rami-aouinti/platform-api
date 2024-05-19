@@ -19,8 +19,9 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 abstract class AbstractCustomerEvent extends Event
 {
-    public function __construct(private Customer $customer)
-    {
+    public function __construct(
+        private Customer $customer
+    ) {
     }
 
     public function getCustomer(): Customer

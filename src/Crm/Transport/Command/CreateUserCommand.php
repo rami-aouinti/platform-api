@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Command;
 
-use App\User\Domain\Entity\User;
-use App\User\Application\Service\UserService;
 use App\Crm\Application\Validator\ValidationFailedException;
+use App\User\Application\Service\UserService;
+use App\User\Domain\Entity\User;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,16 +23,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Class CreateUserCommand
- *
  * @package App\Crm\Transport\Command
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 #[AsCommand(name: 'kimai:user:create')]
 final class CreateUserCommand extends AbstractUserCommand
 {
-    public function __construct(private UserService $userService)
-    {
+    public function __construct(
+        private UserService $userService
+    ) {
         parent::__construct();
     }
 
@@ -64,7 +63,7 @@ final class CreateUserCommand extends AbstractUserCommand
         $email = $input->getArgument('email');
         $role = $input->getArgument('role');
 
-        if (null !== $input->getArgument('password')) {
+        if ($input->getArgument('password') !== null) {
             $password = $input->getArgument('password');
         } else {
             $password = $this->askForPassword($input, $output);

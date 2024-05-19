@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace App\Blog\Transport\Controller\Api\v1\Blog\Admin;
 
-use App\Blog\Domain\Entity\Post;
-use App\User\Domain\Entity\User;
-use App\Blog\Transport\Form\PostType;
-use App\Blog\Domain\Repository\PostRepository;
 use App\Blog\Application\Security\PostVoter;
+use App\Blog\Domain\Entity\Post;
+use App\Blog\Domain\Repository\PostRepository;
+use App\Blog\Transport\Form\PostType;
+use App\User\Domain\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -57,12 +57,19 @@ final class BlogController extends AbstractController
     #[Route('/', name: 'admin_index', methods: ['GET'])]
     #[Route('/', name: 'admin_post_index', methods: ['GET'])]
     public function index(
-        #[CurrentUser] User $user,
+        #[CurrentUser]
+        User $user,
         PostRepository $posts,
     ): Response {
-        $authorPosts = $posts->findBy(['author' => $user], ['publishedAt' => 'DESC']);
+        $authorPosts = $posts->findBy([
+            'author' => $user,
+        ], [
+            'publishedAt' => 'DESC',
+        ]);
 
-        return $this->render('admin/blog/index.html.twig', ['posts' => $authorPosts]);
+        return $this->render('admin/blog/index.html.twig', [
+            'posts' => $authorPosts,
+        ]);
     }
 
     /**
@@ -74,7 +81,8 @@ final class BlogController extends AbstractController
      */
     #[Route('/new', name: 'admin_post_new', methods: ['GET', 'POST'])]
     public function new(
-        #[CurrentUser] User $user,
+        #[CurrentUser]
+        User $user,
         Request $request,
         EntityManagerInterface $entityManager,
     ): Response {
@@ -120,7 +128,9 @@ final class BlogController extends AbstractController
     /**
      * Finds and displays a Post entity.
      */
-    #[Route('/{id}', name: 'admin_post_show', requirements: ['id' => Requirement::POSITIVE_INT], methods: ['GET'])]
+    #[Route('/{id}', name: 'admin_post_show', requirements: [
+        'id' => Requirement::POSITIVE_INT,
+    ], methods: ['GET'])]
     public function show(Post $post): Response
     {
         // This security check can also be performed
@@ -135,7 +145,9 @@ final class BlogController extends AbstractController
     /**
      * Displays a form to edit an existing Post entity.
      */
-    #[Route('/{id}/edit', name: 'admin_post_edit', requirements: ['id' => Requirement::POSITIVE_INT], methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'admin_post_edit', requirements: [
+        'id' => Requirement::POSITIVE_INT,
+    ], methods: ['GET', 'POST'])]
     #[IsGranted('edit', subject: 'post', message: 'Posts can only be edited by their authors.')]
     public function edit(Request $request, Post $post, EntityManagerInterface $entityManager): Response
     {
@@ -146,7 +158,9 @@ final class BlogController extends AbstractController
             $entityManager->flush();
             $this->addFlash('success', 'post.updated_successfully');
 
-            return $this->redirectToRoute('admin_post_edit', ['id' => $post->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('admin_post_edit', [
+                'id' => $post->getId(),
+            ], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('admin/blog/edit.html.twig', [
@@ -158,7 +172,9 @@ final class BlogController extends AbstractController
     /**
      * Deletes a Post entity.
      */
-    #[Route('/{id}/delete', name: 'admin_post_delete', requirements: ['id' => Requirement::POSITIVE_INT], methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'admin_post_delete', requirements: [
+        'id' => Requirement::POSITIVE_INT,
+    ], methods: ['POST'])]
     #[IsGranted('delete', subject: 'post')]
     public function delete(Request $request, Post $post, EntityManagerInterface $entityManager): Response
     {

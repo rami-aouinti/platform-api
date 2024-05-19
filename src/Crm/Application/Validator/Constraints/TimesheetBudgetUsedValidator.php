@@ -11,17 +11,17 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Validator\Constraints;
 
-use App\Crm\Transport\Activity\ActivityStatisticService;
 use App\Crm\Application\Configuration\LocaleService;
 use App\Crm\Application\Configuration\SystemConfiguration;
-use App\Crm\Transport\Customer\CustomerStatisticService;
-use App\Crm\Domain\Entity\Timesheet as TimesheetEntity;
 use App\Crm\Application\Model\BudgetStatisticModel;
-use App\Crm\Transport\Project\ProjectStatisticService;
-use App\Crm\Domain\Repository\TimesheetRepository;
-use App\Crm\Transport\Timesheet\RateServiceInterface;
 use App\Crm\Application\Utils\Duration;
 use App\Crm\Application\Utils\LocaleFormatter;
+use App\Crm\Domain\Entity\Timesheet as TimesheetEntity;
+use App\Crm\Domain\Repository\TimesheetRepository;
+use App\Crm\Transport\Activity\ActivityStatisticService;
+use App\Crm\Transport\Customer\CustomerStatisticService;
+use App\Crm\Transport\Project\ProjectStatisticService;
+use App\Crm\Transport\Timesheet\RateServiceInterface;
 use DateTime;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Validator\Constraint;
@@ -106,13 +106,14 @@ final class TimesheetBudgetUsedValidator extends ConstraintValidator
         if ($id !== null) {
             $rawData = $this->timesheetRepository->getRawData($id);
 
-            $activityId = (int) $rawData['activity'];
-            $projectId = (int) $rawData['project'];
-            $customerId = (int) $rawData['customer'];
+            $activityId = (int)$rawData['activity'];
+            $projectId = (int)$rawData['project'];
+            $customerId = (int)$rawData['customer'];
 
             // if an existing entry was updated, but the relevant fields for budget calculation were not touched: do not validate!
             // this could for example happen when export flag is changed OR if "prevent overbooking"  config was recently activated and this is an old entry
-            if ($duration === $rawData['duration'] &&
+            if (
+                $duration === $rawData['duration'] &&
                 $rate === $rawData['rate'] &&
                 $value->isBillable() === $rawData['billable'] &&
                 $begin->format('Y.m.d') === $rawData['begin']->format('Y.m.d') &&
@@ -127,12 +128,12 @@ final class TimesheetBudgetUsedValidator extends ConstraintValidator
             // only subtract the previously logged data in case the record was billable
             // if it wasn't billable, then its values are not included in the statistic models used later on
             if ($rawData['billable']) {
-                if (null !== $value->getActivity() && $activityId === $value->getActivity()->getId()) {
+                if ($value->getActivity() !== null && $activityId === $value->getActivity()->getId()) {
                     $activityDuration -= $rawData['duration'];
                     $activityRate -= $rawData['rate'];
                 }
 
-                if (null !== $value->getProject()) {
+                if ($value->getProject() !== null) {
                     if ($projectId === $value->getProject()->getId()) {
                         $projectDuration -= $rawData['duration'];
                         $projectRate -= $rawData['rate'];
@@ -221,7 +222,7 @@ final class TimesheetBudgetUsedValidator extends ConstraintValidator
             ->setParameters([
                 '%used%' => $helper->money($rate, $currency),
                 '%budget%' => $helper->money($budget, $currency),
-                '%free%' => $helper->money($free, $currency)
+                '%free%' => $helper->money($free, $currency),
             ])
             ->addViolation()
         ;
@@ -245,7 +246,7 @@ final class TimesheetBudgetUsedValidator extends ConstraintValidator
             ->setParameters([
                 '%used%' => $durationFormat->format($duration),
                 '%budget%' => $durationFormat->format($budget),
-                '%free%' => $durationFormat->format($free)
+                '%free%' => $durationFormat->format($free),
             ])
             ->addViolation()
         ;

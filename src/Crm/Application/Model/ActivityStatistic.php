@@ -11,20 +11,15 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Model;
 
-use App\Crm\Domain\Entity\Activity;
 use App\Crm\Application\Model\Statistic\BudgetStatistic;
+use App\Crm\Domain\Entity\Activity;
 
 /**
- * Class ActivityStatistic
- *
  * @package App\Crm\Application\Model
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 class ActivityStatistic extends BudgetStatistic implements \JsonSerializable
 {
-    /**
-     * @var Activity
-     */
     private Activity $activity;
 
     public function getActivity(): ?Activity
@@ -39,8 +34,6 @@ class ActivityStatistic extends BudgetStatistic implements \JsonSerializable
 
     /**
      * Added for simpler re-use in frontend (charts).
-     *
-     * @return string|null
      */
     public function getColor(): ?string
     {
@@ -53,8 +46,6 @@ class ActivityStatistic extends BudgetStatistic implements \JsonSerializable
 
     /**
      * Added for simpler re-use in frontend (charts).
-     *
-     * @return string|null
      */
     public function getName(): ?string
     {

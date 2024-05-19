@@ -30,9 +30,17 @@ use Symfony\Component\HttpClient\HttpClient;
 #[AsCommand(name: 'kimai:translations')]
 final class TranslationCommand extends Command
 {
-    public function __construct(private string $projectDirectory, private string $kernelEnvironment, private LocaleService $localeService)
-    {
+    public function __construct(
+        private string $projectDirectory,
+        private string $kernelEnvironment,
+        private LocaleService $localeService
+    ) {
         parent::__construct();
+    }
+
+    public function isEnabled(): bool
+    {
+        return $this->kernelEnvironment !== 'prod';
     }
 
     protected function configure(): void
@@ -53,11 +61,6 @@ final class TranslationCommand extends Command
             // @see https://www.deepl.com/de/pro#developer
             ->addOption('translate-deepl', null, InputOption::VALUE_REQUIRED, 'Translate using the "DeepL API Free" auth-key')
         ;
-    }
-
-    public function isEnabled(): bool
-    {
-        return $this->kernelEnvironment !== 'prod';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -146,7 +149,13 @@ final class TranslationCommand extends Command
         // Fill empty translations with english version
         // ==========================================================================
         if ($input->getOption('fill-empty')) {
-            $translateFrom = ['de-CH' => 'de', 'de_CH' => 'de', 'pt_BR' => 'pt', 'pt-BR' => 'pt', 'pt' => 'pt_BR'];
+            $translateFrom = [
+                'de-CH' => 'de',
+                'de_CH' => 'de',
+                'pt_BR' => 'pt',
+                'pt-BR' => 'pt',
+                'pt' => 'pt_BR',
+            ];
             $translations = [];
             foreach ($sources as $file) {
                 $base = basename($file);
@@ -199,7 +208,7 @@ final class TranslationCommand extends Command
             foreach ($sources as $file) {
                 $xml = simplexml_load_file($file);
                 foreach ($xml->file->body->{'trans-unit'} as $unit) {
-                    $n = (string) $unit['resname'];
+                    $n = (string)$unit['resname'];
                     if (!\array_key_exists($n, $duplicates)) {
                         $duplicates[$n] = [];
                     }
@@ -287,11 +296,11 @@ final class TranslationCommand extends Command
                 $xml = simplexml_load_file($file);
 
                 foreach ($xml->file->body->{'trans-unit'} as $unit) {
-                    $id = (string) $unit['id'];
+                    $id = (string)$unit['id'];
                     $enTrans[$id] = [
-                        'resname' => (string) $unit['resname'],
-                        'source' => (string) $unit->source,
-                        'target' => (string) $unit->target
+                        'resname' => (string)$unit['resname'],
+                        'source' => (string)$unit->source,
+                        'target' => (string)$unit->target,
                     ];
                     $allKeys++;
                 }
@@ -303,11 +312,11 @@ final class TranslationCommand extends Command
                 if (file_exists($localeFile)) {
                     $xml2 = simplexml_load_file($localeFile);
                     foreach ($xml2->file->body->{'trans-unit'} as $unit) {
-                        $id = (string) $unit['id'];
+                        $id = (string)$unit['id'];
                         $translated[$id] = [
-                            'resname' => (string) $unit['resname'],
-                            'source' => (string) $unit->source,
-                            'target' => (string) $unit->target
+                            'resname' => (string)$unit['resname'],
+                            'source' => (string)$unit->source,
+                            'target' => (string)$unit->target,
                         ];
                     }
                 }
@@ -337,8 +346,11 @@ final class TranslationCommand extends Command
                     ];
 
                     $rawResponseData = null;
+
                     try {
-                        $rawResponseData = $client->request('POST', $baseUrl, ['body' => $params]);
+                        $rawResponseData = $client->request('POST', $baseUrl, [
+                            'body' => $params,
+                        ]);
                     } catch (\Exception $exception) {
                         $io->error($exception->getMessage());
 
@@ -371,8 +383,8 @@ final class TranslationCommand extends Command
                 throw new \Exception('Missing "resname" attribute in file: ' . $file);
             }
 
-            $source = (string) $unit['resname'];
-            $translations[$source] = (string) $unit->target;
+            $source = (string)$unit['resname'];
+            $translations[$source] = (string)$unit->target;
         }
 
         return $translations;
@@ -456,9 +468,9 @@ final class TranslationCommand extends Command
                 continue;
             }
 
-            $key = (string) $unit['resname'];
+            $key = (string)$unit['resname'];
 
-            $translation = (string) $unit->target;
+            $translation = (string)$unit->target;
             if (\strlen($translation) > 0) {
                 continue;
             }
@@ -495,7 +507,7 @@ final class TranslationCommand extends Command
                 continue;
             }
 
-            if ((string) $unit['resname'] === $key) {
+            if ((string)$unit['resname'] === $key) {
                 $dom = dom_import_simplexml($unit);
                 $dom->parentNode->removeChild($dom);
                 break;
@@ -517,7 +529,7 @@ final class TranslationCommand extends Command
 
         /** @var \SimpleXMLElement $unit */
         foreach ($xml->file->body->{'trans-unit'} as $unit) {
-            $translation = (string) $unit->target;
+            $translation = (string)$unit->target;
             if (\strlen($translation) > 0) {
                 $hasTranslation = true;
                 break;

@@ -21,11 +21,12 @@ final class BinaryFileResponseWriter implements WriterInterface
     private string $prefix;
 
     /**
-     * @param WriterInterface $writer
      * @param string $prefix is only urlencoded but not validated and can break the response if you pass in invalid character
      */
-    public function __construct(private WriterInterface $writer, string $prefix)
-    {
+    public function __construct(
+        private WriterInterface $writer,
+        string $prefix
+    ) {
         $this->prefix = urlencode($prefix);
     }
 

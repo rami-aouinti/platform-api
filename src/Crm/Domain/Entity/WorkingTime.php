@@ -12,14 +12,12 @@ declare(strict_types=1);
 namespace App\Crm\Domain\Entity;
 
 use App\Crm\Domain\Repository\WorkingTimeRepository;
+use App\User\Domain\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\User\Domain\Entity\User;
 
 /**
- * Class WorkingTime
- *
  * @package App\Crm\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

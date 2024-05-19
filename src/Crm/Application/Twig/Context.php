@@ -14,8 +14,10 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 final class Context
 {
-    public function __construct(private SystemConfiguration $systemConfiguration, private RequestStack $requestStack)
-    {
+    public function __construct(
+        private SystemConfiguration $systemConfiguration,
+        private RequestStack $requestStack
+    ) {
     }
 
     public function isModalRequest(): bool

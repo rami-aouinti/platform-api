@@ -20,13 +20,14 @@ use App\Crm\Transport\Timesheet\RoundingService;
  */
 final class DurationCalculator implements CalculatorInterface
 {
-    public function __construct(private RoundingService $roundings)
-    {
+    public function __construct(
+        private RoundingService $roundings
+    ) {
     }
 
     public function calculate(Timesheet $record, array $changeset): void
     {
-        if (null === $record->getEnd()) {
+        if ($record->getEnd() === null) {
             return;
         }
 

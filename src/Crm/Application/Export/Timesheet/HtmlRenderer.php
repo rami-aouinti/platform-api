@@ -16,16 +16,12 @@ use App\Crm\Application\Export\TimesheetExportInterface;
 
 final class HtmlRenderer extends BaseHtmlRenderer implements TimesheetExportInterface
 {
-    protected function getTemplate(): string
-    {
-        return 'timesheet/export.html.twig';
-    }
-
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return 'print';
+    }
+    protected function getTemplate(): string
+    {
+        return 'timesheet/export.html.twig';
     }
 }

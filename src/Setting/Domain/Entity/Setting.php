@@ -96,7 +96,7 @@ class Setting
 
     #[ORM\Column(type: Types::STRING)]
     #[Assert\Length(max: 255)]
-     #[Groups([
+    #[Groups([
         'Setting',
         'Setting.sidebarColor',
 
@@ -151,42 +151,42 @@ class Setting
         $this->title = $title;
     }
 
-    public  function getLogo(): ?string
+    public function getLogo(): ?string
     {
         return $this->logo;
     }
 
-    public  function setLogo(?string $logo):void
+    public function setLogo(?string $logo): void
     {
         $this->logo = $logo;
     }
 
-    public  function getDrawer(): ?string
+    public function getDrawer(): ?string
     {
         return $this->drawer;
     }
 
-    public  function setDrawer(?string $drawer):void
+    public function setDrawer(?string $drawer): void
     {
         $this->drawer = $drawer;
     }
 
-    public  function getSidebarColor(): ?string
+    public function getSidebarColor(): ?string
     {
         return $this->sidebarColor;
     }
 
-    public  function setSidebarColor(?string $sidebarColor):void
+    public function setSidebarColor(?string $sidebarColor): void
     {
         $this->sidebarColor = $sidebarColor;
     }
 
-    public  function getSidebarTheme(): ?string
+    public function getSidebarTheme(): ?string
     {
         return $this->sidebarTheme;
     }
 
-    public  function setSidebarTheme(?string $sidebarTheme):void
+    public function setSidebarTheme(?string $sidebarTheme): void
     {
         $this->sidebarTheme = $sidebarTheme;
     }

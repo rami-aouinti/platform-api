@@ -14,8 +14,6 @@ namespace App\Crm\Transport\Ldap;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\BadgeInterface;
 
 /**
- * Class LdapBadge
- *
  * @package App\Crm\Transport\Ldap
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

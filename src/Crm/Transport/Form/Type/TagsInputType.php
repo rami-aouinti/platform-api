@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Form\Type;
 
-use App\Crm\Transport\Form\DataTransformer\TagArrayToStringTransformer;
 use App\Crm\Domain\Repository\TagRepository;
+use App\Crm\Transport\Form\DataTransformer\TagArrayToStringTransformer;
 use Symfony\Bridge\Doctrine\Form\DataTransformer\CollectionToArrayTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -30,14 +30,13 @@ final class TagsInputType extends AbstractType
     public function __construct(
         private readonly TagRepository $tagRepository,
         private readonly UrlGeneratorInterface $router
-    )
-    {
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addModelTransformer(new CollectionToArrayTransformer(), true);
-        $builder->addModelTransformer(new TagArrayToStringTransformer($this->tagRepository, (bool) $options['allow_create']), true);
+        $builder->addModelTransformer(new TagArrayToStringTransformer($this->tagRepository, (bool)$options['allow_create']), true);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -60,7 +59,7 @@ final class TagsInputType extends AbstractType
             'data-minimum-character' => 3,
             'class' => 'form-select',
             'autocomplete' => 'off',
-            'data-form-widget' => 'autocomplete'
+            'data-form-widget' => 'autocomplete',
         ]);
 
         if ($options['allow_create']) {

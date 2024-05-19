@@ -23,8 +23,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 final class UserLanguageType extends AbstractType
 {
-    public function __construct(private readonly LocaleService $localeService)
-    {
+    public function __construct(
+        private readonly LocaleService $localeService
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void

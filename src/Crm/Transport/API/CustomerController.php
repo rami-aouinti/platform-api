@@ -11,17 +11,17 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\API;
 
-use App\Crm\Transport\Customer\CustomerService;
+use App\Crm\Application\Utils\SearchTerm;
 use App\Crm\Domain\Entity\Customer;
 use App\Crm\Domain\Entity\CustomerRate;
-use App\User\Domain\Entity\User;
-use App\Crm\Transport\Event\CustomerMetaDefinitionEvent;
-use App\Crm\Transport\Form\API\CustomerApiEditForm;
-use App\Crm\Transport\Form\API\CustomerRateApiForm;
 use App\Crm\Domain\Repository\CustomerRateRepository;
 use App\Crm\Domain\Repository\CustomerRepository;
 use App\Crm\Domain\Repository\Query\CustomerQuery;
-use App\Crm\Application\Utils\SearchTerm;
+use App\Crm\Transport\Customer\CustomerService;
+use App\Crm\Transport\Event\CustomerMetaDefinitionEvent;
+use App\Crm\Transport\Form\API\CustomerApiEditForm;
+use App\Crm\Transport\Form\API\CustomerRateApiForm;
+use App\User\Domain\Entity\User;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
@@ -81,7 +81,7 @@ final class CustomerController extends BaseApiController
 
         $visible = $paramFetcher->get('visible');
         if (\is_string($visible) && $visible !== '') {
-            $query->setVisibility((int) $visible);
+            $query->setVisibility((int)$visible);
         }
 
         $term = $paramFetcher->get('term');
@@ -101,7 +101,9 @@ final class CustomerController extends BaseApiController
      * Returns one customer
      */
     #[OA\Response(response: 200, description: 'Returns one customer entity', content: new OA\JsonContent(ref: '#/components/schemas/CustomerEntity'))]
-    #[Route(methods: ['GET'], path: '/{id}', name: 'get_customer', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['GET'], path: '/{id}', name: 'get_customer', requirements: [
+        'id' => '\d+',
+    ])]
     #[IsGranted('view', 'customer')]
     public function getAction(Customer $customer): Response
     {
@@ -157,7 +159,9 @@ final class CustomerController extends BaseApiController
     #[OA\Patch(description: 'Update an existing customer, you can pass all or just a subset of all attributes', responses: [new OA\Response(response: 200, description: 'Returns the updated customer', content: new OA\JsonContent(ref: '#/components/schemas/CustomerEntity'))])]
     #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/CustomerEditForm'))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Customer ID to update', required: true)]
-    #[Route(methods: ['PATCH'], path: '/{id}', name: 'patch_customer', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['PATCH'], path: '/{id}', name: 'patch_customer', requirements: [
+        'id' => '\d+',
+    ])]
     public function patchAction(Request $request, Customer $customer): Response
     {
         $event = new CustomerMetaDefinitionEvent($customer);
@@ -171,7 +175,7 @@ final class CustomerController extends BaseApiController
         $form->setData($customer);
         $form->submit($request->request->all(), false);
 
-        if (false === $form->isValid()) {
+        if ($form->isValid() === false) {
             $view = new View($form, Response::HTTP_OK);
             $view->getContext()->setGroups(self::GROUPS_FORM);
 
@@ -192,7 +196,9 @@ final class CustomerController extends BaseApiController
     #[IsGranted('edit', 'customer')]
     #[OA\Response(response: 200, description: 'Sets the value of an existing/configured meta-field. You cannot create unknown meta-fields, if the given name is not a configured meta-field, this will return an exception.', content: new OA\JsonContent(ref: '#/components/schemas/CustomerEntity'))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Customer record ID to set the meta-field value for', required: true)]
-    #[Route(methods: ['PATCH'], path: '/{id}/meta', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['PATCH'], path: '/{id}/meta', requirements: [
+        'id' => '\d+',
+    ])]
     #[Rest\RequestParam(name: 'name', strict: true, nullable: false, description: 'The meta-field name')]
     #[Rest\RequestParam(name: 'value', strict: true, nullable: false, description: 'The meta-field value')]
     public function metaAction(Customer $customer, ParamFetcherInterface $paramFetcher): Response
@@ -223,7 +229,9 @@ final class CustomerController extends BaseApiController
     #[IsGranted('edit', 'customer')]
     #[OA\Response(response: 200, description: 'Returns a collection of customer rate entities', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/CustomerRate')))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The customer whose rates will be returned', required: true)]
-    #[Route(methods: ['GET'], path: '/{id}/rates', name: 'get_customer_rates', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['GET'], path: '/{id}/rates', name: 'get_customer_rates', requirements: [
+        'id' => '\d+',
+    ])]
     public function getRatesAction(Customer $customer): Response
     {
         $rates = $this->customerRateRepository->getRatesForCustomer($customer);
@@ -241,8 +249,13 @@ final class CustomerController extends BaseApiController
     #[OA\Delete(responses: [new OA\Response(response: 204, description: 'Returns no content: 204 on successful delete')])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The customer whose rate will be removed', required: true)]
     #[OA\Parameter(name: 'rateId', in: 'path', description: 'The rate to remove', required: true)]
-    #[Route(methods: ['DELETE'], path: '/{id}/rates/{rateId}', name: 'delete_customer_rate', requirements: ['id' => '\d+', 'rateId' => '\d+'])]
-    public function deleteRateAction(Customer $customer, #[MapEntity(mapping: ['rateId' => 'id'])] CustomerRate $rate): Response
+    #[Route(methods: ['DELETE'], path: '/{id}/rates/{rateId}', name: 'delete_customer_rate', requirements: [
+        'id' => '\d+',
+        'rateId' => '\d+',
+    ])]
+    public function deleteRateAction(Customer $customer, #[MapEntity(mapping: [
+        'rateId' => 'id',
+    ])] CustomerRate $rate): Response
     {
         if ($rate->getCustomer() !== $customer) {
             throw $this->createNotFoundException();
@@ -262,7 +275,9 @@ final class CustomerController extends BaseApiController
     #[OA\Post(responses: [new OA\Response(response: 200, description: 'Returns the new created rate', content: new OA\JsonContent(ref: '#/components/schemas/CustomerRate'))])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The customer to add the rate for', required: true)]
     #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/CustomerRateForm'))]
-    #[Route(methods: ['POST'], path: '/{id}/rates', name: 'post_customer_rate', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['POST'], path: '/{id}/rates', name: 'post_customer_rate', requirements: [
+        'id' => '\d+',
+    ])]
     public function postRateAction(Customer $customer, Request $request): Response
     {
         $rate = new CustomerRate();
@@ -275,7 +290,7 @@ final class CustomerController extends BaseApiController
         $form->setData($rate);
         $form->submit($request->request->all(), false);
 
-        if (false === $form->isValid()) {
+        if ($form->isValid() === false) {
             $view = new View($form, Response::HTTP_OK);
             $view->getContext()->setGroups(self::GROUPS_RATE);
 

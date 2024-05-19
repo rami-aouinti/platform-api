@@ -12,16 +12,14 @@ declare(strict_types=1);
 namespace App\Crm\Transport\Configuration;
 
 use App\Crm\Domain\Entity\Configuration;
-use App\Crm\Transport\Form\Model\SystemConfiguration;
 use App\Crm\Domain\Repository\ConfigurationRepository;
+use App\Crm\Transport\Form\Model\SystemConfiguration;
 use Doctrine\ORM\Exception\ORMException;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
 /**
- * Class ConfigurationService
- *
  * @package App\Crm\Transport\Configuration
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -36,8 +34,7 @@ final class ConfigurationService implements ConfigLoaderInterface
     public function __construct(
         private readonly ConfigurationRepository $configurationRepository,
         private readonly CacheInterface $cache
-    )
-    {
+    ) {
     }
 
     /**
@@ -63,7 +60,9 @@ final class ConfigurationService implements ConfigLoaderInterface
 
     public function getConfiguration(string $name): ?Configuration
     {
-        return $this->configurationRepository->findOneBy(['name' => $name]);
+        return $this->configurationRepository->findOneBy([
+            'name' => $name,
+        ]);
     }
 
     /**
@@ -85,8 +84,6 @@ final class ConfigurationService implements ConfigLoaderInterface
     }
 
     /**
-     * @param SystemConfiguration $model
-     *
      * @throws InvalidArgumentException
      * @throws ORMException
      */

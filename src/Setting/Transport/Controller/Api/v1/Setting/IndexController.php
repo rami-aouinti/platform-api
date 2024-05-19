@@ -91,7 +91,7 @@ readonly class IndexController
             $this->serializer->serialize(
                 $settingRepository->findOneBy(
                     [
-                        'author' => $loggedInUser
+                        'author' => $loggedInUser,
                     ]
                 ),
                 'json',

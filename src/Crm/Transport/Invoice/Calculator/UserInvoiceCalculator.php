@@ -21,12 +21,12 @@ final class UserInvoiceCalculator extends AbstractSumInvoiceCalculator implement
 {
     public function getIdentifiers(ExportableItem $invoiceItem): array
     {
-        if (null === $invoiceItem->getUser()?->getId()) {
+        if ($invoiceItem->getUser()?->getId() === null) {
             throw new \Exception('Cannot handle un-persisted user');
         }
 
         return [
-            $invoiceItem->getUser()->getId()
+            $invoiceItem->getUser()->getId(),
         ];
     }
 

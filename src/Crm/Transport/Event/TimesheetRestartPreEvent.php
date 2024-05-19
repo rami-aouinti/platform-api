@@ -15,8 +15,10 @@ use App\Crm\Domain\Entity\Timesheet;
 
 final class TimesheetRestartPreEvent extends AbstractTimesheetEvent
 {
-    public function __construct(Timesheet $new, private Timesheet $original)
-    {
+    public function __construct(
+        Timesheet $new,
+        private Timesheet $original
+    ) {
         parent::__construct($new);
     }
 

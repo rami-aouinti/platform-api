@@ -23,8 +23,7 @@ final class TimesheetOverlappingValidator extends ConstraintValidator
     public function __construct(
         private readonly SystemConfiguration $configuration,
         private readonly TimesheetRepository $repository
-    )
-    {
+    ) {
     }
 
     public function validate(mixed $value, Constraint $constraint): void

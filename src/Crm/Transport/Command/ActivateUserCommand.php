@@ -20,16 +20,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Class ActivateUserCommand
- *
  * @package App\Crm\Transport\Command
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 #[AsCommand(name: 'kimai:user:activate')]
 final class ActivateUserCommand extends Command
 {
-    public function __construct(private UserService $userService)
-    {
+    public function __construct(
+        private UserService $userService
+    ) {
         parent::__construct();
     }
 

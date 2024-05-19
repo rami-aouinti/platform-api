@@ -18,8 +18,9 @@ final class CalendarConfigurationEvent extends Event
     /**
      * @param array<string, string|int|bool|array> $configuration
      */
-    public function __construct(private array $configuration)
-    {
+    public function __construct(
+        private array $configuration
+    ) {
     }
 
     public function getConfiguration(): array

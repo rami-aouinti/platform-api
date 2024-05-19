@@ -11,9 +11,6 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Doctrine;
 
-/**
- *
- */
 interface ModifiedAt
 {
     public function setModifiedAt(\DateTimeImmutable $dateTime): void;

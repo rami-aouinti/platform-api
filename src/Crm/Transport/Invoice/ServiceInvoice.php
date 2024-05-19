@@ -11,19 +11,19 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Invoice;
 
-use App\Crm\Transport\Configuration\LocaleService;
+use App\Crm\Application\Model\InvoiceDocument;
+use App\Crm\Application\Utils\FileHelper;
 use App\Crm\Domain\Entity\ExportableItem;
 use App\Crm\Domain\Entity\Invoice;
+use App\Crm\Domain\Repository\InvoiceDocumentRepository;
+use App\Crm\Domain\Repository\InvoiceRepository;
+use App\Crm\Domain\Repository\Query\InvoiceQuery;
+use App\Crm\Transport\Configuration\LocaleService;
 use App\Crm\Transport\Event\InvoiceCreatedEvent;
 use App\Crm\Transport\Event\InvoiceDeleteEvent;
 use App\Crm\Transport\Event\InvoicePostRenderEvent;
 use App\Crm\Transport\Event\InvoicePreRenderEvent;
 use App\Export\Base\DispositionInlineInterface;
-use App\Crm\Application\Model\InvoiceDocument;
-use App\Crm\Domain\Repository\InvoiceDocumentRepository;
-use App\Crm\Domain\Repository\InvoiceRepository;
-use App\Crm\Domain\Repository\Query\InvoiceQuery;
-use App\Crm\Application\Utils\FileHelper;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -59,7 +59,7 @@ final class ServiceInvoice
     ) {
     }
 
-    public function addNumberGenerator(NumberGeneratorInterface $generator): ServiceInvoice
+    public function addNumberGenerator(NumberGeneratorInterface $generator): self
     {
         $this->numberGenerator[] = $generator;
 
@@ -87,7 +87,7 @@ final class ServiceInvoice
         return null;
     }
 
-    public function addCalculator(CalculatorInterface $calculator): ServiceInvoice
+    public function addCalculator(CalculatorInterface $calculator): self
     {
         $this->calculator[] = $calculator;
 
@@ -123,7 +123,6 @@ final class ServiceInvoice
     /**
      * Returns an array of invoice renderer, which will consist of a unique name and a controller action.
      *
-     * @param bool $customOnly
      * @return InvoiceDocument[]
      */
     public function getDocuments(bool $customOnly = false): array
@@ -135,7 +134,7 @@ final class ServiceInvoice
         return $this->documents->findAll();
     }
 
-    public function addRenderer(RendererInterface $renderer): ServiceInvoice
+    public function addRenderer(RendererInterface $renderer): self
     {
         $this->renderer[] = $renderer;
 
@@ -160,16 +159,11 @@ final class ServiceInvoice
         return $this->invoiceItemRepositories;
     }
 
-    public function addInvoiceItemRepository(InvoiceItemRepositoryInterface $invoiceItemRepository): ServiceInvoice
+    public function addInvoiceItemRepository(InvoiceItemRepositoryInterface $invoiceItemRepository): self
     {
         $this->invoiceItemRepositories[] = $invoiceItemRepository;
 
         return $this;
-    }
-
-    private function getInvoicesDirectory(): string
-    {
-        return $this->fileHelper->getDataDirectory('invoices');
     }
 
     public function getInvoiceFile(Invoice $invoice): ?\SplFileInfo
@@ -188,7 +182,7 @@ final class ServiceInvoice
     public function saveGeneratedInvoice(InvoicePostRenderEvent $event): string
     {
         $invoiceDirectory = $this->getInvoicesDirectory();
-        $filename = (string) new InvoiceFilename($event->getModel());
+        $filename = (string)new InvoiceFilename($event->getModel());
 
         $response = $event->getResponse();
 
@@ -237,19 +231,15 @@ final class ServiceInvoice
             case Invoice::STATUS_NEW:
                 $invoice->setIsNew();
                 break;
-
             case Invoice::STATUS_PENDING:
                 $invoice->setIsPending();
                 break;
-
             case Invoice::STATUS_PAID:
                 $invoice->setIsPaid();
                 break;
-
             case Invoice::STATUS_CANCELED:
                 $invoice->setIsCanceled();
                 break;
-
             default:
                 throw new \InvalidArgumentException('Unknown invoice status');
         }
@@ -271,20 +261,10 @@ final class ServiceInvoice
         return $items;
     }
 
-    /**
-     * @param ExportableItem[] $entries
-     */
-    private function markEntriesAsExported(array $entries): void
-    {
-        foreach ($this->getInvoiceItemRepositories() as $repository) {
-            $repository->setExported($entries);
-        }
-    }
-
     public function renderInvoice(InvoiceModel $model, EventDispatcherInterface $dispatcher, bool $dispositionInline = false): Response
     {
         $document = $this->getDocumentByName($model->getTemplate()->getRenderer());
-        if (null === $document) {
+        if ($document === null) {
             throw new \Exception('Please adjust your invoice template, the renderer is invalid: ' . $model->getTemplate()->getRenderer());
         }
 
@@ -315,7 +295,7 @@ final class ServiceInvoice
     public function createInvoice(InvoiceModel $model, EventDispatcherInterface $dispatcher): Invoice
     {
         $document = $this->getDocumentByName($model->getTemplate()->getRenderer());
-        if (null === $document) {
+        if ($document === null) {
             throw new \Exception('Unknown invoice document: ' . $model->getTemplate()->getRenderer());
         }
 
@@ -387,99 +367,6 @@ final class ServiceInvoice
         return $model;
     }
 
-    private function createModelWithoutEntries(InvoiceQuery $query): InvoiceModel
-    {
-        $customer = $query->getCustomer();
-        if ($customer === null) {
-            throw new \Exception('Cannot create invoice model without customer');
-        }
-
-        $template = $query->getTemplate();
-
-        if ($query->isAllowTemplateOverwrite() && $customer->hasInvoiceTemplate()) {
-            $template = $customer->getInvoiceTemplate();
-        }
-
-        if (null === $template) {
-            throw new \Exception('Cannot create invoice model without template');
-        }
-
-        $formatter = new DefaultInvoiceFormatter($this->formatter, $template->getLanguage());
-
-        $model = $this->invoiceModelFactory->createModel(
-            $formatter,
-            $customer,
-            $template,
-            $query
-        );
-
-        if ($query->getInvoiceDate() !== null) {
-            $model->setInvoiceDate($query->getInvoiceDate());
-        }
-
-        if (null !== $query->getCurrentUser()) {
-            $model->setUser($query->getCurrentUser());
-        }
-
-        $generator = $this->getNumberGeneratorByName($template->getNumberGenerator());
-        if (null === $generator) {
-            throw new \Exception('Please adjust your invoice template, the number generator is invalid: ' . $template->getNumberGenerator());
-        }
-
-        $calculator = $this->getCalculatorByName($template->getCalculator());
-        if (null === $calculator) {
-            throw new \Exception('Please adjust your invoice template, the sum calculator is invalid: ' . $template->getCalculator());
-        }
-
-        $model->setCalculator($calculator);
-        $model->setNumberGenerator($generator);
-
-        return $model;
-    }
-
-    private function prepareModelQueryDates(InvoiceModel $model): void
-    {
-        $begin = $model->getQuery()?->getBegin();
-        $end = $model->getQuery()?->getEnd();
-
-        if ($begin !== null && $end !== null) {
-            return;
-        }
-
-        if (\count($model->getEntries()) === 0) {
-            return;
-        }
-
-        $tmpBegin = null;
-        $tmpEnd = null;
-
-        foreach ($model->getEntries() as $entry) {
-            if ($begin === null) {
-                if ($tmpBegin === null) {
-                    $tmpBegin = $entry->getBegin();
-                } else {
-                    $tmpBegin = min($entry->getBegin(), $tmpBegin);
-                }
-            }
-
-            if ($end === null) {
-                if ($tmpEnd === null) {
-                    $tmpEnd = $entry->getEnd();
-                } else {
-                    $tmpEnd = max($entry->getEnd(), $tmpEnd);
-                }
-            }
-        }
-
-        if ($begin === null && $tmpBegin !== null) {
-            $model->getQuery()->setBegin($tmpBegin);
-        }
-
-        if ($end === null && $tmpEnd !== null) {
-            $model->getQuery()->setEnd($tmpEnd);
-        }
-    }
-
     /**
      * @return InvoiceModel[]
      * @throws \Exception
@@ -537,5 +424,113 @@ final class ServiceInvoice
         }
 
         return $models;
+    }
+
+    private function getInvoicesDirectory(): string
+    {
+        return $this->fileHelper->getDataDirectory('invoices');
+    }
+
+    /**
+     * @param ExportableItem[] $entries
+     */
+    private function markEntriesAsExported(array $entries): void
+    {
+        foreach ($this->getInvoiceItemRepositories() as $repository) {
+            $repository->setExported($entries);
+        }
+    }
+
+    private function createModelWithoutEntries(InvoiceQuery $query): InvoiceModel
+    {
+        $customer = $query->getCustomer();
+        if ($customer === null) {
+            throw new \Exception('Cannot create invoice model without customer');
+        }
+
+        $template = $query->getTemplate();
+
+        if ($query->isAllowTemplateOverwrite() && $customer->hasInvoiceTemplate()) {
+            $template = $customer->getInvoiceTemplate();
+        }
+
+        if ($template === null) {
+            throw new \Exception('Cannot create invoice model without template');
+        }
+
+        $formatter = new DefaultInvoiceFormatter($this->formatter, $template->getLanguage());
+
+        $model = $this->invoiceModelFactory->createModel(
+            $formatter,
+            $customer,
+            $template,
+            $query
+        );
+
+        if ($query->getInvoiceDate() !== null) {
+            $model->setInvoiceDate($query->getInvoiceDate());
+        }
+
+        if ($query->getCurrentUser() !== null) {
+            $model->setUser($query->getCurrentUser());
+        }
+
+        $generator = $this->getNumberGeneratorByName($template->getNumberGenerator());
+        if ($generator === null) {
+            throw new \Exception('Please adjust your invoice template, the number generator is invalid: ' . $template->getNumberGenerator());
+        }
+
+        $calculator = $this->getCalculatorByName($template->getCalculator());
+        if ($calculator === null) {
+            throw new \Exception('Please adjust your invoice template, the sum calculator is invalid: ' . $template->getCalculator());
+        }
+
+        $model->setCalculator($calculator);
+        $model->setNumberGenerator($generator);
+
+        return $model;
+    }
+
+    private function prepareModelQueryDates(InvoiceModel $model): void
+    {
+        $begin = $model->getQuery()?->getBegin();
+        $end = $model->getQuery()?->getEnd();
+
+        if ($begin !== null && $end !== null) {
+            return;
+        }
+
+        if (\count($model->getEntries()) === 0) {
+            return;
+        }
+
+        $tmpBegin = null;
+        $tmpEnd = null;
+
+        foreach ($model->getEntries() as $entry) {
+            if ($begin === null) {
+                if ($tmpBegin === null) {
+                    $tmpBegin = $entry->getBegin();
+                } else {
+                    $tmpBegin = min($entry->getBegin(), $tmpBegin);
+                }
+            }
+
+            if ($end === null) {
+                if ($tmpEnd === null) {
+                    $tmpEnd = $entry->getEnd();
+                } else {
+                    $tmpEnd = max($entry->getEnd(), $tmpEnd);
+                }
+            }
+        }
+
+        if ($begin === null && $tmpBegin !== null) {
+            $model->getQuery()->setBegin($tmpBegin);
+        }
+
+        if ($end === null && $tmpEnd !== null) {
+            $model->getQuery()->setEnd($tmpEnd);
+        }
     }
 }

@@ -24,8 +24,7 @@ final class TagArrayToStringTransformer implements DataTransformerInterface
     public function __construct(
         private readonly TagRepository $tagRepository,
         private readonly bool $create
-    )
-    {
+    ) {
     }
 
     /**
@@ -54,13 +53,15 @@ final class TagArrayToStringTransformer implements DataTransformerInterface
     public function reverseTransform(mixed $value): mixed
     {
         // check for empty tag list
-        if ('' === $value || null === $value) {
+        if ($value === '' || $value === null) {
             return [];
         }
         $names = array_filter(array_unique(array_map('trim', explode(',', $value))));
 
         // get the current tags and find the new ones that should be created
-        $tags = $this->tagRepository->findBy(['name' => $names]);
+        $tags = $this->tagRepository->findBy([
+            'name' => $names,
+        ]);
         if ($this->create) {
             // works, because of the implicit case: (string) $tag
             $newNames = array_diff($names, $tags);

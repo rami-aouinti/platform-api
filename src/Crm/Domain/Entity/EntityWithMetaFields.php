@@ -22,5 +22,5 @@ interface EntityWithMetaFields
 
     public function getMetaField(string $name): ?MetaTableTypeInterface;
 
-    public function setMetaField(MetaTableTypeInterface $meta): EntityWithMetaFields;
+    public function setMetaField(MetaTableTypeInterface $meta): self;
 }

@@ -11,18 +11,12 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Pdf;
 
-/**
- *
- */
 interface HtmlToPdfConverter
 {
     /**
      * Returns the binary content of the PDF, which can be saved as file.
      * Throws an exception if conversion fails.
      *
-     * @param string $html
-     * @param array $options
-     * @return string
      * @throws \Exception
      */
     public function convertToPdf(string $html, array $options = []): string;

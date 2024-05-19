@@ -14,8 +14,6 @@ namespace App\Crm\Transport\Form\API;
 use App\Crm\Transport\Form\ActivityRateForm;
 
 /**
- * Class ActivityRateApiForm
- *
  * @package App\Crm\Transport\Form\API
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

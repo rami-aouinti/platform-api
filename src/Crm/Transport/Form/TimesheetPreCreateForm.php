@@ -28,13 +28,23 @@ final class TimesheetPreCreateForm extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $this->addProject($builder, true, null, null, ['required' => false]);
-        $this->addActivity($builder, null, null, ['required' => false]);
-        $builder->add('description', DescriptionType::class, ['required' => false]);
-        $builder->add('tags', TagsInputType::class, ['required' => false]);
+        $this->addProject($builder, true, null, null, [
+            'required' => false,
+        ]);
+        $this->addActivity($builder, null, null, [
+            'required' => false,
+        ]);
+        $builder->add('description', DescriptionType::class, [
+            'required' => false,
+        ]);
+        $builder->add('tags', TagsInputType::class, [
+            'required' => false,
+        ]);
         $builder->add('metaFields', MetaFieldsCollectionType::class);
         if ($options['include_user']) {
-            $builder->add('user', UserType::class, ['required' => false]);
+            $builder->add('user', UserType::class, [
+                'required' => false,
+            ]);
         }
     }
 
@@ -44,7 +54,7 @@ final class TimesheetPreCreateForm extends AbstractType
             'csrf_protection' => false,
             'include_user' => false,
             'method' => 'GET',
-            'validation_groups' => ['none'] // otherwise the default timesheet validations would trigger
+            'validation_groups' => ['none'], // otherwise the default timesheet validations would trigger
         ]);
     }
 }

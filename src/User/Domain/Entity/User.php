@@ -21,16 +21,16 @@ use App\User\Domain\Entity\Traits\Blameable;
 use App\User\Domain\Entity\Traits\UserRelations;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
+use OpenApi\Attributes as OA;
 use Ramsey\Uuid\Doctrine\UuidBinaryOrderedTimeType;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints as AssertCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Common\Collections\Collection;
-use JMS\Serializer\Annotation as Serializer;
-use OpenApi\Attributes as OA;
 use Throwable;
 
 /**
@@ -313,7 +313,6 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     ])]
     private ?string $facebookId = null;
 
-
     #[ORM\Column(
         type: 'string',
         nullable: true
@@ -512,58 +511,64 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
         return $this;
     }
 
-    public  function getPhone(): string
+    public function getPhone(): string
     {
         return $this->phone;
     }
-    public  function setPhone(string $phone):self
+    public function setPhone(string $phone): self
     {
         $this->phone = $phone;
+
         return $this;
     }
-    public  function getTitle(): string
+    public function getTitle(): string
     {
         return $this->title;
     }
-    public  function setTitle(string $title):self
+    public function setTitle(string $title): self
     {
         $this->title = $title;
+
         return $this;
     }
-    public  function getDescription(): string
+    public function getDescription(): string
     {
         return $this->description;
     }
-    public  function setDescription(string $description):self
+    public function setDescription(string $description): self
     {
         $this->description = $description;
+
         return $this;
     }
-    public  function getFacebookId(): ?string
+    public function getFacebookId(): ?string
     {
         return $this->facebookId;
     }
-    public  function setFacebookId(?string $facebookId):self
+    public function setFacebookId(?string $facebookId): self
     {
         $this->facebookId = $facebookId;
+
         return $this;
     }
-    public  function getInstagramId(): ?string
+    public function getInstagramId(): ?string
     {
         return $this->instagramId;
     }
-    public  function setInstagramId(?string $instagramId):self
+    public function setInstagramId(?string $instagramId): self
     {
         $this->instagramId = $instagramId;
+
         return $this;
     }
-    public  function getTwitterId(): ?string
+    public function getTwitterId(): ?string
     {
         return $this->twitterId;
     }
-    public  function setTwitterId(?string $twitterId):self
+    public function setTwitterId(?string $twitterId): self
     {
         $this->twitterId = $twitterId;
+
         return $this;
     }
 
@@ -608,11 +613,11 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
         return $this;
     }
 
-    public  function getGoogleId(): ?string
+    public function getGoogleId(): ?string
     {
         return $this->googleId;
     }
-    public  function setGoogleId(?string $googleId):self
+    public function setGoogleId(?string $googleId): self
     {
         $this->googleId = $googleId;
 
@@ -741,9 +746,8 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
 
     /**
      * @param iterable<UserPreference> $preferences
-     * @return User
      */
-    public function setPreferences(iterable $preferences): User
+    public function setPreferences(iterable $preferences): self
     {
         $this->preferences = new ArrayCollection();
 
@@ -755,15 +759,12 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     }
 
     /**
-     * @param string $name
      * @param bool|int|float|string|null $default
-     * @param bool $allowNull
-     * @return bool|int|float|string|null
      */
     public function getPreferenceValue(string $name, mixed $default = null, bool $allowNull = true): bool|int|float|string|null
     {
         $preference = $this->getPreference($name);
-        if (null === $preference) {
+        if ($preference === null) {
             return $default;
         }
 
@@ -787,14 +788,9 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
         return null;
     }
 
-
-    /**
-     * @param UserPreference $preference
-     * @return User
-     */
-    public function addPreference(UserPreference $preference): User
+    public function addPreference(UserPreference $preference): self
     {
-        if (null === $this->preferences) {
+        if ($this->preferences === null) {
             $this->preferences = new ArrayCollection();
         }
 
@@ -824,23 +820,12 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
             return;
         }
 
-        if (null !== $this->findMemberByTeam($team)) {
+        if ($this->findMemberByTeam($team) !== null) {
             return;
         }
 
         $this->memberships->add($member);
         $team->addMember($member);
-    }
-
-    private function findMemberByTeam(Team $team): ?TeamMember
-    {
-        foreach ($this->memberships as $member) {
-            if ($member->getTeam() === $team) {
-                return $member;
-            }
-        }
-
-        return null;
     }
 
     public function removeMembership(TeamMember $member): void
@@ -868,5 +853,16 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     public function hasMembership(TeamMember $member): bool
     {
         return $this->memberships->contains($member);
+    }
+
+    private function findMemberByTeam(Team $team): ?TeamMember
+    {
+        foreach ($this->memberships as $member) {
+            if ($member->getTeam() === $team) {
+                return $member;
+            }
+        }
+
+        return null;
     }
 }

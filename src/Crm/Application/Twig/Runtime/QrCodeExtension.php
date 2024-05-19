@@ -21,9 +21,7 @@ final class QrCodeExtension implements RuntimeExtensionInterface
     }
 
     /**
-     * @param string $data
      * @param array<string, mixed> $writerOptions
-     * @return string
      */
     public function qrCodeDataUriFunction(string $data, array $writerOptions = []): string
     {

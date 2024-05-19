@@ -27,20 +27,54 @@ abstract class AbstractTimesheetSubscriber extends AbstractActionsSubscriber
         $timesheet = $payload['timesheet'];
         if ($timesheet->getId() !== null) {
             if ($timesheet->isRunning() && $this->isGranted('stop', $timesheet)) {
-                $event->addAction('stop', ['url' => $this->path('stop_timesheet', ['id' => $timesheet->getId()]), 'class' => 'api-link dd-ts-stop', 'attr' => ['data-event' => 'kimai.timesheetStop kimai.timesheetUpdate', 'data-method' => 'PATCH', 'data-msg-error' => 'timesheet.stop.error', 'data-msg-success' => 'timesheet.stop.success']]);
+                $event->addAction('stop', [
+                    'url' => $this->path('stop_timesheet', [
+                        'id' => $timesheet->getId(),
+                    ]),
+                    'class' => 'api-link dd-ts-stop',
+                    'attr' => [
+                        'data-event' => 'kimai.timesheetStop kimai.timesheetUpdate',
+                        'data-method' => 'PATCH',
+                        'data-msg-error' => 'timesheet.stop.error',
+                        'data-msg-success' => 'timesheet.stop.success',
+                    ],
+                ]);
             }
 
             if (!$timesheet->isRunning() && $this->isGranted('start', $timesheet)) {
-                $event->addAction('repeat', ['title' => 'repeat', 'translation_domain' => 'actions', 'url' => $this->path('restart_timesheet', ['id' => $timesheet->getId()]), 'class' => 'api-link dd-ts-repeat', 'attr' => ['data-payload' => '{"copy": "all"}', 'data-event' => 'kimai.timesheetStart kimai.timesheetUpdate', 'data-method' => 'PATCH', 'data-msg-error' => 'timesheet.start.error', 'data-msg-success' => 'timesheet.start.success']]);
+                $event->addAction('repeat', [
+                    'title' => 'repeat',
+                    'translation_domain' => 'actions',
+                    'url' => $this->path('restart_timesheet', [
+                        'id' => $timesheet->getId(),
+                    ]),
+                    'class' => 'api-link dd-ts-repeat',
+                    'attr' => [
+                        'data-payload' => '{"copy": "all"}',
+                        'data-event' => 'kimai.timesheetStart kimai.timesheetUpdate',
+                        'data-method' => 'PATCH',
+                        'data-msg-error' => 'timesheet.start.error',
+                        'data-msg-success' => 'timesheet.start.success',
+                    ],
+                ]);
             }
 
             if ($this->isGranted('edit', $timesheet)) {
-                $event->addEdit($this->path($routeEdit, ['id' => $timesheet->getId()]), !$event->isView('edit'), 'dd-ts-edit');
+                $event->addEdit($this->path($routeEdit, [
+                    'id' => $timesheet->getId(),
+                ]), !$event->isView('edit'), 'dd-ts-edit');
             }
 
             if ($this->isGranted('duplicate', $timesheet)) {
                 $class = $event->isView('edit') ? '' : 'modal-ajax-form';
-                $event->addAction('copy', ['title' => 'copy', 'translation_domain' => 'actions', 'url' => $this->path($routeDuplicate, ['id' => $timesheet->getId()]), 'class' => $class . ' dd-ts-duplicate']);
+                $event->addAction('copy', [
+                    'title' => 'copy',
+                    'translation_domain' => 'actions',
+                    'url' => $this->path($routeDuplicate, [
+                        'id' => $timesheet->getId(),
+                    ]),
+                    'class' => $class . ' dd-ts-duplicate',
+                ]);
             }
 
             if ($event->countActions() > 0) {
@@ -49,7 +83,9 @@ abstract class AbstractTimesheetSubscriber extends AbstractActionsSubscriber
 
             if (($event->isIndexView() || $event->isView('calendar')) && $this->isGranted('delete', $timesheet)) {
                 $event->addAction('trash', [
-                    'url' => $this->path('delete_timesheet', ['id' => $timesheet->getId()]),
+                    'url' => $this->path('delete_timesheet', [
+                        'id' => $timesheet->getId(),
+                    ]),
                     'class' => 'api-link text-red dd-ts-trash',
                     'translation_domain' => 'actions',
                     'attr' => [
@@ -57,8 +93,8 @@ abstract class AbstractTimesheetSubscriber extends AbstractActionsSubscriber
                         'data-method' => 'DELETE',
                         'data-question' => 'confirm.delete',
                         'data-msg-error' => 'action.delete.error',
-                        'data-msg-success' => 'action.delete.success'
-                    ]
+                        'data-msg-success' => 'action.delete.success',
+                    ],
                 ]);
             }
         }

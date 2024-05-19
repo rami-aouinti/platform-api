@@ -24,9 +24,7 @@ interface CalculatorInterface
     /**
      * All necessary changes need to be applied on the given $record.
      *
-     * @param Timesheet $record
      * @param array<string, array<mixed, mixed>> $changeset
-     * @return void
      */
     public function calculate(Timesheet $record, array $changeset): void;
 

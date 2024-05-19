@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Repository;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Domain\Entity\WorkingTime;
+use App\User\Domain\Entity\User;
 use Doctrine\ORM\EntityRepository;
 
 /**

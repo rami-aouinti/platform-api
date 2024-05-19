@@ -13,8 +13,9 @@ namespace App\Crm\Transport\Configuration;
 
 final class MailConfiguration
 {
-    public function __construct(private string $mailFrom)
-    {
+    public function __construct(
+        private string $mailFrom
+    ) {
     }
 
     public function getFromAddress(): ?string

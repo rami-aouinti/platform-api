@@ -11,23 +11,67 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Pdf;
 
-use App\Crm\Constants;
 use App\Crm\Application\Utils\FileHelper;
+use App\Crm\Constants;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\Mpdf;
 use Mpdf\Output\Destination;
 
 /**
- * Class MPdfConverter
- *
  * @package App\Crm\Application\Pdf
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class MPdfConverter implements HtmlToPdfConverter
 {
-    public function __construct(private readonly FileHelper $fileHelper, private readonly string $cacheDirectory)
+    public function __construct(
+        private readonly FileHelper $fileHelper,
+        private readonly string $cacheDirectory
+    ) {
+    }
+
+    /**
+     * @throws \Mpdf\MpdfException
+     */
+    public function convertToPdf(string $html, array $options = []): string
     {
+        $sanitized = array_merge(
+            $this->sanitizeOptions($options),
+            [
+                'tempDir' => $this->cacheDirectory,
+                'exposeVersion' => false,
+            ]
+        );
+
+        $mpdf = $this->initMpdf($sanitized);
+
+        // some OS'es do not follow the PHP default settings
+        if ((int)\ini_get('pcre.backtrack_limit') < 1000000) {
+            @ini_set('pcre.backtrack_limit', '1000000');
+        }
+
+        // large amount of data take time
+        @ini_set('max_execution_time', '120');
+
+        // reduce the size of content parts that are passed to MPDF, to prevent
+        // https://mpdf.github.io/troubleshooting/known-issues.html#blank-pages-or-some-sections-missing
+        $parts = explode('<pagebreak>', $html);
+        for ($i = 0; $i < \count($parts); $i++) {
+            if (stripos($parts[$i], '<!-- CONTENT_PART -->') !== false) {
+                $subParts = explode('<!-- CONTENT_PART -->', $parts[$i]);
+                foreach ($subParts as $subPart) {
+                    $mpdf->WriteHTML($subPart);
+                }
+            } else {
+                $mpdf->WriteHTML($parts[$i]);
+            }
+
+            if ($i < \count($parts) - 1) {
+                $mpdf->WriteHTML('<pagebreak>');
+            }
+        }
+
+        return $mpdf->Output('', Destination::STRING_RETURN);
     }
 
     private function sanitizeOptions(array $options): array
@@ -57,52 +101,7 @@ final class MPdfConverter implements HtmlToPdfConverter
     }
 
     /**
-     * @param string $html
-     * @param array $options
-     * @return string
-     * @throws \Mpdf\MpdfException
-     */
-    public function convertToPdf(string $html, array $options = []): string
-    {
-        $sanitized = array_merge(
-            $this->sanitizeOptions($options),
-            ['tempDir' => $this->cacheDirectory, 'exposeVersion' => false]
-        );
-
-        $mpdf = $this->initMpdf($sanitized);
-
-        // some OS'es do not follow the PHP default settings
-        if ((int) \ini_get('pcre.backtrack_limit') < 1000000) {
-            @ini_set('pcre.backtrack_limit', '1000000');
-        }
-
-        // large amount of data take time
-        @ini_set('max_execution_time', '120');
-
-        // reduce the size of content parts that are passed to MPDF, to prevent
-        // https://mpdf.github.io/troubleshooting/known-issues.html#blank-pages-or-some-sections-missing
-        $parts = explode('<pagebreak>', $html);
-        for ($i = 0; $i < \count($parts); $i++) {
-            if (stripos($parts[$i], '<!-- CONTENT_PART -->') !== false) {
-                $subParts = explode('<!-- CONTENT_PART -->', $parts[$i]);
-                foreach ($subParts as $subPart) {
-                    $mpdf->WriteHTML($subPart);
-                }
-            } else {
-                $mpdf->WriteHTML($parts[$i]);
-            }
-
-            if ($i < \count($parts) - 1) {
-                $mpdf->WriteHTML('<pagebreak>');
-            }
-        }
-
-        return $mpdf->Output('', Destination::STRING_RETURN);
-    }
-
-    /**
      * @param array<string, array<mixed>> $options
-     * @return Mpdf
      */
     private function initMpdf(array $options): Mpdf
     {

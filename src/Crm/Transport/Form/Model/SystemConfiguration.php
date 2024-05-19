@@ -20,8 +20,9 @@ final class SystemConfiguration
      */
     private array $configuration = [];
 
-    public function __construct(private ?string $section = null)
-    {
+    public function __construct(
+        private ?string $section = null
+    ) {
     }
 
     public function getSection(): ?string
@@ -29,7 +30,7 @@ final class SystemConfiguration
         return $this->section;
     }
 
-    public function setTranslation(string $translation): SystemConfiguration
+    public function setTranslation(string $translation): self
     {
         $this->translation = $translation;
 
@@ -41,7 +42,7 @@ final class SystemConfiguration
         return $this->translation ?? $this->section;
     }
 
-    public function setTranslationDomain(string $domain): SystemConfiguration
+    public function setTranslationDomain(string $domain): self
     {
         $this->translationDomain = $domain;
 
@@ -74,16 +75,15 @@ final class SystemConfiguration
 
     /**
      * @param Configuration[] $configuration
-     * @return SystemConfiguration
      */
-    public function setConfiguration(array $configuration): SystemConfiguration
+    public function setConfiguration(array $configuration): self
     {
         $this->configuration = $configuration;
 
         return $this;
     }
 
-    public function addConfiguration(Configuration $configuration): SystemConfiguration
+    public function addConfiguration(Configuration $configuration): self
     {
         $this->configuration[] = $configuration;
 

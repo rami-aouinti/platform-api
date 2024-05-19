@@ -39,7 +39,7 @@ final class WeekPickerType extends AbstractType
         /** @var \DateTimeInterface|null $date */
         $date = $form->getData();
 
-        if (null === $date) {
+        if ($date === null) {
             /** @var \DateTimeImmutable $date */
             $date = $options['start_date'];
         }

@@ -11,22 +11,23 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Export\Spreadsheet;
 
-use App\User\Domain\Entity\User;
-use App\Crm\Transport\Event\UserPreferenceDisplayEvent;
 use App\Crm\Application\Export\Spreadsheet\Extractor\AnnotationExtractor;
 use App\Crm\Application\Export\Spreadsheet\Extractor\UserPreferenceExtractor;
+use App\Crm\Transport\Event\UserPreferenceDisplayEvent;
+use App\User\Domain\Entity\User;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 final class UserExporter
 {
-    public function __construct(private SpreadsheetExporter $exporter, private AnnotationExtractor $annotationExtractor, private UserPreferenceExtractor $userPreferenceExtractor)
-    {
+    public function __construct(
+        private SpreadsheetExporter $exporter,
+        private AnnotationExtractor $annotationExtractor,
+        private UserPreferenceExtractor $userPreferenceExtractor
+    ) {
     }
 
     /**
      * @param User[] $entries
-     * @param UserPreferenceDisplayEvent $event
-     * @return Spreadsheet
      * @throws Extractor\ExtractorException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */

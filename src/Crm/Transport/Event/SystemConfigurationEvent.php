@@ -22,8 +22,9 @@ final class SystemConfigurationEvent extends Event
     /**
      * @param SystemConfiguration[] $configurations
      */
-    public function __construct(private array $configurations)
-    {
+    public function __construct(
+        private array $configurations
+    ) {
     }
 
     /**
@@ -34,11 +35,7 @@ final class SystemConfigurationEvent extends Event
         return $this->configurations;
     }
 
-    /**
-     * @param SystemConfiguration $configuration
-     * @return SystemConfigurationEvent
-     */
-    public function addConfiguration(SystemConfiguration $configuration): SystemConfigurationEvent
+    public function addConfiguration(SystemConfiguration $configuration): self
     {
         $this->configurations[] = $configuration;
 

@@ -13,7 +13,9 @@ use Twig\Sandbox\SecurityPolicyInterface;
 
 final class ChainPolicy implements SecurityPolicyInterface
 {
-    /** @var array<SecurityPolicyInterface> */
+    /**
+     * @var array<SecurityPolicyInterface>
+     */
     private array $policies = [];
 
     public function __construct()

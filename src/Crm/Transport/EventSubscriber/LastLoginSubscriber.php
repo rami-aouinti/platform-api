@@ -11,22 +11,21 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\EventSubscriber;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Transport\Event\UserInteractiveLoginEvent;
+use App\User\Domain\Entity\User;
 use App\User\Infrastructure\Repository\UserRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
 
 /**
- * Class LastLoginSubscriber
- *
  * @package App\Crm\Transport\EventSubscriber
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class LastLoginSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private UserRepository $repository)
-    {
+    public function __construct(
+        private UserRepository $repository
+    ) {
     }
 
     public static function getSubscribedEvents(): array

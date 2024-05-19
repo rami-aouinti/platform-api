@@ -12,8 +12,8 @@ declare(strict_types=1);
 namespace App\Crm\Transport\Form\Type;
 
 use App\Crm\Application\Configuration\SystemConfiguration;
-use App\Crm\Constants;
 use App\Crm\Application\Utils\Color;
+use App\Crm\Constants;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -24,8 +24,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class ColorChoiceType extends AbstractType implements DataTransformerInterface
 {
-    public function __construct(private SystemConfiguration $systemConfiguration)
-    {
+    public function __construct(
+        private SystemConfiguration $systemConfiguration
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -47,7 +48,9 @@ final class ColorChoiceType extends AbstractType implements DataTransformerInter
                     $color = (new Color())->getRandom($name);
                 }
 
-                return ['data-color' => $color];
+                return [
+                    'data-color' => $color,
+                ];
             },
         ];
 
@@ -71,8 +74,22 @@ final class ColorChoiceType extends AbstractType implements DataTransformerInter
         ]);
     }
 
+    public function transform(mixed $data): mixed
+    {
+        return $data;
+    }
+
+    public function reverseTransform(mixed $value): mixed
+    {
+        return $value;
+    }
+
+    public function getParent(): string
+    {
+        return ChoiceType::class;
+    }
+
     /**
-     * @param string $config
      * @return array<string, string>
      */
     private function convertStringToColorArray(string $config): array
@@ -104,20 +121,5 @@ final class ColorChoiceType extends AbstractType implements DataTransformerInter
         }
 
         return array_unique($colors);
-    }
-
-    public function transform(mixed $data): mixed
-    {
-        return $data;
-    }
-
-    public function reverseTransform(mixed $value): mixed
-    {
-        return $value;
-    }
-
-    public function getParent(): string
-    {
-        return ChoiceType::class;
     }
 }

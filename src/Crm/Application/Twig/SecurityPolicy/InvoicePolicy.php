@@ -9,8 +9,8 @@
 
 namespace App\Crm\Application\Twig\SecurityPolicy;
 
-use App\Crm\Transport\Invoice\InvoiceModel;
 use App\Crm\Application\Pdf\PdfContext;
+use App\Crm\Transport\Invoice\InvoiceModel;
 use Symfony\Component\String\UnicodeString;
 use Twig\Markup;
 use Twig\Sandbox\SecurityPolicy;

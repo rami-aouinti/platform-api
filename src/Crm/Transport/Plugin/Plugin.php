@@ -15,8 +15,9 @@ final class Plugin
 {
     private ?PluginMetadata $metadata = null;
 
-    public function __construct(private readonly PluginInterface $bundle)
-    {
+    public function __construct(
+        private readonly PluginInterface $bundle
+    ) {
     }
 
     public function getMetadata(): PluginMetadata

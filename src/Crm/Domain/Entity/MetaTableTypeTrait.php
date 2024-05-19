@@ -44,7 +44,9 @@ trait MetaTableTypeTrait
     #[Serializer\Expose]
     #[Serializer\Groups(['Default'])]
     private ?string $value = null;
-    #[ORM\Column(name: 'visible', type: 'boolean', nullable: false, options: ['default' => false])]
+    #[ORM\Column(name: 'visible', type: 'boolean', nullable: false, options: [
+        'default' => false,
+    ])]
     #[Assert\NotNull]
     private bool $visible = false;
     private ?string $label = null;
@@ -69,9 +71,16 @@ trait MetaTableTypeTrait
     private mixed $data = null;
     private bool $updated = false;
 
+    public function __clone()
+    {
+        if ($this->id) {
+            $this->id = null;
+        }
+    }
+
     public function getName(): ?string
     {
-        if (null === $this->name) {
+        if ($this->name === null) {
             return null;
         }
 
@@ -94,9 +103,9 @@ trait MetaTableTypeTrait
         }
 
         return match ($this->type) {
-            YesNoType::class, CheckboxType::class => (\is_string($value) || \is_int($value)) ? (bool) $value : $value,
-            IntegerType::class => (\is_string($value) || \is_int($value)) ? (int) $value : $value,
-            NumberType::class => (\is_string($value) || \is_float($value)) ? (float) $value : $value,
+            YesNoType::class, CheckboxType::class => (\is_string($value) || \is_int($value)) ? (bool)$value : $value,
+            IntegerType::class => (\is_string($value) || \is_int($value)) ? (int)$value : $value,
+            NumberType::class => (\is_string($value) || \is_float($value)) ? (float)$value : $value,
             default => $value
         };
     }
@@ -111,22 +120,21 @@ trait MetaTableTypeTrait
 
         // unchecked checkboxes / false bool would save an empty string in the database
         // those cannot be searched in the database
-        if (null !== $value) {
+        if ($value !== null) {
             switch ($this->type) {
                 case YesNoType::class:
                 case CheckboxType::class:
                     if (!\is_int($value) && !\is_bool($value) && !\is_string($value)) {
                         throw new \InvalidArgumentException('Failed converting meta-field bool value');
-                    } else {
-                        $value = (string) $value;
                     }
+                    $value = (string)$value;
             }
         }
 
         if ($value === null) {
             $this->value = $value;
         } elseif (\is_scalar($value)) {
-            $this->value = (string) $value;
+            $this->value = (string)$value;
         }
 
         return $this;
@@ -217,7 +225,7 @@ trait MetaTableTypeTrait
 
     public function getLabel(): ?string
     {
-        if (null === $this->label) {
+        if ($this->label === null) {
             return $this->name;
         }
 
@@ -233,7 +241,6 @@ trait MetaTableTypeTrait
 
     /**
      * @param array<string, mixed> $options
-     * @return MetaTableTypeInterface
      */
     public function setOptions(array $options): MetaTableTypeInterface
     {
@@ -260,13 +267,6 @@ trait MetaTableTypeTrait
         $this->order = $order;
 
         return $this;
-    }
-
-    public function __clone()
-    {
-        if ($this->id) {
-            $this->id = null;
-        }
     }
 
     /**

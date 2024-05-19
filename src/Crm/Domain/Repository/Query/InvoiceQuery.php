@@ -42,7 +42,7 @@ class InvoiceQuery extends TimesheetQuery
         return $this->template;
     }
 
-    public function setTemplate(InvoiceTemplate $template): InvoiceQuery
+    public function setTemplate(InvoiceTemplate $template): self
     {
         $this->template = $template;
 
@@ -51,8 +51,6 @@ class InvoiceQuery extends TimesheetQuery
 
     /**
      * Helper method, because many templates access {{ model.query.customer }} directly.
-     *
-     * @return Customer|null
      */
     public function getCustomer(): ?Customer
     {
@@ -66,8 +64,6 @@ class InvoiceQuery extends TimesheetQuery
 
     /**
      * Helper method, because many templates access {{ model.query.project }} directly.
-     *
-     * @return Project|null
      */
     public function getProject(): ?Project
     {
@@ -81,8 +77,6 @@ class InvoiceQuery extends TimesheetQuery
 
     /**
      * Helper method, because many templates access {{ model.query.activity }} directly.
-     *
-     * @return Activity|null
      */
     public function getActivity(): ?Activity
     {

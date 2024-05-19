@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Form\MultiUpdate;
 
+use App\Crm\Application\Validator\Constraints as Constraints;
 use App\Crm\Domain\Entity\Activity;
 use App\Crm\Domain\Entity\Customer;
 use App\Crm\Domain\Entity\EntityWithMetaFields;
@@ -19,7 +20,6 @@ use App\Crm\Domain\Entity\Project;
 use App\Crm\Domain\Entity\Tag;
 use App\Crm\Domain\Entity\TimesheetMeta;
 use App\User\Domain\Entity\User;
-use App\Crm\Application\Validator\Constraints as Constraints;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 

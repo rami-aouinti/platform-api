@@ -14,6 +14,8 @@ namespace App\Crm\Transport\Form;
 use App\Crm\Application\Configuration\SystemConfiguration;
 use App\Crm\Domain\Entity\Customer;
 use App\Crm\Domain\Entity\Timesheet;
+use App\Crm\Domain\Repository\CustomerRepository;
+use App\Crm\Domain\Repository\Query\CustomerFormTypeQuery;
 use App\Crm\Transport\Form\Type\CustomerType;
 use App\Crm\Transport\Form\Type\DatePickerType;
 use App\Crm\Transport\Form\Type\DescriptionType;
@@ -26,8 +28,6 @@ use App\Crm\Transport\Form\Type\TimePickerType;
 use App\Crm\Transport\Form\Type\TimesheetBillableType;
 use App\Crm\Transport\Form\Type\UserType;
 use App\Crm\Transport\Form\Type\YesNoType;
-use App\Crm\Domain\Repository\CustomerRepository;
-use App\Crm\Domain\Repository\Query\CustomerFormTypeQuery;
 use App\Crm\Transport\Timesheet\Calculator\BillableCalculator;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
@@ -44,8 +44,10 @@ class TimesheetEditForm extends AbstractType
 {
     use FormTrait;
 
-    public function __construct(private CustomerRepository $customers, private SystemConfiguration $systemConfiguration)
-    {
+    public function __construct(
+        private CustomerRepository $customers,
+        private SystemConfiguration $systemConfiguration
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -65,15 +67,15 @@ class TimesheetEditForm extends AbstractType
             $project = $entry->getProject();
             $customer = $project?->getCustomer();
 
-            if (null !== $entry->getId()) {
+            if ($entry->getId() !== null) {
                 $isNew = false;
             }
 
-            if (null === $project && null !== $activity) {
+            if ($project === null && $activity !== null) {
                 $project = $activity->getProject();
             }
 
-            if (null !== $customer) {
+            if ($customer !== null) {
                 $currency = $customer->getCurrency();
             }
 
@@ -88,7 +90,7 @@ class TimesheetEditForm extends AbstractType
         ];
 
         // primarily for API usage, where we cannot use a user/locale specific format
-        if (null !== $options['date_format']) {
+        if ($options['date_format'] !== null) {
             $dateTimeOptions['format'] = $options['date_format'];
         }
 
@@ -133,18 +135,60 @@ class TimesheetEditForm extends AbstractType
             // 'allow_create' => $allowCreate && $options['create_activity'],
         ]);
 
-        $descriptionOptions = ['required' => false];
+        $descriptionOptions = [
+            'required' => false,
+        ];
         if (!$isNew) {
-            $descriptionOptions['attr'] = ['autofocus' => 'autofocus'];
+            $descriptionOptions['attr'] = [
+                'autofocus' => 'autofocus',
+            ];
         }
         $builder->add('description', DescriptionType::class, $descriptionOptions);
-        $builder->add('tags', TagsType::class, ['required' => false]);
+        $builder->add('tags', TagsType::class, [
+            'required' => false,
+        ]);
         $this->addRates($builder, $currency, $options);
         $this->addUser($builder, $options);
         $builder->add('metaFields', MetaFieldsCollectionType::class);
 
         $this->addExported($builder, $options);
         $this->addBillable($builder, $options);
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $maxMinutes = $this->systemConfiguration->getTimesheetLongRunningDuration();
+        $maxHours = 10;
+        if ($maxMinutes > 0) {
+            $maxHours = (int)($maxMinutes / 60);
+        }
+
+        $resolver->setDefaults([
+            'data_class' => Timesheet::class,
+            'csrf_protection' => true,
+            'csrf_field_name' => '_token',
+            'csrf_token_id' => 'timesheet_edit',
+            'include_user' => false,
+            'include_exported' => false,
+            'include_billable' => true,
+            'include_rate' => true,
+            'create_activity' => false,
+            'docu_chapter' => 'timesheet.html',
+            'method' => 'POST',
+            'date_format' => null,
+            'timezone' => date_default_timezone_get(),
+            'customer' => false, // for API usage
+            'allow_begin_datetime' => true,
+            'allow_end_datetime' => true,
+            'allow_duration' => false,
+            'duration_minutes' => null,
+            'duration_hours' => $maxHours,
+            'attr' => [
+                'data-form-event' => 'kimai.timesheetUpdate',
+                'data-msg-success' => 'action.update.success',
+                'data-msg-error' => 'action.update.error',
+            ],
+        ]);
     }
 
     protected function showCustomer(array $options, bool $isNew, int $customerCount): bool
@@ -171,8 +215,8 @@ class TimesheetEditForm extends AbstractType
             'label' => 'date',
             'mapped' => false,
             'constraints' => [
-                new NotBlank()
-            ]
+                new NotBlank(),
+            ],
         ]));
 
         $timeOptions = $dateTimeOptions;
@@ -181,8 +225,8 @@ class TimesheetEditForm extends AbstractType
             'label' => 'starttime',
             'mapped' => false,
             'constraints' => [
-                new NotBlank()
-            ]
+                new NotBlank(),
+            ],
         ]));
 
         $builder->addEventListener(
@@ -192,7 +236,7 @@ class TimesheetEditForm extends AbstractType
                 $timesheet = $event->getData();
                 $begin = $timesheet->getBegin();
 
-                if (null !== $begin) {
+                if ($begin !== null) {
                     $event->getForm()->get('begin_date')->setData($begin);
                     $event->getForm()->get('begin_time')->setData($begin);
                 }
@@ -230,7 +274,7 @@ class TimesheetEditForm extends AbstractType
         $builder->add('end_time', TimePickerType::class, array_merge($dateTimeOptions, [
             'required' => false,
             'label' => 'endtime',
-            'mapped' => false
+            'mapped' => false,
         ]));
 
         $builder->addEventListener(
@@ -238,7 +282,7 @@ class TimesheetEditForm extends AbstractType
             function (FormEvent $event) {
                 /** @var Timesheet|null $data */
                 $data = $event->getData();
-                if (null !== $data->getEnd()) {
+                if ($data->getEnd() !== null) {
                     $event->getForm()->get('end_time')->setData($data->getEnd());
                 }
             }
@@ -297,14 +341,14 @@ class TimesheetEditForm extends AbstractType
         }
 
         $duration = $options['duration_minutes'];
-        if ($duration !== null && (int) $duration > 0) {
+        if ($duration !== null && (int)$duration > 0) {
             $durationOptions = array_merge($durationOptions, [
-                'preset_minutes' => $duration
+                'preset_minutes' => $duration,
             ]);
         }
 
         $duration = $options['duration_hours'];
-        if ($duration !== null && (int) $duration > 0) {
+        if ($duration !== null && (int)$duration > 0) {
             $durationOptions = array_merge($durationOptions, [
                 'preset_hours' => $duration,
             ]);
@@ -317,7 +361,7 @@ class TimesheetEditForm extends AbstractType
             function (FormEvent $event) {
                 /** @var Timesheet|null $timesheet */
                 $timesheet = $event->getData();
-                if (null === $timesheet || $timesheet->isRunning()) {
+                if ($timesheet === null || $timesheet->isRunning()) {
                     $event->getForm()->get('duration')->setData(null);
                 }
             }
@@ -382,7 +426,7 @@ class TimesheetEditForm extends AbstractType
         }
 
         $builder->add('exported', YesNoType::class, [
-            'label' => 'exported'
+            'label' => 'exported',
         ]);
     }
 
@@ -411,41 +455,5 @@ class TimesheetEditForm extends AbstractType
                 return $record;
             }
         ));
-    }
-
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        $maxMinutes = $this->systemConfiguration->getTimesheetLongRunningDuration();
-        $maxHours = 10;
-        if ($maxMinutes > 0) {
-            $maxHours = (int) ($maxMinutes / 60);
-        }
-
-        $resolver->setDefaults([
-            'data_class' => Timesheet::class,
-            'csrf_protection' => true,
-            'csrf_field_name' => '_token',
-            'csrf_token_id' => 'timesheet_edit',
-            'include_user' => false,
-            'include_exported' => false,
-            'include_billable' => true,
-            'include_rate' => true,
-            'create_activity' => false,
-            'docu_chapter' => 'timesheet.html',
-            'method' => 'POST',
-            'date_format' => null,
-            'timezone' => date_default_timezone_get(),
-            'customer' => false, // for API usage
-            'allow_begin_datetime' => true,
-            'allow_end_datetime' => true,
-            'allow_duration' => false,
-            'duration_minutes' => null,
-            'duration_hours' => $maxHours,
-            'attr' => [
-                'data-form-event' => 'kimai.timesheetUpdate',
-                'data-msg-success' => 'action.update.success',
-                'data-msg-error' => 'action.update.error',
-            ],
-        ]);
     }
 }

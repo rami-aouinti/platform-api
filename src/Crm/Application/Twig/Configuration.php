@@ -17,15 +17,27 @@ use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 /**
- * Class Configuration
- *
  * @package App\Crm\Application\Twig
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class Configuration extends AbstractExtension
 {
-    public function __construct(private SystemConfiguration $configuration)
+    public function __construct(
+        private SystemConfiguration $configuration
+    ) {
+    }
+
+    public function __call($name, $arguments)
     {
+        $checks = ['is' . $name, 'get' . $name, 'has' . $name, $name];
+
+        foreach ($checks as $methodName) {
+            if (method_exists($this->configuration, $methodName)) {
+                return \call_user_func([$this->configuration, $methodName], $arguments);
+            }
+        }
+
+        return $this->configuration->find($name);
     }
 
     public function getFunctions(): array
@@ -50,19 +62,6 @@ final class Configuration extends AbstractExtension
                 return '300';
             case 'theme.calendar.background_color':
                 return Constants::DEFAULT_COLOR;
-        }
-
-        return $this->configuration->find($name);
-    }
-
-    public function __call($name, $arguments)
-    {
-        $checks = ['is' . $name, 'get' . $name, 'has' . $name, $name];
-
-        foreach ($checks as $methodName) {
-            if (method_exists($this->configuration, $methodName)) {
-                return \call_user_func([$this->configuration, $methodName], $arguments);
-            }
         }
 
         return $this->configuration->find($name);

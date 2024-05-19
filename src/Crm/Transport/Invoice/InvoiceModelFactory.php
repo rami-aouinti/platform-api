@@ -11,16 +11,14 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Invoice;
 
-use App\Crm\Transport\Activity\ActivityStatisticService;
-use App\Crm\Transport\Customer\CustomerStatisticService;
 use App\Crm\Domain\Entity\Customer;
 use App\Crm\Domain\Entity\InvoiceTemplate;
-use App\Crm\Transport\Project\ProjectStatisticService;
 use App\Crm\Domain\Repository\Query\InvoiceQuery;
+use App\Crm\Transport\Activity\ActivityStatisticService;
+use App\Crm\Transport\Customer\CustomerStatisticService;
+use App\Crm\Transport\Project\ProjectStatisticService;
 
 /**
- * Class InvoiceModelFactory
- *
  * @package App\Crm\Transport\Invoice
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

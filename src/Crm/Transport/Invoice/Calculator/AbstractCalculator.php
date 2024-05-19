@@ -23,19 +23,6 @@ abstract class AbstractCalculator
      */
     abstract public function getEntries(): array;
 
-    /**
-     * @param array<InvoiceItem> $items
-     * @return array<InvoiceItem>
-     */
-    protected function sortEntries(array $items): array
-    {
-        usort($items, function (InvoiceItem $item1, InvoiceItem $item2) {
-            return $item1->getBegin() <=> $item2->getBegin();
-        });
-
-        return $items;
-    }
-
     abstract public function getId(): string;
 
     public function setModel(InvoiceModel $model): void
@@ -61,7 +48,7 @@ abstract class AbstractCalculator
     public function getTax(): float
     {
         $vat = $this->getVat();
-        if (0.00 === $vat) {
+        if ($vat === 0.00) {
             return 0.00;
         }
 
@@ -77,18 +64,29 @@ abstract class AbstractCalculator
 
     /**
      * Returns the total amount of worked time in seconds.
-     *
-     * @return int
      */
     public function getTimeWorked(): int
     {
         $time = 0;
         foreach ($this->model->getEntries() as $entry) {
-            if (null !== $entry->getDuration()) {
+            if ($entry->getDuration() !== null) {
                 $time += $entry->getDuration();
             }
         }
 
         return $time;
+    }
+
+    /**
+     * @param array<InvoiceItem> $items
+     * @return array<InvoiceItem>
+     */
+    protected function sortEntries(array $items): array
+    {
+        usort($items, function (InvoiceItem $item1, InvoiceItem $item2) {
+            return $item1->getBegin() <=> $item2->getBegin();
+        });
+
+        return $items;
     }
 }

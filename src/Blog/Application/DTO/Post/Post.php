@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace App\Blog\Application\DTO\Post;
 
+use App\Blog\Domain\Entity\Post as Entity;
 use App\General\Application\DTO\Interfaces\RestDtoInterface;
 use App\General\Application\DTO\RestDto;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
-use App\User\Domain\Entity\Interfaces\UserGroupAwareInterface;
-use App\Blog\Domain\Entity\Post as Entity;
-use App\User\Domain\Entity\UserGroup as UserGroupEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-
-use function array_map;
 
 /**
  * @package App\Post
@@ -23,20 +19,20 @@ use function array_map;
  */
 class Post extends RestDto
 {
-
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[Assert\Length(min: 2, max: 255)]
     protected string $title = '';
 
-    public  function getTitle(): string
+    public function getTitle(): string
     {
         return $this->title;
     }
-    public  function setTitle(string $title):self
+    public function setTitle(string $title): self
     {
         $this->setVisited('title');
         $this->title = $title;
+
         return $this;
     }
 

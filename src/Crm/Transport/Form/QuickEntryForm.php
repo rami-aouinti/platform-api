@@ -12,10 +12,10 @@ declare(strict_types=1);
 namespace App\Crm\Transport\Form;
 
 use App\Crm\Application\Configuration\SystemConfiguration;
-use App\Crm\Transport\Form\Type\QuickEntryWeekType;
-use App\Crm\Transport\Form\Type\WeekPickerType;
 use App\Crm\Application\Model\QuickEntryWeek;
 use App\Crm\Application\Validator\Constraints\QuickEntryModel;
+use App\Crm\Transport\Form\Type\QuickEntryWeekType;
+use App\Crm\Transport\Form\Type\WeekPickerType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -27,8 +27,9 @@ use Symfony\Component\Validator\Constraints\Valid;
 
 final class QuickEntryForm extends AbstractType
 {
-    public function __construct(private SystemConfiguration $configuration)
-    {
+    public function __construct(
+        private SystemConfiguration $configuration
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -83,7 +84,9 @@ final class QuickEntryForm extends AbstractType
             'allow_add' => true,
             'constraints' => [
                 new Valid(),
-                new All(['constraints' => [new QuickEntryModel()]])
+                new All([
+                    'constraints' => [new QuickEntryModel()],
+                ]),
             ],
         ]);
     }

@@ -27,8 +27,9 @@ final class CustomerToolbarForm extends AbstractType
 {
     use ToolbarFormTrait;
 
-    public function __construct(private readonly CustomerRepository $customerRepository)
-    {
+    public function __construct(
+        private readonly CustomerRepository $customerRepository
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void

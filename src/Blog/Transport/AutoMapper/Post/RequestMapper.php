@@ -9,8 +9,6 @@ use App\General\Domain\Enum\Locale;
 use App\General\Transport\AutoMapper\RestRequestMapper;
 use InvalidArgumentException;
 
-use function array_map;
-
 /**
  * @package App\Post
  */

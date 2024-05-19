@@ -11,12 +11,12 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Controller\Api\v1\Reporting;
 
-use App\Crm\Transport\Controller\Api\v1\AbstractController;
-use App\Crm\Domain\Entity\Customer;
-use App\Crm\Transport\Form\Model\DateRange;
-use App\Crm\Transport\Project\ProjectStatisticService;
 use App\Crm\Application\Reporting\ProjectDateRange\ProjectDateRangeForm;
 use App\Crm\Application\Reporting\ProjectDateRange\ProjectDateRangeQuery;
+use App\Crm\Domain\Entity\Customer;
+use App\Crm\Transport\Controller\Api\v1\AbstractController;
+use App\Crm\Transport\Form\Model\DateRange;
+use App\Crm\Transport\Project\ProjectStatisticService;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,8 +24,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * Class ProjectDateRangeController
- *
  * @package App\Crm\Transport\Controller\Api\v1\Reporting
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -42,7 +40,7 @@ final class ProjectDateRangeController extends AbstractController
         $defaultStart = $dateFactory->getStartOfMonth();
         $query = new ProjectDaterangeQuery($defaultStart, $user);
         $form = $this->createFormForGetRequest(ProjectDateRangeForm::class, $query, [
-            'timezone' => $user->getTimezone()
+            'timezone' => $user->getTimezone(),
         ]);
         $form->submit($request->query->all(), false);
 
@@ -62,7 +60,10 @@ final class ProjectDateRangeController extends AbstractController
             /** @var Customer $customer */
             $customer = $entry->getProject()->getCustomer();
             if (!isset($byCustomer[$customer->getId()])) {
-                $byCustomer[$customer->getId()] = ['customer' => $customer, 'projects' => []];
+                $byCustomer[$customer->getId()] = [
+                    'customer' => $customer,
+                    'projects' => [],
+                ];
             }
             $byCustomer[$customer->getId()]['projects'][] = $entry;
         }

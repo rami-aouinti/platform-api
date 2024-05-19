@@ -15,8 +15,6 @@ use App\Crm\Transport\Form\TeamEditForm;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
- * Class TeamApiEditForm
- *
  * @package App\Crm\Transport\Form\API
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

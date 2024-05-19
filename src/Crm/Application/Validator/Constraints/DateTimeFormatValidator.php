@@ -19,7 +19,6 @@ final class DateTimeFormatValidator extends ConstraintValidator
 {
     /**
      * @param string|mixed|null $value
-     * @param Constraint $constraint
      */
     public function validate(mixed $value, Constraint $constraint): void
     {
@@ -63,7 +62,7 @@ final class DateTimeFormatValidator extends ConstraintValidator
             }
         }
 
-        if (false === $valid) {
+        if ($valid === false) {
             $this->context->buildViolation(DateTimeFormat::getErrorName(DateTimeFormat::INVALID_FORMAT))
                 ->setTranslationDomain('validators')
                 ->setCode(DateTimeFormat::INVALID_FORMAT)

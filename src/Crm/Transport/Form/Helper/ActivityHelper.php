@@ -24,8 +24,9 @@ final class ActivityHelper
 
     private ?string $pattern = null;
 
-    public function __construct(private readonly SystemConfiguration $configuration)
-    {
+    public function __construct(
+        private readonly SystemConfiguration $configuration
+    ) {
     }
 
     public function getChoicePattern(): string

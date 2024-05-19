@@ -21,8 +21,10 @@ use App\Crm\Domain\Repository\TimesheetRepository;
  */
 final class RateService implements RateServiceInterface
 {
-    public function __construct(private array $rates, private TimesheetRepository $repository)
-    {
+    public function __construct(
+        private array $rates,
+        private TimesheetRepository $repository
+    ) {
     }
 
     public function calculate(Timesheet $record): Rate
@@ -38,35 +40,35 @@ final class RateService implements RateServiceInterface
 
         $rate = $this->getBestFittingRate($record);
 
-        if (null !== $rate) {
+        if ($rate !== null) {
             if ($rate->isFixed()) {
                 $fixedRate ??= $rate->getRate();
-                if (null !== $rate->getInternalRate()) {
+                if ($rate->getInternalRate() !== null) {
                     $fixedInternalRate = $rate->getInternalRate();
                 }
             } else {
                 $hourlyRate ??= $rate->getRate();
-                if (null !== $rate->getInternalRate()) {
+                if ($rate->getInternalRate() !== null) {
                     $internalRate = $rate->getInternalRate();
                 }
             }
         }
 
-        if (null !== $fixedRate) {
-            if (null === $fixedInternalRate) {
-                $fixedInternalRate = (float) $record->getUser()->getPreferenceValue(UserPreference::INTERNAL_RATE, $fixedRate, false);
+        if ($fixedRate !== null) {
+            if ($fixedInternalRate === null) {
+                $fixedInternalRate = (float)$record->getUser()->getPreferenceValue(UserPreference::INTERNAL_RATE, $fixedRate, false);
             }
 
             return new Rate($fixedRate, $fixedInternalRate, null, $fixedRate);
         }
 
         // user preferences => fallback if nothing else was configured
-        if (null === $hourlyRate) {
-            $hourlyRate = (float) $record->getUser()->getPreferenceValue(UserPreference::HOURLY_RATE, 0.00, false);
+        if ($hourlyRate === null) {
+            $hourlyRate = (float)$record->getUser()->getPreferenceValue(UserPreference::HOURLY_RATE, 0.00, false);
         }
 
-        if (null === $internalRate) {
-            $internalRate = (float) $record->getUser()->getPreferenceValue(UserPreference::INTERNAL_RATE, $hourlyRate, false);
+        if ($internalRate === null) {
+            $internalRate = (float)$record->getUser()->getPreferenceValue(UserPreference::INTERNAL_RATE, $hourlyRate, false);
         }
 
         $factor = 1.00;
@@ -80,7 +82,7 @@ final class RateService implements RateServiceInterface
         $totalRate = 0;
         $totalInternalRate = 0;
 
-        if (null !== $record->getDuration()) {
+        if ($record->getDuration() !== null) {
             $totalRate = Util::calculateRate($factoredHourlyRate, $record->getDuration());
             $totalInternalRate = Util::calculateRate($factoredInternalRate, $record->getDuration());
         }
@@ -95,8 +97,8 @@ final class RateService implements RateServiceInterface
         $sorted = [];
         foreach ($rates as $rate) {
             $score = $rate->getScore();
-            if (null !== $rate->getUser() && $timesheet->getUser() === $rate->getUser()) {
-                ++$score;
+            if ($rate->getUser() !== null && $timesheet->getUser() === $rate->getUser()) {
+                $score++;
             }
 
             $sorted[$score] = $rate;
@@ -119,7 +121,7 @@ final class RateService implements RateServiceInterface
             $weekday = $record->getEnd()->format('l');
             $days = array_map('strtolower', $rateFactor['days']);
             if (\in_array(strtolower($weekday), $days)) {
-                $factor += (float) $rateFactor['factor'];
+                $factor += (float)$rateFactor['factor'];
             }
         }
 

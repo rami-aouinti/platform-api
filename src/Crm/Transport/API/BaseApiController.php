@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\API;
 
-use App\User\Domain\Entity\User;
+use App\Crm\Application\Utils\Pagination;
 use App\Crm\Domain\Repository\Query\BaseQuery;
 use App\Crm\Transport\Timesheet\DateTimeFactory;
-use App\Crm\Application\Utils\Pagination;
+use App\User\Domain\Entity\User;
 use FOS\RestBundle\View\View;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -42,12 +42,14 @@ abstract class BaseApiController extends AbstractController
     {
         return $this->container
             ->get('form.factory')
-            ->createNamed('', $type, $data, array_merge(['method' => 'GET'], $options));
+            ->createNamed('', $type, $data, array_merge([
+                'method' => 'GET',
+            ], $options));
     }
 
     protected function getDateTimeFactory(?User $user = null): DateTimeFactory
     {
-        if (null === $user) {
+        if ($user === null) {
             $user = $this->getUser();
         }
 
@@ -56,9 +58,9 @@ abstract class BaseApiController extends AbstractController
 
     protected function addPagination(View $view, Pagination $pagination): void
     {
-        $view->setHeader('X-Page', (string) $pagination->getCurrentPage());
-        $view->setHeader('X-Total-Count', (string) $pagination->getNbResults());
-        $view->setHeader('X-Total-Pages', (string) $pagination->getNbPages());
-        $view->setHeader('X-Per-Page', (string) $pagination->getMaxPerPage());
+        $view->setHeader('X-Page', (string)$pagination->getCurrentPage());
+        $view->setHeader('X-Total-Count', (string)$pagination->getNbResults());
+        $view->setHeader('X-Total-Pages', (string)$pagination->getNbPages());
+        $view->setHeader('X-Per-Page', (string)$pagination->getMaxPerPage());
     }
 }

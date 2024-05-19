@@ -20,7 +20,9 @@ final class MenuItemModel implements MenuItemInterface
     private ?string $route;
     private array $routeArgs;
     private bool $isActive = false;
-    /** @var array<MenuItemModel> */
+    /**
+     * @var array<MenuItemModel>
+     */
     private array $children = [];
     private ?string $icon;
     private ?MenuItemModel $parent = null;
@@ -31,6 +33,8 @@ final class MenuItemModel implements MenuItemInterface
     private bool $lastWasDivider = false;
     private bool $expanded = false;
     private string $translationDomain = 'messages';
+
+    private array $childRoutes = [];
 
     public function __construct(
         string $id,
@@ -54,7 +58,7 @@ final class MenuItemModel implements MenuItemInterface
         return $this->children;
     }
 
-    public function getChild(string $id): ?MenuItemModel
+    public function getChild(string $id): ?self
     {
         foreach ($this->children as $child) {
             if ($child->getIdentifier() === $id) {
@@ -105,14 +109,14 @@ final class MenuItemModel implements MenuItemInterface
         return $this->parent !== null;
     }
 
-    public function getParent(): ?MenuItemModel
+    public function getParent(): ?self
     {
         return $this->parent;
     }
 
     public function setParent(MenuItemInterface $parent): void
     {
-        if (!($parent instanceof MenuItemModel)) {
+        if (!($parent instanceof self)) {
             throw new \Exception('MenuItemModel::setParent() expects a MenuItemModel');
         }
         $this->parent = $parent;
@@ -165,7 +169,7 @@ final class MenuItemModel implements MenuItemInterface
 
     public function addChild(MenuItemInterface $child): void
     {
-        if (!($child instanceof MenuItemModel)) {
+        if (!($child instanceof self)) {
             throw new \Exception('MenuItemModel::addChild() expects a MenuItemModel');
         }
 
@@ -191,32 +195,12 @@ final class MenuItemModel implements MenuItemInterface
         }
     }
 
-    public function findChild(string $identifier): ?MenuItemModel
+    public function findChild(string $identifier): ?self
     {
         return $this->find($identifier, $this);
     }
 
-    private function find(string $identifier, MenuItemModel $menu): ?MenuItemModel
-    {
-        if ($menu->getIdentifier() === $identifier) {
-            return $this;
-        }
-
-        foreach ($menu->getChildren() as $child) {
-            if ($child->getIdentifier() === $identifier) {
-                return $child;
-            }
-            if ($child->hasChildren()) {
-                if (($tmp = $this->find($identifier, $child)) !== null) {
-                    return $tmp;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    public function getActiveChild(): ?MenuItemModel
+    public function getActiveChild(): ?self
     {
         foreach ($this->children as $child) {
             if ($child->isActive()) {
@@ -252,16 +236,14 @@ final class MenuItemModel implements MenuItemInterface
         return $this->badgeColor;
     }
 
-    private array $childRoutes = [];
-
-    public function setChildRoutes(array $routes): MenuItemModel
+    public function setChildRoutes(array $routes): self
     {
         $this->childRoutes = $routes;
 
         return $this;
     }
 
-    public function addChildRoute(string $route): MenuItemModel
+    public function addChildRoute(string $route): self
     {
         $this->childRoutes[] = $route;
 
@@ -273,9 +255,9 @@ final class MenuItemModel implements MenuItemInterface
         return \in_array($route, $this->childRoutes);
     }
 
-    public static function createDivider(): MenuItemModel
+    public static function createDivider(): self
     {
-        $model = new MenuItemModel('divider_' . self::$dividerId++, '');
+        $model = new self('divider_' . self::$dividerId++, '');
         $model->setDivider(true);
 
         return $model;
@@ -309,5 +291,25 @@ final class MenuItemModel implements MenuItemInterface
     public function setTranslationDomain(string $translationDomain): void
     {
         $this->translationDomain = $translationDomain;
+    }
+
+    private function find(string $identifier, self $menu): ?self
+    {
+        if ($menu->getIdentifier() === $identifier) {
+            return $this;
+        }
+
+        foreach ($menu->getChildren() as $child) {
+            if ($child->getIdentifier() === $identifier) {
+                return $child;
+            }
+            if ($child->hasChildren()) {
+                if (($tmp = $this->find($identifier, $child)) !== null) {
+                    return $tmp;
+                }
+            }
+        }
+
+        return null;
     }
 }

@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Form\Type;
 
-use App\Crm\Transport\Event\ConfigureMainMenuEvent;
 use App\Crm\Application\Utils\MenuItemModel;
+use App\Crm\Transport\Event\ConfigureMainMenuEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -21,8 +21,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class MenuChoiceType extends AbstractType
 {
-    public function __construct(private EventDispatcherInterface $eventDispatcher)
-    {
+    public function __construct(
+        private EventDispatcherInterface $eventDispatcher
+    ) {
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -35,6 +36,11 @@ final class MenuChoiceType extends AbstractType
         $resolver->setDefault('choices', function (Options $options): array {
             return $this->getChoices($options['filter_menus']);
         });
+    }
+
+    public function getParent(): string
+    {
+        return ChoiceType::class;
     }
 
     /**
@@ -55,7 +61,6 @@ final class MenuChoiceType extends AbstractType
     }
 
     /**
-     * @param MenuItemModel $menu
      * @param array<string> $filter
      * @return array<string, string>
      */
@@ -71,6 +76,7 @@ final class MenuChoiceType extends AbstractType
                 if (\count($child->getRouteArgs()) === 0 && $child->getRoute() !== null) {
                     $choices[$child->getLabel()] = $child->getIdentifier();
                 }
+
                 continue;
             }
             foreach ($child->getChildren() as $subChild) {
@@ -81,10 +87,5 @@ final class MenuChoiceType extends AbstractType
         }
 
         return $choices;
-    }
-
-    public function getParent(): string
-    {
-        return ChoiceType::class;
     }
 }

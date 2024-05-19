@@ -22,7 +22,9 @@ class MultiUpdateTableDTO
     /**
      * @var string[]
      */
-    private array $actions = ['' => ''];
+    private array $actions = [
+        '' => '',
+    ];
     private ?string $action = null;
 
     /**
@@ -35,9 +37,8 @@ class MultiUpdateTableDTO
 
     /**
      * @param array<object>|Collection<object> $entities
-     * @return MultiUpdateTableDTO
      */
-    public function setEntities(array|Collection $entities): MultiUpdateTableDTO
+    public function setEntities(array|Collection $entities): self
     {
         $this->entities = $entities;
 
@@ -57,21 +58,21 @@ class MultiUpdateTableDTO
         return \count($this->actions) > 1;
     }
 
-    public function addAction(string $label, string $url): MultiUpdateTableDTO
+    public function addAction(string $label, string $url): self
     {
         $this->actions[$label] = $url;
 
         return $this;
     }
 
-    public function addDelete(string $url): MultiUpdateTableDTO
+    public function addDelete(string $url): self
     {
         $this->actions['delete'] = $url;
 
         return $this;
     }
 
-    public function addUpdate(string $url): MultiUpdateTableDTO
+    public function addUpdate(string $url): self
     {
         $this->actions['action.edit'] = $url;
 
@@ -83,7 +84,7 @@ class MultiUpdateTableDTO
         return $this->action;
     }
 
-    public function setAction(string $action): MultiUpdateTableDTO
+    public function setAction(string $action): self
     {
         $this->action = $action;
 

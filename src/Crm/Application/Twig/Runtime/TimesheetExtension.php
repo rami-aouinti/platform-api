@@ -9,11 +9,11 @@
 
 namespace App\Crm\Application\Twig\Runtime;
 
-use App\Crm\Domain\Entity\Timesheet;
-use App\User\Domain\Entity\User;
 use App\Crm\Application\Model\FavoriteTimesheet;
+use App\Crm\Domain\Entity\Timesheet;
 use App\Crm\Domain\Repository\TimesheetRepository;
 use App\Crm\Transport\Timesheet\FavoriteRecordService;
+use App\User\Domain\Entity\User;
 use Twig\Extension\RuntimeExtensionInterface;
 
 final class TimesheetExtension implements RuntimeExtensionInterface
@@ -21,8 +21,7 @@ final class TimesheetExtension implements RuntimeExtensionInterface
     public function __construct(
         private readonly TimesheetRepository $repository,
         private readonly FavoriteRecordService $favoriteRecordService
-    )
-    {
+    ) {
     }
 
     /**

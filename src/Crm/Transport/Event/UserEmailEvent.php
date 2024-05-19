@@ -16,8 +16,10 @@ use Symfony\Component\Mime\Email;
 
 class UserEmailEvent extends EmailEvent
 {
-    public function __construct(private User $user, Email $email)
-    {
+    public function __construct(
+        private User $user,
+        Email $email
+    ) {
         parent::__construct($email);
     }
 

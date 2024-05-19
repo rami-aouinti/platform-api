@@ -25,8 +25,9 @@ class QuickEntryWeek
      */
     private array $rows = [];
 
-    public function __construct(private \DateTime $startDate)
-    {
+    public function __construct(
+        private \DateTime $startDate
+    ) {
     }
 
     public function addRow(?User $user = null, ?Project $project = null, ?Activity $activity = null): QuickEntryModel
@@ -66,6 +67,14 @@ class QuickEntryWeek
         return $rows;
     }
 
+    /**
+     * @param QuickEntryModel[] $rows
+     */
+    public function setRows(array $rows): void
+    {
+        $this->rows = $rows;
+    }
+
     private function sortByProjectName(QuickEntryModel $a, QuickEntryModel $b): int
     {
         $aName = $a->getProject()?->getName();
@@ -78,17 +87,9 @@ class QuickEntryWeek
         } elseif ($aName !== null && $bName === null) {
             $result = -1;
         } else {
-            $result = strcmp((string) $aName, (string) $bName);
+            $result = strcmp((string)$aName, (string)$bName);
         }
 
-        return  $result < 0 ? -1 : 1;
-    }
-
-    /**
-     * @param QuickEntryModel[] $rows
-     */
-    public function setRows(array $rows): void
-    {
-        $this->rows = $rows;
+        return $result < 0 ? -1 : 1;
     }
 }

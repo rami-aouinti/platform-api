@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Invoice;
 
-use App\Crm\Transport\Configuration\LocaleService;
 use App\Crm\Application\Utils\LocaleFormatter;
+use App\Crm\Transport\Configuration\LocaleService;
 
 final class DefaultInvoiceFormatter implements InvoiceFormatter
 {
@@ -21,27 +21,20 @@ final class DefaultInvoiceFormatter implements InvoiceFormatter
      */
     private $formatter;
 
-    public function __construct(private LocaleService $localeService, private string $locale)
-    {
-    }
-
-    private function getFormatter(): LocaleFormatter
-    {
-        if ($this->formatter === null) {
-            $this->formatter = new LocaleFormatter($this->localeService, $this->locale);
-        }
-
-        return $this->formatter;
+    public function __construct(
+        private LocaleService $localeService,
+        private string $locale
+    ) {
     }
 
     public function getFormattedDateTime(\DateTimeInterface $date): string
     {
-        return (string) $this->getFormatter()->dateShort($date);
+        return (string)$this->getFormatter()->dateShort($date);
     }
 
     public function getFormattedTime(\DateTimeInterface $date): string
     {
-        return (string) $this->getFormatter()->time($date);
+        return (string)$this->getFormatter()->time($date);
     }
 
     public function getFormattedMonthName(\DateTimeInterface $date): string
@@ -83,5 +76,14 @@ final class DefaultInvoiceFormatter implements InvoiceFormatter
     public function getFormattedAmount(float $amount): string
     {
         return $this->getFormatter()->amount($amount);
+    }
+
+    private function getFormatter(): LocaleFormatter
+    {
+        if ($this->formatter === null) {
+            $this->formatter = new LocaleFormatter($this->localeService, $this->locale);
+        }
+
+        return $this->formatter;
     }
 }

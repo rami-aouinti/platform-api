@@ -11,18 +11,18 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\API;
 
+use App\Crm\Application\Utils\SearchTerm;
 use App\Crm\Domain\Entity\Project;
 use App\Crm\Domain\Entity\ProjectRate;
-use App\User\Domain\Entity\User;
-use App\Crm\Transport\Event\ProjectMetaDefinitionEvent;
-use App\Crm\Transport\Form\API\ProjectApiEditForm;
-use App\Crm\Transport\Form\API\ProjectRateApiForm;
-use App\Crm\Transport\Project\ProjectService;
 use App\Crm\Domain\Repository\CustomerRepository;
 use App\Crm\Domain\Repository\ProjectRateRepository;
 use App\Crm\Domain\Repository\ProjectRepository;
 use App\Crm\Domain\Repository\Query\ProjectQuery;
-use App\Crm\Application\Utils\SearchTerm;
+use App\Crm\Transport\Event\ProjectMetaDefinitionEvent;
+use App\Crm\Transport\Form\API\ProjectApiEditForm;
+use App\Crm\Transport\Form\API\ProjectRateApiForm;
+use App\Crm\Transport\Project\ProjectService;
+use App\User\Domain\Entity\User;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
@@ -105,12 +105,12 @@ final class ProjectController extends BaseApiController
 
         $visible = $paramFetcher->get('visible');
         if (\is_string($visible) && $visible !== '') {
-            $query->setVisibility((int) $visible);
+            $query->setVisibility((int)$visible);
         }
 
         $globalActivities = $paramFetcher->get('globalActivities');
         if ($globalActivities !== null) {
-            $query->setGlobalActivities((bool) $globalActivities);
+            $query->setGlobalActivities((bool)$globalActivities);
         }
 
         $ignoreDates = false;
@@ -155,7 +155,9 @@ final class ProjectController extends BaseApiController
      * Returns one project
      */
     #[OA\Response(response: 200, description: 'Returns one project entity', content: new OA\JsonContent(ref: '#/components/schemas/ProjectEntity'))]
-    #[Route(methods: ['GET'], path: '/{id}', name: 'get_project', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['GET'], path: '/{id}', name: 'get_project', requirements: [
+        'id' => '\d+',
+    ])]
     #[IsGranted('view', 'project')]
     public function getAction(Project $project): Response
     {
@@ -210,7 +212,9 @@ final class ProjectController extends BaseApiController
     #[OA\Patch(description: 'Update an existing project, you can pass all or just a subset of all attributes', responses: [new OA\Response(response: 200, description: 'Returns the updated project', content: new OA\JsonContent(ref: '#/components/schemas/ProjectEntity'))])]
     #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/ProjectEditForm'))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Project ID to update', required: true)]
-    #[Route(methods: ['PATCH'], path: '/{id}', name: 'patch_project', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['PATCH'], path: '/{id}', name: 'patch_project', requirements: [
+        'id' => '\d+',
+    ])]
     public function patchAction(Request $request, Project $project): Response
     {
         $event = new ProjectMetaDefinitionEvent($project);
@@ -226,7 +230,7 @@ final class ProjectController extends BaseApiController
         $form->setData($project);
         $form->submit($request->request->all(), false);
 
-        if (false === $form->isValid()) {
+        if ($form->isValid() === false) {
             $view = new View($form, Response::HTTP_OK);
             $view->getContext()->setGroups(self::GROUPS_FORM);
 
@@ -247,7 +251,9 @@ final class ProjectController extends BaseApiController
     #[IsGranted('edit', 'project')]
     #[OA\Response(response: 200, description: 'Sets the value of an existing/configured meta-field. You cannot create unknown meta-fields, if the given name is not a configured meta-field, this will return an exception.', content: new OA\JsonContent(ref: '#/components/schemas/ProjectEntity'))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'Project record ID to set the meta-field value for', required: true)]
-    #[Route(methods: ['PATCH'], path: '/{id}/meta', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['PATCH'], path: '/{id}/meta', requirements: [
+        'id' => '\d+',
+    ])]
     #[Rest\RequestParam(name: 'name', strict: true, nullable: false, description: 'The meta-field name')]
     #[Rest\RequestParam(name: 'value', strict: true, nullable: false, description: 'The meta-field value')]
     public function metaAction(Project $project, ParamFetcherInterface $paramFetcher): Response
@@ -278,7 +284,9 @@ final class ProjectController extends BaseApiController
     #[IsGranted('edit', 'project')]
     #[OA\Response(response: 200, description: 'Returns a collection of project rate entities', content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/ProjectRate')))]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The project whose rates will be returned', required: true)]
-    #[Route(methods: ['GET'], path: '/{id}/rates', name: 'get_project_rates', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['GET'], path: '/{id}/rates', name: 'get_project_rates', requirements: [
+        'id' => '\d+',
+    ])]
     public function getRatesAction(Project $project): Response
     {
         $rates = $this->projectRateRepository->getRatesForProject($project);
@@ -296,8 +304,13 @@ final class ProjectController extends BaseApiController
     #[OA\Delete(responses: [new OA\Response(response: 204, description: 'Returns no content: 204 on successful delete')])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The project whose rate will be removed', required: true)]
     #[OA\Parameter(name: 'rateId', in: 'path', description: 'The rate to remove', required: true)]
-    #[Route(methods: ['DELETE'], path: '/{id}/rates/{rateId}', name: 'delete_project_rate', requirements: ['id' => '\d+', 'rateId' => '\d+'])]
-    public function deleteRateAction(Project $project, #[MapEntity(mapping: ['rateId' => 'id'])] ProjectRate $rate): Response
+    #[Route(methods: ['DELETE'], path: '/{id}/rates/{rateId}', name: 'delete_project_rate', requirements: [
+        'id' => '\d+',
+        'rateId' => '\d+',
+    ])]
+    public function deleteRateAction(Project $project, #[MapEntity(mapping: [
+        'rateId' => 'id',
+    ])] ProjectRate $rate): Response
     {
         if ($rate->getProject() !== $project) {
             throw $this->createNotFoundException();
@@ -317,7 +330,9 @@ final class ProjectController extends BaseApiController
     #[OA\Post(responses: [new OA\Response(response: 200, description: 'Returns the new created rate', content: new OA\JsonContent(ref: '#/components/schemas/ProjectRate'))])]
     #[OA\Parameter(name: 'id', in: 'path', description: 'The project to add the rate for', required: true)]
     #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/ProjectRateForm'))]
-    #[Route(methods: ['POST'], path: '/{id}/rates', name: 'post_project_rate', requirements: ['id' => '\d+'])]
+    #[Route(methods: ['POST'], path: '/{id}/rates', name: 'post_project_rate', requirements: [
+        'id' => '\d+',
+    ])]
     public function postRateAction(Project $project, Request $request): Response
     {
         $rate = new ProjectRate();
@@ -330,7 +345,7 @@ final class ProjectController extends BaseApiController
         $form->setData($rate);
         $form->submit($request->request->all(), false);
 
-        if (false === $form->isValid()) {
+        if ($form->isValid() === false) {
             $view = new View($form, Response::HTTP_OK);
             $view->getContext()->setGroups(self::GROUPS_RATE);
 

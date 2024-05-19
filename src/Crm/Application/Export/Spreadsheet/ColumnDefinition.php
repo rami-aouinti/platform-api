@@ -17,8 +17,11 @@ final class ColumnDefinition
 
     private string $translationDomain = 'messages';
 
-    public function __construct(private string $label, private string $type, callable $accessor)
-    {
+    public function __construct(
+        private string $label,
+        private string $type,
+        callable $accessor
+    ) {
         $this->accessor = $accessor;
     }
 

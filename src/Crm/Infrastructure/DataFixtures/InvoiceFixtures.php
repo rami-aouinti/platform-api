@@ -55,10 +55,6 @@ final class InvoiceFixtures extends Fixture
         }
     }
 
-    /**
-     * @param Generator $faker
-     * @return array
-     */
     private function getInvoiceConfigs(Generator $faker): array
     {
         $paymentTerms =
@@ -96,8 +92,7 @@ final class InvoiceFixtures extends Fixture
 
     private function generatePaymentDetails(Generator $faker): string
     {
-        return
-            'Acme Bank' . PHP_EOL .
+        return 'Acme Bank' . PHP_EOL .
             'BIC: ' . $faker->swiftBicNumber() . PHP_EOL .
             'IBAN: ' . $faker->iban('DE')
         ;
@@ -105,8 +100,7 @@ final class InvoiceFixtures extends Fixture
 
     private function generateContact(Generator $faker): string
     {
-        return
-            'Phone: ' . $faker->phoneNumber() . PHP_EOL .
+        return 'Phone: ' . $faker->phoneNumber() . PHP_EOL .
             'Email: ' . $faker->safeEmail() . PHP_EOL .
             'Web: www.' . $faker->domainName()
         ;
@@ -114,8 +108,7 @@ final class InvoiceFixtures extends Fixture
 
     private function generateAddress(Generator $faker): string
     {
-        return
-            $faker->streetAddress() . PHP_EOL .
+        return $faker->streetAddress() . PHP_EOL .
             $faker->postcode() . ' ' . $faker->city() . ', ' . $faker->country()
         ;
     }

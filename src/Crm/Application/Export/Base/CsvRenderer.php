@@ -18,31 +18,28 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class CsvRenderer extends AbstractSpreadsheetRenderer
 {
-    /**
-     * @return string
-     */
     public function getFileExtension(): string
     {
         return '.csv';
     }
 
-    /**
-     * @return string
-     */
+    public function getId(): string
+    {
+        return 'csv';
+    }
+
     protected function getContentType(): string
     {
         return 'text/csv';
     }
 
     /**
-     * @param Spreadsheet $spreadsheet
-     * @return string
      * @throws \Exception
      */
     protected function saveSpreadsheet(Spreadsheet $spreadsheet): string
     {
         $filename = @tempnam(sys_get_temp_dir(), 'kimai-export-csv');
-        if (false === $filename) {
+        if ($filename === false) {
             throw new \Exception('Could not open temporary file');
         }
 
@@ -50,11 +47,6 @@ class CsvRenderer extends AbstractSpreadsheetRenderer
         $writer->save($filename);
 
         return $filename;
-    }
-
-    public function getId(): string
-    {
-        return 'csv';
     }
 
     protected function setDuration(Worksheet $sheet, int $column, int $row, ?int $duration): void

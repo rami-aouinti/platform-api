@@ -23,8 +23,7 @@ final class CustomerValidator extends ConstraintValidator
     public function __construct(
         private readonly SystemConfiguration $systemConfiguration,
         private readonly CustomerRepository $customerRepository
-    )
-    {
+    ) {
     }
 
     /**
@@ -40,8 +39,12 @@ final class CustomerValidator extends ConstraintValidator
             throw new UnexpectedTypeException($value, CustomerEntity::class);
         }
 
-        if ((bool) $this->systemConfiguration->find('customer.rules.allow_duplicate_number') === false && (($number = $value->getNumber()) !== null)) {
-            foreach ($this->customerRepository->findBy(['number' => $number]) as $tmp) {
+        if ((bool)$this->systemConfiguration->find('customer.rules.allow_duplicate_number') === false && (($number = $value->getNumber()) !== null)) {
+            foreach (
+                $this->customerRepository->findBy([
+                'number' => $number,
+                ]) as $tmp
+            ) {
                 if ($tmp->getId() !== $value->getId()) {
                     $this->context->buildViolation(Customer::getErrorName(Customer::CUSTOMER_NUMBER_EXISTING))
                         ->setParameter('%number%', $number)

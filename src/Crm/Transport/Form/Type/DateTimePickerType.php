@@ -50,7 +50,10 @@ class DateTimePickerType extends AbstractType
             'view_timezone',
         ]));
 
-        $defaultTime = ['hour' => '', 'minute' => ''];
+        $defaultTime = [
+            'hour' => '',
+            'minute' => '',
+        ];
 
         if (\array_key_exists('force_time', $options)) {
             $tmp = $options['force_time'];
@@ -61,16 +64,16 @@ class DateTimePickerType extends AbstractType
             }
         }
 
-        if (false === $options['label']) {
+        if ($options['label'] === false) {
             $dateOptions['label'] = false;
             $timeOptions['label'] = false;
         }
 
-        if (null !== $options['date_label']) {
+        if ($options['date_label'] !== null) {
             $dateOptions['label'] = $options['date_label'];
         }
 
-        if (null !== $options['time_label']) {
+        if ($options['time_label'] !== null) {
             $timeOptions['label'] = $options['time_label'];
         }
 
@@ -158,6 +161,11 @@ class DateTimePickerType extends AbstractType
         ]);
     }
 
+    public function getBlockPrefix(): string
+    {
+        return 'date_time';
+    }
+
     /**
      * @return array{'hour': string, 'minute': string}
      */
@@ -165,7 +173,7 @@ class DateTimePickerType extends AbstractType
     {
         $values = [
             'hour' => '',
-            'minute' => ''
+            'minute' => '',
         ];
 
         if (\is_string($time)) {
@@ -177,10 +185,5 @@ class DateTimePickerType extends AbstractType
         }
 
         return $values;
-    }
-
-    public function getBlockPrefix(): string
-    {
-        return 'date_time';
     }
 }

@@ -17,15 +17,15 @@ use App\WorkingTime\Model\YearSummary;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class WorkingTimeYearSummaryEvent
- *
  * @package App\Crm\Transport\Event
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class WorkingTimeYearSummaryEvent extends Event
 {
-    public function __construct(private YearPerUserSummary $yearPerUserSummary, private \DateTimeInterface $until)
-    {
+    public function __construct(
+        private YearPerUserSummary $yearPerUserSummary,
+        private \DateTimeInterface $until
+    ) {
     }
 
     public function getYear(): Year

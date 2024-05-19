@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Invoice\NumberGenerator;
 
+use App\Crm\Application\Utils\NumberGenerator;
+use App\Crm\Domain\Repository\InvoiceRepository;
 use App\Crm\Transport\Configuration\SystemConfiguration;
 use App\Crm\Transport\Invoice\InvoiceModel;
 use App\Crm\Transport\Invoice\NumberGeneratorInterface;
-use App\Crm\Domain\Repository\InvoiceRepository;
-use App\Crm\Application\Utils\NumberGenerator;
 
 final class ConfigurableNumberGenerator implements NumberGeneratorInterface
 {
@@ -24,8 +24,7 @@ final class ConfigurableNumberGenerator implements NumberGeneratorInterface
     public function __construct(
         private readonly InvoiceRepository $repository,
         private readonly SystemConfiguration $configuration
-    )
-    {
+    ) {
     }
 
     public function getId(): string
@@ -70,10 +69,10 @@ final class ConfigurableNumberGenerator implements NumberGeneratorInterface
                 'm' => $invoiceDate->format('n'),
                 'D' => $invoiceDate->format('d'),
                 'd' => $invoiceDate->format('j'),
-                'YY' => (int) $invoiceDate->format('Y') + $increaseBy,
-                'yy' => (int) $invoiceDate->format('y') + $increaseBy,
-                'MM' => (int) $invoiceDate->format('m') + $increaseBy,
-                'DD' => (int) $invoiceDate->format('d') + $increaseBy,
+                'YY' => (int)$invoiceDate->format('Y') + $increaseBy,
+                'yy' => (int)$invoiceDate->format('y') + $increaseBy,
+                'MM' => (int)$invoiceDate->format('m') + $increaseBy,
+                'DD' => (int)$invoiceDate->format('d') + $increaseBy,
                 'date' => $invoiceDate->format('ymd'),
                 'cc' => $this->repository->getCounterForCustomerAllTime($this->model->getCustomer()) + $increaseBy,
                 'ccy' => $this->repository->getCounterForYear($invoiceDate, $this->model->getCustomer()) + $increaseBy,
@@ -83,14 +82,14 @@ final class ConfigurableNumberGenerator implements NumberGeneratorInterface
                 'cuy' => $this->repository->getCounterForYear($invoiceDate, null, $this->model->getUser()) + $increaseBy,
                 'cum' => $this->repository->getCounterForMonth($invoiceDate, null, $this->model->getUser()) + $increaseBy,
                 'cud' => $this->repository->getCounterForDay($invoiceDate, null, $this->model->getUser()) + $increaseBy,
-                'ustaff' => (string) $this->model->getUser()?->getAccountNumber(),
-                'uid' => (string) $this->model->getUser()?->getId(),
+                'ustaff' => (string)$this->model->getUser()?->getAccountNumber(),
+                'uid' => (string)$this->model->getUser()?->getId(),
                 'c' => $this->repository->getCounterForCustomerAllTime() + $increaseBy,
                 'cy' => $this->repository->getCounterForYear($invoiceDate) + $increaseBy,
                 'cm' => $this->repository->getCounterForMonth($invoiceDate) + $increaseBy,
                 'cd' => $this->repository->getCounterForDay($invoiceDate) + $increaseBy,
-                'cname' => (string) $this->model->getCustomer()?->getName(),
-                'cnumber' => (string) $this->model->getCustomer()?->getNumber(),
+                'cname' => (string)$this->model->getCustomer()?->getName(),
+                'cnumber' => (string)$this->model->getCustomer()?->getNumber(),
                 default => $originalFormat,
             };
         });
@@ -98,7 +97,7 @@ final class ConfigurableNumberGenerator implements NumberGeneratorInterface
         do {
             $result = $numberGenerator->getNumber($increaseBy);
             $increaseBy++;
-        } while ((int) $result < 0 || ($this->repository->hasInvoice($result) && $loops++ < 99));
+        } while ((int)$result < 0 || ($this->repository->hasInvoice($result) && $loops++ < 99));
 
         return $result;
     }

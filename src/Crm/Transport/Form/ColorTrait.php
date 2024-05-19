@@ -16,9 +16,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 
-/**
- *
- */
 trait ColorTrait
 {
     protected function addColor(FormBuilderInterface $builder, bool $required = false): void

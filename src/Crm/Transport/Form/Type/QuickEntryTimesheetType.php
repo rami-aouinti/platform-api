@@ -22,8 +22,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class QuickEntryTimesheetType extends AbstractType
 {
-    public function __construct(private Security $security)
-    {
+    public function __construct(
+        private Security $security
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -38,14 +39,14 @@ final class QuickEntryTimesheetType extends AbstractType
         ];
 
         $duration = $options['duration_minutes'];
-        if ($duration !== null && (int) $duration > 0) {
+        if ($duration !== null && (int)$duration > 0) {
             $durationOptions = array_merge($durationOptions, [
-                'preset_minutes' => $duration
+                'preset_minutes' => $duration,
             ]);
         }
 
         $duration = $options['duration_hours'];
-        if ($duration !== null && (int) $duration > 0) {
+        if ($duration !== null && (int)$duration > 0) {
             $durationOptions = array_merge($durationOptions, [
                 'preset_hours' => $duration,
             ]);
@@ -58,12 +59,14 @@ final class QuickEntryTimesheetType extends AbstractType
             function (FormEvent $event) use ($durationOptions) {
                 /** @var Timesheet|null $data */
                 $data = $event->getData();
-                if (null === $data || $data->isRunning()) {
+                if ($data === null || $data->isRunning()) {
                     $event->getForm()->get('duration')->setData(null);
                 }
 
-                if (null !== $data && !$this->security->isGranted('edit', $data)) {
-                    $event->getForm()->add('duration', DurationType::class, array_merge(['disabled' => true], $durationOptions));
+                if ($data !== null && !$this->security->isGranted('edit', $data)) {
+                    $event->getForm()->add('duration', DurationType::class, array_merge([
+                        'disabled' => true,
+                    ], $durationOptions));
                 }
             }
         );
@@ -75,8 +78,9 @@ final class QuickEntryTimesheetType extends AbstractType
                 /** @var Timesheet $data */
                 $data = $event->getData();
                 $duration = $data->getDuration(false);
+
                 try {
-                    if (null !== $duration) {
+                    if ($duration !== null) {
                         $end = clone $data->getBegin();
                         $end->modify('+ ' . abs($duration) . ' seconds');
                         $data->setEnd($end);

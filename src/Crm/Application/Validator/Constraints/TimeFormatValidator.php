@@ -20,7 +20,6 @@ final class TimeFormatValidator extends ConstraintValidator
 {
     /**
      * @param string|mixed $value
-     * @param Constraint $constraint
      */
     public function validate(mixed $value, Constraint $constraint): void
     {
@@ -28,7 +27,7 @@ final class TimeFormatValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, __NAMESPACE__ . '\TimeFormat');
         }
 
-        if (null === $value || '' === $value) {
+        if ($value === null || $value === '') {
             return;
         }
 
@@ -36,7 +35,7 @@ final class TimeFormatValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, 'string');
         }
 
-        $value = (string) $value;
+        $value = (string)$value;
 
         if (preg_match('/^([01][0-9]|2[0-3]):([0-5][0-9])$/', $value) !== 1) {
             $this->context->buildViolation('The given value is not a valid time.')

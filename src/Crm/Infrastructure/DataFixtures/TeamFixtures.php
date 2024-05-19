@@ -38,39 +38,6 @@ final class TeamFixtures extends Fixture
         return ['users', 'team'];
     }
 
-    /**
-     * @param ObjectManager $manager
-     * @return array<int|string, User>
-     */
-    private function getAllUsers(ObjectManager $manager): array
-    {
-        $all = [];
-        /** @var User[] $entries */
-        $entries = $manager->getRepository(User::class)->findAll();
-        foreach ($entries as $temp) {
-            $all[$temp->getId()] = $temp;
-        }
-
-        return $all;
-    }
-
-    /**
-     * @param ObjectManager $manager
-     * @return array<int|string, Project>
-     */
-    private function getAllProjects(ObjectManager $manager): array
-    {
-        $all = [];
-
-        /** @var Project[] $entries */
-        $entries = $manager->getRepository(Project::class)->findAll();
-        foreach ($entries as $temp) {
-            $all[$temp->getId()] = $temp;
-        }
-
-        return $all;
-    }
-
     public function load(ObjectManager $manager): void
     {
         $allUsers = $this->getAllUsers($manager);
@@ -79,13 +46,13 @@ final class TeamFixtures extends Fixture
 
         for ($i = 1; $i <= self::AMOUNT_TEAMS; $i++) {
             $maxUsers = \count($allUsers) - 1;
-            if (self::MAX_USERS_PER_TEAM < $maxUsers) {
+            if ($maxUsers > self::MAX_USERS_PER_TEAM) {
                 $maxUsers = self::MAX_USERS_PER_TEAM;
             }
             $userCount = mt_rand(1, $maxUsers);
 
             $maxProjects = \count($allProjects) - 1;
-            if (self::MAX_PROJECTS_PER_TEAM < $maxProjects) {
+            if ($maxProjects > self::MAX_PROJECTS_PER_TEAM) {
                 $maxProjects = self::MAX_PROJECTS_PER_TEAM;
             }
             $projectCount = mt_rand(0, $maxProjects);
@@ -118,5 +85,36 @@ final class TeamFixtures extends Fixture
 
         $manager->flush();
         $manager->clear();
+    }
+
+    /**
+     * @return array<int|string, User>
+     */
+    private function getAllUsers(ObjectManager $manager): array
+    {
+        $all = [];
+        /** @var User[] $entries */
+        $entries = $manager->getRepository(User::class)->findAll();
+        foreach ($entries as $temp) {
+            $all[$temp->getId()] = $temp;
+        }
+
+        return $all;
+    }
+
+    /**
+     * @return array<int|string, Project>
+     */
+    private function getAllProjects(ObjectManager $manager): array
+    {
+        $all = [];
+
+        /** @var Project[] $entries */
+        $entries = $manager->getRepository(Project::class)->findAll();
+        foreach ($entries as $temp) {
+            $all[$temp->getId()] = $temp;
+        }
+
+        return $all;
     }
 }

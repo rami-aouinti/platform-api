@@ -14,8 +14,6 @@ namespace App\Crm\Application\Model\Statistic;
 use App\Crm\Application\Model\TimesheetCountedStatistic;
 
 /**
- * Class BudgetStatistic
- *
  * @package App\Crm\Application\Model\Statistic
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

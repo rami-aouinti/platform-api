@@ -55,14 +55,17 @@ final class AppExtension extends AbstractExtension
      */
     public function getLocales(): array
     {
-        if (null !== $this->locales) {
+        if ($this->locales !== null) {
             return $this->locales;
         }
 
         $this->locales = [];
 
         foreach ($this->enabledLocales as $localeCode) {
-            $this->locales[] = ['code' => $localeCode, 'name' => Locales::getName($localeCode, $localeCode)];
+            $this->locales[] = [
+                'code' => $localeCode,
+                'name' => Locales::getName($localeCode, $localeCode),
+            ];
         }
 
         return $this->locales;

@@ -14,15 +14,15 @@ namespace App\Crm\Application\Model\Statistic;
 use App\User\Domain\Entity\User;
 
 /**
- * Class UserYear
- *
  * @package App\Crm\Application\Model\Statistic
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class UserYear
 {
-    public function __construct(private User $user, private Year $year)
-    {
+    public function __construct(
+        private User $user,
+        private Year $year
+    ) {
     }
 
     public function getYear(): Year

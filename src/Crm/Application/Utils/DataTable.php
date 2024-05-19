@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Utils;
 
-use App\Crm\Transport\Form\MultiUpdate\MultiUpdateTableDTO;
 use App\Crm\Domain\Repository\Query\BaseQuery;
+use App\Crm\Transport\Form\MultiUpdate\MultiUpdateTableDTO;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Traversable;
@@ -31,8 +31,10 @@ final class DataTable implements \Countable, \IteratorAggregate
     private bool $sticky = true;
     private ?string $paginationRoute = null;
 
-    public function __construct(private string $tableName, private BaseQuery $query)
-    {
+    public function __construct(
+        private string $tableName,
+        private BaseQuery $query
+    ) {
     }
 
     public function hasResults(): bool
@@ -87,7 +89,6 @@ final class DataTable implements \Countable, \IteratorAggregate
 
     /**
      * @param FormInterface<MultiUpdateTableDTO>|null $batchForm
-     * @return void
      */
     public function setBatchForm(?FormInterface $batchForm): void
     {
@@ -98,7 +99,7 @@ final class DataTable implements \Countable, \IteratorAggregate
                 'class' => 'alwaysVisible multiCheckbox',
                 'orderBy' => false,
                 'title' => false,
-                'batchUpdate' => true
+                'batchUpdate' => true,
             ]);
         }
     }
@@ -130,10 +131,6 @@ final class DataTable implements \Countable, \IteratorAggregate
      * - translation_domain
      * - orderBy (string|false)
      * - order (desc, asc)
-     *
-     * @param string $name
-     * @param array $column
-     * @return void
      */
     public function addColumn(string $name, array $column = []): void
     {

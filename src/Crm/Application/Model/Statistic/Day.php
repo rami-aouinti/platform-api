@@ -14,8 +14,6 @@ namespace App\Crm\Application\Model\Statistic;
 use DateTime;
 
 /**
- * Class Day
- *
  * @package App\Crm\Application\Model\Statistic
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -24,8 +22,11 @@ final class Day extends Timesheet
     private int $totalDurationBillable = 0;
     private array $details = [];
 
-    public function __construct(private DateTime $day, int $duration, float $rate)
-    {
+    public function __construct(
+        private DateTime $day,
+        int $duration,
+        float $rate
+    ) {
         $this->setTotalDuration($duration);
         $this->setTotalRate($rate);
     }
@@ -45,7 +46,7 @@ final class Day extends Timesheet
         $this->totalDurationBillable = $seconds;
     }
 
-    public function setDetails(array $details): Day
+    public function setDetails(array $details): self
     {
         $this->details = $details;
 

@@ -11,14 +11,16 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Widget\Type;
 
-use App\Crm\Transport\Event\RevenueStatisticEvent;
 use App\Crm\Domain\Repository\TimesheetRepository;
+use App\Crm\Transport\Event\RevenueStatisticEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 abstract class AbstractAmountPeriod extends AbstractWidget
 {
-    public function __construct(private TimesheetRepository $repository, private EventDispatcherInterface $dispatcher)
-    {
+    public function __construct(
+        private TimesheetRepository $repository,
+        private EventDispatcherInterface $dispatcher
+    ) {
     }
 
     public function getTitle(): string

@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Validator\Constraints;
 
-use App\Crm\Domain\Entity\Timesheet as TimesheetEntity;
 use App\Crm\Application\Validator\Constraints\Timesheet as TimesheetEntityConstraint;
+use App\Crm\Domain\Entity\Timesheet as TimesheetEntity;
 use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -26,8 +26,7 @@ final class TimesheetValidator extends ConstraintValidator
     public function __construct(
         #[TaggedIterator(TimesheetConstraint::class)]
         private iterable $constraints
-    )
-    {
+    ) {
     }
 
     public function validate(mixed $value, Constraint $constraint): void

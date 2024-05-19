@@ -11,12 +11,14 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Controller\Api\v1;
 
+use App\Crm\Application\Utils\PageSetup;
 use App\Crm\Transport\Calendar\CalendarService;
 use App\Crm\Transport\Configuration\SystemConfiguration;
-use App\User\Domain\Entity\User;
 use App\Crm\Transport\Form\CalendarForm;
 use App\Crm\Transport\Timesheet\TrackingModeService;
-use App\Crm\Application\Utils\PageSetup;
+use App\User\Domain\Entity\User;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,14 +27,21 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 /**
  * Controller used to display calendars.
  */
-#[Route(path: '/calendar')]
+#[Route(path: '/v1/calendar')]
 #[IsGranted('IS_AUTHENTICATED_REMEMBERED')]
 final class CalendarController extends AbstractController
 {
-    public function __construct(private CalendarService $calendarService, private SystemConfiguration $configuration, private TrackingModeService $service)
-    {
+    public function __construct(
+        private readonly CalendarService $calendarService,
+        private readonly SystemConfiguration $configuration,
+        private readonly TrackingModeService $service
+    ) {
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     #[Route(path: '/', name: 'calendar', methods: ['GET'])]
     #[Route(path: '/{profile}', name: 'calendar_user', methods: ['GET'])]
     public function userCalendar(Request $request): Response
@@ -41,7 +50,9 @@ final class CalendarController extends AbstractController
         $profile = $this->getUser();
 
         if ($this->isGranted('view_other_timesheet')) {
-            $form = $this->createFormForGetRequest(CalendarForm::class, ['user' => $profile], [
+            $form = $this->createFormForGetRequest(CalendarForm::class, [
+                'user' => $profile,
+            ], [
                 'action' => $this->generateUrl('calendar'),
             ]);
 

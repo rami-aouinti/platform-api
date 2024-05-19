@@ -21,7 +21,9 @@ final class AmountToday extends AbstractAmountPeriod
      */
     public function getOptions(array $options = []): array
     {
-        return array_merge(['color' => WidgetInterface::COLOR_TODAY], parent::getOptions($options));
+        return array_merge([
+            'color' => WidgetInterface::COLOR_TODAY,
+        ], parent::getOptions($options));
     }
 
     public function getId(): string

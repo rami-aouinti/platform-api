@@ -15,9 +15,6 @@ use App\Crm\Domain\Entity\ExportableItem;
 use App\Crm\Domain\Repository\Query\ExportQuery;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-/**
- *
- */
 #[AutoconfigureTag]
 interface ExportRepositoryInterface
 {
@@ -26,12 +23,10 @@ interface ExportRepositoryInterface
      * Be careful to only handle the ones, which belong to your repository.
      *
      * @param ExportableItem[] $items
-     * @return void
      */
     public function setExported(array $items): void;
 
     /**
-     * @param ExportQuery $query
      * @return ExportableItem[]
      */
     public function getExportItemsForQuery(ExportQuery $query): iterable;
@@ -39,8 +34,6 @@ interface ExportRepositoryInterface
     /**
      * Returns the type of this repository.
      * Must match the value returned by your entities via ExportableItem::getType().
-     *
-     * @return string
      */
     public function getType(): string;
 }

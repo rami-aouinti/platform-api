@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\EventSubscriber\Actions;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Transport\Event\PageActionsEvent;
+use App\User\Domain\Entity\User;
 
 final class UserFormsSubscriber extends AbstractActionsSubscriber
 {
@@ -33,28 +33,66 @@ final class UserFormsSubscriber extends AbstractActionsSubscriber
         }
 
         if ($this->isGranted('edit', $user)) {
-            $event->addAction('edit', ['url' => $this->path('user_profile_edit', ['username' => $user->getUserIdentifier()]), 'title' => 'profile-stats', 'translation_domain' => 'actions']);
+            $event->addAction('edit', [
+                'url' => $this->path('user_profile_edit', [
+                    'username' => $user->getUserIdentifier(),
+                ]),
+                'title' => 'profile-stats',
+                'translation_domain' => 'actions',
+            ]);
         }
         if ($this->isGranted('preferences', $user)) {
-            $event->addConfig($this->path('user_profile_preferences', ['username' => $user->getUserIdentifier()]));
+            $event->addConfig($this->path('user_profile_preferences', [
+                'username' => $user->getUserIdentifier(),
+            ]));
         }
         if ($this->isGranted('password', $user)) {
-            $event->addAction('password', ['url' => $this->path('user_profile_password', ['username' => $user->getUserIdentifier()]), 'title' => 'profile.password']);
+            $event->addAction('password', [
+                'url' => $this->path('user_profile_password', [
+                    'username' => $user->getUserIdentifier(),
+                ]),
+                'title' => 'profile.password',
+            ]);
         }
         if ($this->isGranted('2fa', $user)) {
-            $event->addAction('2fa', ['url' => $this->path('user_profile_2fa', ['username' => $user->getUserIdentifier()]), 'title' => 'profile.2fa']);
+            $event->addAction('2fa', [
+                'url' => $this->path('user_profile_2fa', [
+                    'username' => $user->getUserIdentifier(),
+                ]),
+                'title' => 'profile.2fa',
+            ]);
         }
         if ($this->isGranted('api-token', $user)) {
-            $event->addAction('api-token', ['url' => $this->path('user_profile_api_token', ['username' => $user->getUserIdentifier()]), 'title' => 'profile.api-token']);
+            $event->addAction('api-token', [
+                'url' => $this->path('user_profile_api_token', [
+                    'username' => $user->getUserIdentifier(),
+                ]),
+                'title' => 'profile.api-token',
+            ]);
         }
         if ($this->isGranted('teams', $user)) {
-            $event->addAction('teams', ['url' => $this->path('user_profile_teams', ['username' => $user->getUserIdentifier()]), 'title' => 'teams']);
+            $event->addAction('teams', [
+                'url' => $this->path('user_profile_teams', [
+                    'username' => $user->getUserIdentifier(),
+                ]),
+                'title' => 'teams',
+            ]);
         }
         if ($this->isGranted('roles', $user)) {
-            $event->addAction('roles', ['url' => $this->path('user_profile_roles', ['username' => $user->getUserIdentifier()]), 'title' => 'profile.roles']);
+            $event->addAction('roles', [
+                'url' => $this->path('user_profile_roles', [
+                    'username' => $user->getUserIdentifier(),
+                ]),
+                'title' => 'profile.roles',
+            ]);
         }
         if ($this->isGranted('contract', $user)) {
-            $event->addAction('contract', ['url' => $this->path('user_profile_contract', ['username' => $user->getUserIdentifier()]), 'title' => 'work_contract']);
+            $event->addAction('contract', [
+                'url' => $this->path('user_profile_contract', [
+                    'username' => $user->getUserIdentifier(),
+                ]),
+                'title' => 'work_contract',
+            ]);
         }
     }
 }

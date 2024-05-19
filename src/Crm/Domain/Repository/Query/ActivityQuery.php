@@ -26,7 +26,7 @@ class ActivityQuery extends ProjectQuery
         'project',
         'budget',
         'timeBudget',
-        'visible'
+        'visible',
     ];
 
     /**
@@ -52,10 +52,6 @@ class ActivityQuery extends ProjectQuery
         return $this->globalsOnly;
     }
 
-    /**
-     * @param bool $globalsOnly
-     * @return self
-     */
     public function setGlobalsOnly(bool $globalsOnly): self
     {
         $this->globalsOnly = $globalsOnly;

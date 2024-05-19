@@ -35,7 +35,6 @@ class ActivityRateRepository extends EntityRepository
     }
 
     /**
-     * @param Activity $activity
      * @return ActivityRate[]
      */
     public function getRatesForActivity(Activity $activity): array

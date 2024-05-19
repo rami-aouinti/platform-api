@@ -20,8 +20,6 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Class AbstractUserCommand
- *
  * @package App\Crm\Transport\Command
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

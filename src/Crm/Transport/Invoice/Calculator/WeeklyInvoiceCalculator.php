@@ -21,12 +21,12 @@ final class WeeklyInvoiceCalculator extends AbstractSumInvoiceCalculator impleme
 {
     public function getIdentifiers(ExportableItem $invoiceItem): array
     {
-        if (null === $invoiceItem->getBegin()) {
+        if ($invoiceItem->getBegin() === null) {
             throw new \Exception('Cannot handle invoice items without start date');
         }
 
         return [
-            $invoiceItem->getBegin()->format('W')
+            $invoiceItem->getBegin()->format('W'),
         ];
     }
 

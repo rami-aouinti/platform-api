@@ -23,14 +23,14 @@ interface MetaTableTypeInterface
     /**
      * Sets the name of this entry.
      */
-    public function setName(string $name): MetaTableTypeInterface;
+    public function setName(string $name): self;
 
     public function getValue(): mixed;
 
     /**
      * Value will not be serialized before its stored, so it should be a primitive type.
      */
-    public function setValue(mixed $value): MetaTableTypeInterface;
+    public function setValue(mixed $value): self;
 
     /**
      * Get the linked entity.
@@ -40,18 +40,18 @@ interface MetaTableTypeInterface
     /**
      * Set the linked entity of this entry.
      */
-    public function setEntity(EntityWithMetaFields $entity): MetaTableTypeInterface;
+    public function setEntity(EntityWithMetaFields $entity): self;
 
     /**
      * This will merge the current object with the values from the given $meta instance.
      * It should NOT update the name or value, but only the form settings.
      */
-    public function merge(MetaTableTypeInterface $meta): MetaTableTypeInterface;
+    public function merge(self $meta): self;
 
     /**
      * Whether this field can be displayed in "public" places like API results or export.
      */
-    public function setIsVisible(bool $include): MetaTableTypeInterface;
+    public function setIsVisible(bool $include): self;
 
     /**
      * Whether this field can be displayed in "public" places like API results or export.
@@ -61,7 +61,7 @@ interface MetaTableTypeInterface
     /**
      * Whether this field is required to be filled out in the form.
      */
-    public function setIsRequired(bool $isRequired): MetaTableTypeInterface;
+    public function setIsRequired(bool $isRequired): self;
 
     /**
      * Whether the form field is required.
@@ -77,7 +77,7 @@ interface MetaTableTypeInterface
     /**
      * Sets the form type.
      */
-    public function setType(string $type): MetaTableTypeInterface;
+    public function setType(string $type): self;
 
     /**
      * Get all constraints that should be attached to the form type.
@@ -89,15 +89,14 @@ interface MetaTableTypeInterface
     /**
      * Adds a constraint to the form type.
      */
-    public function addConstraint(Constraint $constraint): MetaTableTypeInterface;
+    public function addConstraint(Constraint $constraint): self;
 
     /**
      * Sets all constraints for the form type, overwriting all previously attached.
      *
      * @param Constraint[] $constraints
-     * @return MetaTableTypeInterface
      */
-    public function setConstraints(array $constraints): MetaTableTypeInterface;
+    public function setConstraints(array $constraints): self;
 
     /**
      * Returns the label shown to the end-user.
@@ -107,15 +106,14 @@ interface MetaTableTypeInterface
     /**
      * Sets or removes the label shown to the end-user.
      */
-    public function setLabel(?string $label): MetaTableTypeInterface;
+    public function setLabel(?string $label): self;
 
     /**
      * Set an array of options for the FormType.
      *
      * @param array<string, mixed> $options
-     * @return MetaTableTypeInterface
      */
-    public function setOptions(array $options): MetaTableTypeInterface;
+    public function setOptions(array $options): self;
 
     /**
      * Returns an array with options for the FormType.
@@ -127,7 +125,7 @@ interface MetaTableTypeInterface
     /**
      * Sets the order of this meta-field.
      */
-    public function setOrder(int $order): MetaTableTypeInterface;
+    public function setOrder(int $order): self;
 
     /**
      * Returns the order (default: 0).

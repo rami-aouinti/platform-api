@@ -30,15 +30,12 @@ final class ReloadCommand extends Command
     public function __construct(
         private readonly string $projectDirectory,
         private readonly string $kernelEnvironment
-    )
-    {
+    ) {
         parent::__construct();
     }
 
     /**
      * Returns the base directory to the Kimai installation.
-     *
-     * @return string
      */
     protected function getRootDirectory(): string
     {
@@ -67,7 +64,7 @@ final class ReloadCommand extends Command
             $command = $this->getApplication()->find('lint:yaml');
             $cmdInput = new StringInput('lint:yaml --parse-tags config');
             $cmdInput->setInteractive(false);
-            if (0 !== $command->run($cmdInput, $output)) {
+            if ($command->run($cmdInput, $output) !== 0) {
                 throw new \RuntimeException('Config file seems to be invalid');
             }
 
@@ -82,7 +79,7 @@ final class ReloadCommand extends Command
             $command = $this->getApplication()->find('lint:xliff');
             $cmdInput = new StringInput('lint:xliff translations');
             $cmdInput->setInteractive(false);
-            if (0 !== $command->run($cmdInput, $output)) {
+            if ($command->run($cmdInput, $output) !== 0) {
                 throw new \RuntimeException('Translation files seem to be invalid');
             }
 
@@ -107,7 +104,7 @@ final class ReloadCommand extends Command
                     'Please run these commands to rebuild the cache manually:',
                     'rm -r var/cache/*' . PHP_EOL .
                     'bin/console cache:clear --env=' . $environment . PHP_EOL .
-                    'bin/console cache:warmup --env=' . $environment
+                    'bin/console cache:warmup --env=' . $environment,
                 ]
             );
 
@@ -126,8 +123,13 @@ final class ReloadCommand extends Command
         $io->text('Rebuilding your cache, please be patient ...');
 
         $command = $this->getApplication()->find('cache:clear');
+
         try {
-            if (0 !== $command->run(new ArrayInput(['--env' => $environment]), $output)) {
+            if (
+                $command->run(new ArrayInput([
+                '--env' => $environment,
+                ]), $output) !== 0
+            ) {
                 throw new \RuntimeException('Could not clear cache, missing permissions?');
             }
         } catch (\Exception $ex) {
@@ -137,8 +139,13 @@ final class ReloadCommand extends Command
         }
 
         $command = $this->getApplication()->find('cache:warmup');
+
         try {
-            if (0 !== $command->run(new ArrayInput(['--env' => $environment]), $output)) {
+            if (
+                $command->run(new ArrayInput([
+                '--env' => $environment,
+                ]), $output) !== 0
+            ) {
                 throw new \RuntimeException('Could not warmup cache, missing permissions?');
             }
         } catch (\Exception $ex) {

@@ -21,7 +21,9 @@ final class AmountMonth extends AbstractAmountPeriod
      */
     public function getOptions(array $options = []): array
     {
-        return array_merge(['color' => WidgetInterface::COLOR_MONTH], parent::getOptions($options));
+        return array_merge([
+            'color' => WidgetInterface::COLOR_MONTH,
+        ], parent::getOptions($options));
     }
 
     public function getId(): string

@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Invoice\Hydrator;
 
-use App\Crm\Transport\Activity\ActivityStatisticService;
 use App\Crm\Domain\Entity\Activity;
+use App\Crm\Transport\Activity\ActivityStatisticService;
 use App\Crm\Transport\Invoice\InvoiceModel;
 use App\Crm\Transport\Invoice\InvoiceModelHydrator;
 
@@ -20,8 +20,9 @@ final class InvoiceModelActivityHydrator implements InvoiceModelHydrator
 {
     use BudgetHydratorTrait;
 
-    public function __construct(private ActivityStatisticService $activityStatistic)
-    {
+    public function __construct(
+        private ActivityStatisticService $activityStatistic
+    ) {
     }
 
     public function hydrate(InvoiceModel $model): array

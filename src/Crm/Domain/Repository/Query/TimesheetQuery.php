@@ -13,8 +13,8 @@ namespace App\Crm\Domain\Repository\Query;
 
 use App\Crm\Domain\Entity\Activity;
 use App\Crm\Domain\Entity\Tag;
-use App\User\Domain\Entity\User;
 use App\Crm\Transport\Form\Model\DateRange;
+use App\User\Domain\Entity\User;
 
 class TimesheetQuery extends ActivityQuery implements BillableInterface, DateRangeInterface
 {
@@ -30,7 +30,9 @@ class TimesheetQuery extends ActivityQuery implements BillableInterface, DateRan
     public const TIMESHEET_ORDER_ALLOWED = ['begin', 'end', 'duration', 'rate', 'hourlyRate', 'customer', 'project', 'activity', 'description'];
 
     private ?User $timesheetUser = null;
-    /** @var array<Activity> */
+    /**
+     * @var array<Activity>
+     */
     private array $activities = [];
     private int $state = self::STATE_ALL;
     private int $exported = self::STATE_ALL;
@@ -139,7 +141,7 @@ class TimesheetQuery extends ActivityQuery implements BillableInterface, DateRan
         return $this->activities;
     }
 
-    public function addActivity(Activity $activity): TimesheetQuery
+    public function addActivity(Activity $activity): self
     {
         $this->activities[] = $activity;
 
@@ -149,7 +151,7 @@ class TimesheetQuery extends ActivityQuery implements BillableInterface, DateRan
     /**
      * @param array<Activity> $activities
      */
-    public function setActivities(array $activities): TimesheetQuery
+    public function setActivities(array $activities): self
     {
         $this->activities = $activities;
 
@@ -176,7 +178,7 @@ class TimesheetQuery extends ActivityQuery implements BillableInterface, DateRan
         return $this->state === self::STATE_STOPPED;
     }
 
-    public function setState(int $state): TimesheetQuery
+    public function setState(int $state): self
     {
         if (\in_array($state, [self::STATE_ALL, self::STATE_RUNNING, self::STATE_STOPPED], true)) {
             $this->state = $state;
@@ -234,7 +236,7 @@ class TimesheetQuery extends ActivityQuery implements BillableInterface, DateRan
         return $this->modifiedAfter;
     }
 
-    public function setModifiedAfter(\DateTime $modifiedAfter): TimesheetQuery
+    public function setModifiedAfter(\DateTime $modifiedAfter): self
     {
         $this->modifiedAfter = $modifiedAfter;
 

@@ -9,9 +9,9 @@
 
 namespace App\Crm\Application\Twig;
 
+use App\Crm\Application\Utils\Color;
 use App\Crm\Constants;
 use App\Crm\Domain\Entity\EntityWithMetaFields;
-use App\Crm\Application\Utils\Color;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -30,7 +30,10 @@ final class Extensions extends AbstractExtension
             new TwigFilter('color', [$this, 'color']),
             new TwigFilter('font_contrast', [$this, 'calculateFontContrastColor']),
             new TwigFilter('default_color', [$this, 'defaultColor']),
-            new TwigFilter('nl2str', [$this, 'replaceNewline'], ['pre_escape' => 'html', 'is_safe' => ['html']]),
+            new TwigFilter('nl2str', [$this, 'replaceNewline'], [
+                'pre_escape' => 'html',
+                'is_safe' => ['html'],
+            ]),
         ];
     }
 
@@ -64,7 +67,7 @@ final class Extensions extends AbstractExtension
             ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
         );
 
-        if (false === $key) {
+        if ($key === false) {
             return 1;
         }
 
@@ -73,9 +76,6 @@ final class Extensions extends AbstractExtension
 
     /**
      * Returns null instead of the default color if $defaultColor is not set to true.
-     *
-     * @param EntityWithMetaFields $entity
-     * @return string|null
      */
     public function color(EntityWithMetaFields $entity, bool $defaultColor = false): ?string
     {
@@ -99,7 +99,6 @@ final class Extensions extends AbstractExtension
 
     /**
      * @param object $object
-     * @return null|string
      */
     public function getClassName($object): ?string
     {
@@ -112,7 +111,7 @@ final class Extensions extends AbstractExtension
 
     public function multilineIndent(?string $string, string $indent): string
     {
-        if (null === $string || '' === $string) {
+        if ($string === null || $string === '') {
             return '';
         }
 

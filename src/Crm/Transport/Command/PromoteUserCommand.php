@@ -11,14 +11,12 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Command;
 
-use App\User\Domain\Entity\User;
 use App\User\Application\Service\UserService;
+use App\User\Domain\Entity\User;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Class PromoteUserCommand
- *
  * @package App\Crm\Transport\Command
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

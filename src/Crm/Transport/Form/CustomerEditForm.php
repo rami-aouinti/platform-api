@@ -48,7 +48,7 @@ class CustomerEditForm extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'name',
                 'attr' => [
-                    'autofocus' => 'autofocus'
+                    'autofocus' => 'autofocus',
                 ],
             ])
             ->add('number', TextType::class, [
@@ -89,13 +89,17 @@ class CustomerEditForm extends AbstractType
             ->add('fax', TelType::class, [
                 'label' => 'fax',
                 'required' => false,
-                'attr' => ['icon' => 'fax'],
+                'attr' => [
+                    'icon' => 'fax',
+                ],
                 'block_prefix' => 'phone',
             ])
             ->add('mobile', TelType::class, [
                 'label' => 'mobile',
                 'required' => false,
-                'attr' => ['icon' => 'mobile'],
+                'attr' => [
+                    'icon' => 'mobile',
+                ],
                 'block_prefix' => 'phone',
             ])
             ->add('email', MailType::class, [
@@ -146,7 +150,7 @@ class CustomerEditForm extends AbstractType
             'include_budget' => false,
             'include_time' => false,
             'attr' => [
-                'data-form-event' => 'kimai.customerUpdate'
+                'data-form-event' => 'kimai.customerUpdate',
             ],
         ]);
     }

@@ -21,8 +21,6 @@ use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class Customer
- *
  * @package App\Crm\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -35,10 +33,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Constraints\Customer]
 class Customer implements EntityWithMetaFields, EntityWithBudget
 {
-    public const DEFAULT_CURRENCY = 'EUR';
-
     use BudgetTrait;
     use ColorTrait;
+
+    public const DEFAULT_CURRENCY = 'EUR';
 
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -71,7 +69,9 @@ class Customer implements EntityWithMetaFields, EntityWithBudget
     #[Serializer\Groups(['Default'])]
     #[Exporter\Expose(label: 'visible', type: 'boolean')]
     private bool $visible = true;
-    #[ORM\Column(name: 'billable', type: 'boolean', nullable: false, options: ['default' => true])]
+    #[ORM\Column(name: 'billable', type: 'boolean', nullable: false, options: [
+        'default' => true,
+    ])]
     #[Assert\NotNull]
     #[Serializer\Expose]
     #[Serializer\Groups(['Default'])]
@@ -199,6 +199,34 @@ class Customer implements EntityWithMetaFields, EntityWithBudget
         $this->name = $name;
         $this->meta = new ArrayCollection();
         $this->teams = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return $this->getName();
+    }
+
+    public function __clone()
+    {
+        if ($this->id !== null) {
+            $this->id = null;
+        }
+
+        $currentTeams = $this->teams;
+        $this->teams = new ArrayCollection();
+        /** @var Team $team */
+        foreach ($currentTeams as $team) {
+            $this->addTeam($team);
+        }
+
+        $currentMeta = $this->meta;
+        $this->meta = new ArrayCollection();
+        /** @var CustomerMeta $meta */
+        foreach ($currentMeta as $meta) {
+            $newMeta = clone $meta;
+            $newMeta->setEntity($this);
+            $this->setMetaField($newMeta);
+        }
     }
 
     public function getId(): ?int
@@ -474,33 +502,5 @@ class Customer implements EntityWithMetaFields, EntityWithBudget
     public function getTeams(): Collection
     {
         return $this->teams;
-    }
-
-    public function __toString(): string
-    {
-        return $this->getName();
-    }
-
-    public function __clone()
-    {
-        if ($this->id !== null) {
-            $this->id = null;
-        }
-
-        $currentTeams = $this->teams;
-        $this->teams = new ArrayCollection();
-        /** @var Team $team */
-        foreach ($currentTeams as $team) {
-            $this->addTeam($team);
-        }
-
-        $currentMeta = $this->meta;
-        $this->meta = new ArrayCollection();
-        /** @var CustomerMeta $meta */
-        foreach ($currentMeta as $meta) {
-            $newMeta = clone $meta;
-            $newMeta->setEntity($this);
-            $this->setMetaField($newMeta);
-        }
     }
 }

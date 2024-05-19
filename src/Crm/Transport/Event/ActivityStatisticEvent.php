@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Event;
 
-use App\Crm\Domain\Entity\Activity;
 use App\Crm\Application\Model\ActivityStatistic;
+use App\Crm\Domain\Entity\Activity;
 use DateTime;
 use DateTimeInterface;
 
@@ -26,8 +26,7 @@ final class ActivityStatisticEvent extends AbstractActivityEvent
         private readonly ActivityStatistic $statistic,
         ?DateTimeInterface $begin = null,
         ?DateTimeInterface $end = null
-    )
-    {
+    ) {
         parent::__construct($activity);
 
         if ($begin !== null) {

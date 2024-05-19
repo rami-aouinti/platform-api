@@ -21,8 +21,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 final class TrackingModeType extends AbstractType
 {
-    public function __construct(private TrackingModeService $service)
-    {
+    public function __construct(
+        private TrackingModeService $service
+    ) {
     }
 
     public function configureOptions(OptionsResolver $resolver): void

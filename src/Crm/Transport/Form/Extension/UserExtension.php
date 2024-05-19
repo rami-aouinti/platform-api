@@ -19,8 +19,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class UserExtension extends AbstractTypeExtension
 {
-    public function __construct(private Security $security)
-    {
+    public function __construct(
+        private Security $security
+    ) {
     }
 
     public static function getExtendedTypes(): iterable

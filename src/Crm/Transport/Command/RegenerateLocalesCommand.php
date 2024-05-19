@@ -19,8 +19,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Intl\Locales;
 
-use function App\Crm\Transport\Command\sort;
-
 /**
  * Command used to create the locale definition.
  *
@@ -54,8 +52,7 @@ final class RegenerateLocalesCommand extends Command
     public function __construct(
         private readonly string $projectDirectory,
         private readonly string $kernelEnvironment
-    )
-    {
+    ) {
         parent::__construct();
     }
 

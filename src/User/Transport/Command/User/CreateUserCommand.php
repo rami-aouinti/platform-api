@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\User\Transport\Command\User;
 
+use App\Blog\Application\DTO\Post\UserCreate as UserDto;
 use App\General\Transport\Command\HelperConfigure;
 use App\General\Transport\Command\Traits\SymfonyStyleTrait;
 use App\Role\Application\Security\RolesService;
 use App\Role\Domain\Repository\Interfaces\RoleRepositoryInterface;
 use App\Role\Infrastructure\Repository\RoleRepository;
-use App\Blog\Application\DTO\Post\UserCreate as UserDto;
 use App\User\Application\Resource\UserGroupResource;
 use App\User\Application\Resource\UserResource;
 use App\User\Transport\Command\Traits\ApiKeyUserManagementHelperTrait;

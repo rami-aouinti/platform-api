@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Form\Toolbar;
 
-use App\Crm\Transport\Form\Type\InvoiceStatusType;
 use App\Crm\Domain\Repository\Query\InvoiceArchiveQuery;
+use App\Crm\Transport\Form\Type\InvoiceStatusType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -28,9 +28,19 @@ final class InvoiceArchiveForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $this->addSearchTermInputField($builder);
-        $this->addDateRange($builder, ['timezone' => $options['timezone']]);
-        $this->addCustomerMultiChoice($builder, ['required' => false, 'start_date_param' => null, 'end_date_param' => null, 'ignore_date' => true, 'placeholder' => ''], true);
-        $builder->add('status', InvoiceStatusType::class, ['required' => false]);
+        $this->addDateRange($builder, [
+            'timezone' => $options['timezone'],
+        ]);
+        $this->addCustomerMultiChoice($builder, [
+            'required' => false,
+            'start_date_param' => null,
+            'end_date_param' => null,
+            'ignore_date' => true,
+            'placeholder' => '',
+        ], true);
+        $builder->add('status', InvoiceStatusType::class, [
+            'required' => false,
+        ]);
         $this->addPageSizeChoice($builder);
         $this->addHiddenPagination($builder);
         $this->addOrder($builder);

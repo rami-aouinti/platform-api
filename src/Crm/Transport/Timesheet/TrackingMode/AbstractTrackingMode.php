@@ -21,7 +21,7 @@ abstract class AbstractTrackingMode implements TrackingModeInterface
 
     public function create(Timesheet $timesheet, ?Request $request = null): void
     {
-        if (null === $request) {
+        if ($request === null) {
             return;
         }
 
@@ -32,12 +32,12 @@ abstract class AbstractTrackingMode implements TrackingModeInterface
     protected function setBeginEndFromRequest(Timesheet $entry, Request $request)
     {
         $start = $request->get('begin');
-        if (null === $start) {
+        if ($start === null) {
             return;
         }
 
         $start = DateTime::createFromFormat('Y-m-d', $start, $this->getTimezone($entry));
-        if (false === $start) {
+        if ($start === false) {
             return;
         }
 
@@ -45,12 +45,12 @@ abstract class AbstractTrackingMode implements TrackingModeInterface
 
         // only check for an end date if a begin date was given
         $end = $request->get('end');
-        if (null === $end) {
+        if ($end === null) {
             return;
         }
 
         $end = DateTime::createFromFormat('Y-m-d', $end, $this->getTimezone($entry));
-        if (false === $end) {
+        if ($end === false) {
             return;
         }
 
@@ -64,7 +64,7 @@ abstract class AbstractTrackingMode implements TrackingModeInterface
     protected function setFromToFromRequest(Timesheet $entry, Request $request)
     {
         $from = $request->get('from');
-        if (null === $from) {
+        if ($from === null) {
             return;
         }
 
@@ -77,7 +77,7 @@ abstract class AbstractTrackingMode implements TrackingModeInterface
         $entry->setBegin($from);
 
         $to = $request->get('to');
-        if (null === $to) {
+        if ($to === null) {
             return;
         }
 

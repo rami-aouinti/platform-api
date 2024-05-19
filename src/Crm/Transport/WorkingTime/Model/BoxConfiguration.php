@@ -12,8 +12,6 @@ declare(strict_types=1);
 namespace App\Crm\Transport\WorkingTime\Model;
 
 /**
- * Class BoxConfiguration
- *
  * @package App\Crm\Transport\WorkingTime\Model
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

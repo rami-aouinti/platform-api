@@ -22,14 +22,14 @@ abstract class AbstractMetaDisplayEvent extends Event implements MetaDisplayEven
      */
     private array $fields = [];
 
-    public function __construct(private BaseQuery $query, private string $location)
-    {
+    public function __construct(
+        private BaseQuery $query,
+        private string $location
+    ) {
     }
 
     /**
      * To filter where your meta-field will be displayed, use the query settings.
-     *
-     * @return BaseQuery
      */
     public function getQuery(): BaseQuery
     {
@@ -38,8 +38,6 @@ abstract class AbstractMetaDisplayEvent extends Event implements MetaDisplayEven
 
     /**
      * If you want to filter where your meta-field will be displayed, check the current location.
-     *
-     * @return string
      */
     public function getLocation(): string
     {
@@ -48,8 +46,6 @@ abstract class AbstractMetaDisplayEvent extends Event implements MetaDisplayEven
 
     /**
      * Add a new meta field that should be included.
-     *
-     * @param MetaTableTypeInterface $meta
      */
     public function addField(MetaTableTypeInterface $meta): void
     {

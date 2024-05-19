@@ -18,8 +18,6 @@ use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
- * Class AbstractRateForm
- *
  * @package App\Crm\Transport\Form
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -39,7 +37,7 @@ abstract class AbstractRateForm extends AbstractType
                 ],
                 'label' => 'rate',
                 'attr' => [
-                    'autofocus' => 'autofocus'
+                    'autofocus' => 'autofocus',
                 ],
                 'currency' => $currency,
                 'help' => 'help.rate',

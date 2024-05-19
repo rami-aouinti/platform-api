@@ -11,20 +11,18 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Calendar;
 
+use App\Crm\Application\Utils\Color;
+use App\Crm\Domain\Repository\TimesheetRepository;
 use App\Crm\Transport\Configuration\SystemConfiguration;
-use App\User\Domain\Entity\User;
 use App\Crm\Transport\Event\CalendarConfigurationEvent;
 use App\Crm\Transport\Event\CalendarDragAndDropSourceEvent;
 use App\Crm\Transport\Event\CalendarGoogleSourceEvent;
 use App\Crm\Transport\Event\CalendarSourceEvent;
 use App\Crm\Transport\Event\RecentActivityEvent;
-use App\Crm\Domain\Repository\TimesheetRepository;
-use App\Crm\Application\Utils\Color;
+use App\User\Domain\Entity\User;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
- * Class CalendarService
- *
  * @package App\Crm\Transport\Calendar
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -34,12 +32,10 @@ final readonly class CalendarService
         private SystemConfiguration $configuration,
         private TimesheetRepository $repository,
         private EventDispatcherInterface $dispatcher
-    )
-    {
+    ) {
     }
 
     /**
-     * @param User $user
      * @return DragAndDropSource[]
      * @throws \Exception
      */

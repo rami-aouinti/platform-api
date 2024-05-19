@@ -26,7 +26,7 @@ final class CustomerFormTypeQuery extends BaseFormTypeQuery
      */
     public function __construct(Customer|array|int|null $customer = null)
     {
-        if (null !== $customer) {
+        if ($customer !== null) {
             if (!\is_array($customer)) {
                 $customer = [$customer];
             }
@@ -44,15 +44,12 @@ final class CustomerFormTypeQuery extends BaseFormTypeQuery
         $this->allowCustomerPreselect = $allowCustomerPreselect;
     }
 
-    /**
-     * @return Customer|null
-     */
     public function getCustomerToIgnore(): ?Customer
     {
         return $this->customerToIgnore;
     }
 
-    public function setCustomerToIgnore(Customer $customerToIgnore): CustomerFormTypeQuery
+    public function setCustomerToIgnore(Customer $customerToIgnore): self
     {
         $this->customerToIgnore = $customerToIgnore;
 

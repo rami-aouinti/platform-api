@@ -16,6 +16,7 @@ namespace App\Blog\Transport\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+
 use function Symfony\Component\String\u;
 
 /**
@@ -28,11 +29,6 @@ use function Symfony\Component\String\u;
  */
 final class DateTimePickerType extends AbstractType
 {
-    /**
-     * @param OptionsResolver $resolver
-     *
-     * @return void
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         // @see https://symfony.com/doc/current/reference/forms/types/date.html#rendering-a-single-html5-text-box
@@ -56,9 +52,6 @@ final class DateTimePickerType extends AbstractType
         ]);
     }
 
-    /**
-     * @return string|null
-     */
     public function getParent(): ?string
     {
         return DateTimeType::class;

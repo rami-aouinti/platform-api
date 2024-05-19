@@ -11,30 +11,28 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Twig\Runtime;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Transport\Widget\WidgetException;
 use App\Crm\Transport\Widget\WidgetInterface;
 use App\Crm\Transport\Widget\WidgetService;
+use App\User\Domain\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Twig\Environment;
 use Twig\Extension\RuntimeExtensionInterface;
 
 /**
- * Class WidgetExtension
- *
  * @package App\Crm\Application\Twig\Runtime
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class WidgetExtension implements RuntimeExtensionInterface
 {
-    public function __construct(private WidgetService $service, private Security $security)
-    {
+    public function __construct(
+        private WidgetService $service,
+        private Security $security
+    ) {
     }
 
     /**
      * @param WidgetInterface|string $widget
-     * @param array $options
-     * @return string
      * @throws WidgetException
      */
     public function renderWidget(Environment $environment, $widget, array $options = []): string

@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace App\Tests\Blog\Controller\Admin;
 
 use App\Blog\Domain\Entity\Post;
-use App\User\Domain\Entity\User;
 use App\Blog\Domain\Repository\PostRepository;
+use App\User\Domain\Entity\User;
 use App\User\Infrastructure\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -97,7 +97,7 @@ class BlogControllerTest extends WebTestCase
      */
     public function testAdminNewPost(): void
     {
-        $postTitle = 'Blog Post Title '.mt_rand();
+        $postTitle = 'Blog Post Title ' . mt_rand();
         $postSummary = $this->generateRandomString(255);
         $postContent = $this->generateRandomString(1024);
 
@@ -123,7 +123,7 @@ class BlogControllerTest extends WebTestCase
 
     public function testAdminNewDuplicatedPost(): void
     {
-        $postTitle = 'Blog Post Title '.mt_rand();
+        $postTitle = 'Blog Post Title ' . mt_rand();
         $postSummary = $this->generateRandomString(255);
         $postContent = $this->generateRandomString(1024);
 
@@ -157,7 +157,7 @@ class BlogControllerTest extends WebTestCase
      */
     public function testAdminEditPost(): void
     {
-        $newBlogPostTitle = 'Blog Post Title '.mt_rand();
+        $newBlogPostTitle = 'Blog Post Title ' . mt_rand();
 
         $this->client->request('GET', '/en/admin/post/1/edit');
         $this->client->submitForm('Save changes', [
@@ -198,6 +198,6 @@ class BlogControllerTest extends WebTestCase
     {
         $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-        return mb_substr(str_shuffle(str_repeat($chars, (int) ceil($length / mb_strlen($chars)))), 1, $length);
+        return mb_substr(str_shuffle(str_repeat($chars, (int)ceil($length / mb_strlen($chars)))), 1, $length);
     }
 }

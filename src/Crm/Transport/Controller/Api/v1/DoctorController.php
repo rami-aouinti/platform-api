@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Controller\Api\v1;
 
-use App\Crm\Constants;
 use App\Crm\Application\Utils\FileHelper;
 use App\Crm\Application\Utils\PageSetup;
 use App\Crm\Application\Utils\ReleaseVersion;
+use App\Crm\Constants;
 use Composer\InstalledVersions;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,8 +25,6 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
 /**
- * Class DoctorController
- *
  * @package App\Crm\Transport\Controller\Api\v1
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -55,8 +53,12 @@ final class DoctorController extends AbstractController
         'var/log/',
     ];
 
-    public function __construct(private string $projectDirectory, private string $kernelEnvironment, private FileHelper $fileHelper, private CacheInterface $cache)
-    {
+    public function __construct(
+        private string $projectDirectory,
+        private string $kernelEnvironment,
+        private FileHelper $fileHelper,
+        private CacheInterface $cache
+    ) {
     }
 
     #[Route(path: '/flush-log/{token}', name: 'doctor_flush_log', methods: ['GET'])]
@@ -77,7 +79,7 @@ final class DoctorController extends AbstractController
             if (!is_writable($logfile)) {
                 $this->flashError('action.delete.error', 'Logfile cannot be written');
             } else {
-                if (false === file_put_contents($logfile, '')) {
+                if (file_put_contents($logfile, '') === false) {
                     $this->flashError('action.delete.error', 'Failed writing to logfile');
                 } else {
                     $this->flashSuccess('action.delete.success');
@@ -98,7 +100,7 @@ final class DoctorController extends AbstractController
 
         $latestRelease = $this->getNextUpdateVersion();
         if (\is_array($latestRelease) && \array_key_exists('version', $latestRelease)) {
-            if (version_compare(Constants::VERSION, (string) $latestRelease['version']) >= 0) {
+            if (version_compare(Constants::VERSION, (string)$latestRelease['version']) >= 0) {
                 $latestRelease = null;
             }
         }
@@ -116,7 +118,7 @@ final class DoctorController extends AbstractController
             'logLines' => $logLines,
             'logSize' => $this->getLogSize(),
             'composer' => $this->getComposerPackages(),
-            'release' => $latestRelease
+            'release' => $latestRelease,
         ]);
     }
 
@@ -273,7 +275,7 @@ final class DoctorController extends AbstractController
             'sys_temp_dir',
             'date.timezone',
             'session.gc_maxlifetime',
-            'disable_functions'
+            'disable_functions',
         ];
 
         $settings = [];
@@ -290,7 +292,6 @@ final class DoctorController extends AbstractController
 
     /**
      * @author https://php.net/manual/en/function.phpinfo.php#117961
-     * @return array
      */
     private function getPhpInfo(): array
     {
@@ -301,15 +302,19 @@ final class DoctorController extends AbstractController
         ob_start();
         phpinfo(1);
 
-        $phpinfo = ['phpinfo' => []];
+        $phpinfo = [
+            'phpinfo' => [],
+        ];
 
-        if (preg_match_all(
-            '#(?:<h2.*?>(?:<a.*?>)?(.*?)(?:<\/a>)?<\/h2>)|' .
-            '(?:<tr.*?><t[hd].*?>(.*?)\s*</t[hd]>(?:<t[hd].*?>(.*?)\s*</t[hd]>(?:<t[hd].*?>(.*?)\s*</t[hd]>)?)?</tr>)#s',
-            ob_get_clean(),
-            $matches,
-            PREG_SET_ORDER
-        )) {
+        if (
+            preg_match_all(
+                '#(?:<h2.*?>(?:<a.*?>)?(.*?)(?:<\/a>)?<\/h2>)|' .
+                '(?:<tr.*?><t[hd].*?>(.*?)\s*</t[hd]>(?:<t[hd].*?>(.*?)\s*</t[hd]>(?:<t[hd].*?>(.*?)\s*</t[hd]>)?)?</tr>)#s',
+                ob_get_clean(),
+                $matches,
+                PREG_SET_ORDER
+            )
+        ) {
             foreach ($matches as $match) {
                 $fn = $plainText;
                 if (isset($match[3])) {

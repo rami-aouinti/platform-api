@@ -23,8 +23,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 final class LanguageType extends AbstractType
 {
-    public function __construct(private readonly LocaleService $localeService)
-    {
+    public function __construct(
+        private readonly LocaleService $localeService
+    ) {
     }
 
     public function configureOptions(OptionsResolver $resolver): void

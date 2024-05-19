@@ -14,8 +14,6 @@ namespace App\Crm\Application\Reporting\YearByUser;
 use App\Crm\Application\Reporting\DateByUser;
 
 /**
- * Class YearByUser
- *
  * @package App\Crm\Application\Reporting\YearByUser
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

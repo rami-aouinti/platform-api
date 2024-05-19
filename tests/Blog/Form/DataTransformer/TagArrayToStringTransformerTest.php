@@ -14,8 +14,8 @@ declare(strict_types=1);
 namespace App\Tests\Blog\Form\DataTransformer;
 
 use App\Blog\Domain\Entity\Tag;
-use App\Blog\Transport\Form\DataTransformer\TagArrayToStringTransformer;
 use App\Blog\Domain\Repository\TagRepository;
+use App\Blog\Transport\Form\DataTransformer\TagArrayToStringTransformer;
 use PHPUnit\Framework\TestCase;
 
 /**

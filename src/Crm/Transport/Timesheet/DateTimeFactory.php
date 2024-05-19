@@ -21,18 +21,18 @@ final class DateTimeFactory
     private DateTimeZone $timezone;
     private bool $startOnSunday = false;
 
-    public static function createByUser(User $user): self
-    {
-        return new DateTimeFactory(new \DateTimeZone($user->getTimezone()), $user->isFirstDayOfWeekSunday());
-    }
-
     public function __construct(?DateTimeZone $timezone = null, bool $startOnSunday = false)
     {
-        if (null === $timezone) {
+        if ($timezone === null) {
             $timezone = new \DateTimeZone(date_default_timezone_get());
         }
         $this->timezone = $timezone;
         $this->startOnSunday = $startOnSunday;
+    }
+
+    public static function createByUser(User $user): self
+    {
+        return new self(new \DateTimeZone($user->getTimezone()), $user->isFirstDayOfWeekSunday());
     }
 
     public function getTimezone(): DateTimeZone
@@ -56,19 +56,6 @@ final class DateTimeFactory
         $newDate->setTime(0, 0, 0);
 
         return $newDate;
-    }
-
-    private function getDate(DateTimeInterface|string|null $date = null): DateTime
-    {
-        if ($date === null) {
-            $date = 'now';
-        }
-
-        if (\is_string($date)) {
-            return $this->createDateTime($date);
-        }
-
-        return DateTime::createFromInterface($date);
     }
 
     public function getStartOfWeek(DateTimeInterface|string|null $date = null): DateTime
@@ -123,15 +110,6 @@ final class DateTimeFactory
         return $newDate;
     }
 
-    private function createWeekDateTime($year, $week, $day, $hour, $minute, $second)
-    {
-        $date = new DateTime('now', $this->getTimezone());
-        $date->setISODate($year, $week, $day);
-        $date->setTime($hour, $minute, $second);
-
-        return $date;
-    }
-
     public function createDateTime(string $datetime = 'now'): DateTime
     {
         return new DateTime($datetime, $this->getTimezone());
@@ -142,11 +120,6 @@ final class DateTimeFactory
         return new \DateTimeImmutable($datetime, $this->getTimezone());
     }
 
-    /**
-     * @param string $format
-     * @param null|string $datetime
-     * @return bool|DateTime
-     */
     public function createDateTimeFromFormat(string $format, ?string $datetime = 'now'): bool|DateTime
     {
         return DateTime::createFromFormat($format, $datetime ?? 'now', $this->getTimezone());
@@ -174,12 +147,12 @@ final class DateTimeFactory
     {
         $defaultDate = $this->createDateTime('01 january this year 00:00:00');
 
-        if (null === $financialYear) {
+        if ($financialYear === null) {
             return $defaultDate;
         }
 
         $financialYear = $this->createDateTime($financialYear);
-        $financialYear->setDate((int) $defaultDate->format('Y'), (int) $financialYear->format('m'), (int) $financialYear->format('d'));
+        $financialYear->setDate((int)$defaultDate->format('Y'), (int)$financialYear->format('m'), (int)$financialYear->format('d'));
 
         $now = $this->createDateTime('00:00:00');
 
@@ -196,5 +169,27 @@ final class DateTimeFactory
         $yearEnd->modify('+1 year')->modify('-1 day')->setTime(23, 59, 59);
 
         return $yearEnd;
+    }
+
+    private function getDate(DateTimeInterface|string|null $date = null): DateTime
+    {
+        if ($date === null) {
+            $date = 'now';
+        }
+
+        if (\is_string($date)) {
+            return $this->createDateTime($date);
+        }
+
+        return DateTime::createFromInterface($date);
+    }
+
+    private function createWeekDateTime($year, $week, $day, $hour, $minute, $second)
+    {
+        $date = new DateTime('now', $this->getTimezone());
+        $date->setISODate($year, $week, $day);
+        $date->setTime($hour, $minute, $second);
+
+        return $date;
     }
 }

@@ -11,12 +11,12 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Repository\Query;
 
-use App\Crm\Domain\Entity\Bookmark;
-use App\Crm\Domain\Entity\Team;
-use App\User\Domain\Entity\User;
-use App\Crm\Transport\Form\Model\DateRange;
 use App\Crm\Application\Utils\EquatableInterface;
 use App\Crm\Application\Utils\SearchTerm;
+use App\Crm\Domain\Entity\Bookmark;
+use App\Crm\Domain\Entity\Team;
+use App\Crm\Transport\Form\Model\DateRange;
+use App\User\Domain\Entity\User;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormErrorIterator;
 
@@ -29,7 +29,9 @@ class BaseQuery
     public const ORDER_DESC = 'DESC';
     public const DEFAULT_PAGESIZE = 50;
 
-    /** @var array<string, string|int|null|bool|array<mixed>|DateRange> */
+    /**
+     * @var array<string, string|int|null|bool|array<mixed>|DateRange>
+     */
     private array $defaults = [
         'page' => 1,
         'pageSize' => self::DEFAULT_PAGESIZE,
@@ -64,7 +66,7 @@ class BaseQuery
     {
         $this->teams = [];
 
-        if (null !== $teams) {
+        if ($teams !== null) {
             foreach ($teams as $team) {
                 $this->addTeam($team);
             }
@@ -100,9 +102,6 @@ class BaseQuery
 
     /**
      * By setting the current user, you activate (team) permission checks.
-     *
-     * @param User $user
-     * @return self
      */
     public function setCurrentUser(?User $user): self
     {
@@ -147,7 +146,7 @@ class BaseQuery
     public function setOrderBy(?string $orderBy): self
     {
         if ($orderBy === null) {
-            $orderBy = (string) $this->defaults['orderBy']; // @phpstan-ignore-line
+            $orderBy = (string)$this->defaults['orderBy']; // @phpstan-ignore-line
         }
 
         $this->orderBy = $orderBy;
@@ -163,7 +162,7 @@ class BaseQuery
     public function setOrder(?string $order): self
     {
         if ($order === null) {
-            $order = (string) $this->defaults['order']; // @phpstan-ignore-line
+            $order = (string)$this->defaults['order']; // @phpstan-ignore-line
         }
 
         if (\in_array($order, [self::ORDER_ASC, self::ORDER_DESC])) {
@@ -181,7 +180,9 @@ class BaseQuery
     public function getOrderGroups(): array
     {
         if (empty($this->orderGroups)) {
-            return [$this->orderBy => $this->order];
+            return [
+                $this->orderBy => $this->order,
+            ];
         }
 
         return $this->orderGroups;
@@ -189,7 +190,7 @@ class BaseQuery
 
     public function hasSearchTerm(): bool
     {
-        return null !== $this->searchTerm;
+        return $this->searchTerm !== null;
     }
 
     public function getSearchTerm(): ?SearchTerm
@@ -200,63 +201,6 @@ class BaseQuery
     public function setSearchTerm(?SearchTerm $searchTerm): self
     {
         $this->searchTerm = $searchTerm;
-
-        return $this;
-    }
-
-    protected function set(string $name, mixed $value): void
-    {
-        $method = 'set' . ucfirst($name);
-        if (method_exists($this, $method)) {
-            \call_user_func([$this, $method], $value);
-
-            return;
-        }
-
-        if (str_ends_with($name, 's')) {
-            $method = 'add' . ucfirst(substr($name, 0, \strlen($name) - 1));
-            if (method_exists($this, $method) && \is_array($value)) {
-                foreach ($value as $v) {
-                    \call_user_func([$this, $method], $v);
-                }
-
-                return;
-            }
-        }
-
-        if (property_exists($this, $name)) {
-            $this->{$name} = $value;
-        }
-    }
-
-    protected function get(string $name): mixed
-    {
-        $methods = ['get' . ucfirst($name), 'is' . ucfirst($name), 'has' . ucfirst($name)];
-        foreach ($methods as $method) {
-            if (method_exists($this, $method)) {
-                return \call_user_func([$this, $method]);
-            }
-        }
-
-        if (property_exists($this, $name)) {
-            return $this->{$name};
-        }
-
-        return null;
-    }
-
-    /**
-     * You have to add ALL user facing form fields as default!
-     *
-     * @param array<string, string|int|null|bool|array<mixed>|DateRange> $defaults
-     * @return self
-     */
-    protected function setDefaults(array $defaults): self
-    {
-        $this->defaults = array_merge($this->defaults, $defaults);
-        foreach ($this->defaults as $key => $value) {
-            $this->set($key, $value);
-        }
 
         return $this;
     }
@@ -289,7 +233,7 @@ class BaseQuery
 
     public function hasBookmark(): bool
     {
-        return null !== $this->bookmark;
+        return $this->bookmark !== null;
     }
 
     public function setName(string $name): void
@@ -299,7 +243,7 @@ class BaseQuery
 
     public function getName(): string
     {
-        if (null !== $this->name) {
+        if ($this->name !== null) {
             return $this->name;
         }
 
@@ -308,10 +252,10 @@ class BaseQuery
         return array_pop($shortClass);
     }
 
-    public function copyTo(BaseQuery $query): BaseQuery
+    public function copyTo(self $query): self
     {
         $query->setDefaults($this->defaults);
-        if (null !== $this->getCurrentUser()) {
+        if ($this->getCurrentUser() !== null) {
             $query->setCurrentUser($this->getCurrentUser());
         }
         $query->setOrder($this->getOrder());
@@ -407,5 +351,61 @@ class BaseQuery
     public function isApiCall(): bool
     {
         return $this->isApiCall;
+    }
+
+    protected function set(string $name, mixed $value): void
+    {
+        $method = 'set' . ucfirst($name);
+        if (method_exists($this, $method)) {
+            \call_user_func([$this, $method], $value);
+
+            return;
+        }
+
+        if (str_ends_with($name, 's')) {
+            $method = 'add' . ucfirst(substr($name, 0, \strlen($name) - 1));
+            if (method_exists($this, $method) && \is_array($value)) {
+                foreach ($value as $v) {
+                    \call_user_func([$this, $method], $v);
+                }
+
+                return;
+            }
+        }
+
+        if (property_exists($this, $name)) {
+            $this->{$name} = $value;
+        }
+    }
+
+    protected function get(string $name): mixed
+    {
+        $methods = ['get' . ucfirst($name), 'is' . ucfirst($name), 'has' . ucfirst($name)];
+        foreach ($methods as $method) {
+            if (method_exists($this, $method)) {
+                return \call_user_func([$this, $method]);
+            }
+        }
+
+        if (property_exists($this, $name)) {
+            return $this->{$name};
+        }
+
+        return null;
+    }
+
+    /**
+     * You have to add ALL user facing form fields as default!
+     *
+     * @param array<string, string|int|null|bool|array<mixed>|DateRange> $defaults
+     */
+    protected function setDefaults(array $defaults): self
+    {
+        $this->defaults = array_merge($this->defaults, $defaults);
+        foreach ($this->defaults as $key => $value) {
+            $this->set($key, $value);
+        }
+
+        return $this;
     }
 }

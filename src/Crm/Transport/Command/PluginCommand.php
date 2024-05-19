@@ -22,8 +22,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(name: 'kimai:plugins')]
 final class PluginCommand extends Command
 {
-    public function __construct(private PluginManager $plugins)
-    {
+    public function __construct(
+        private PluginManager $plugins
+    ) {
         parent::__construct();
     }
 

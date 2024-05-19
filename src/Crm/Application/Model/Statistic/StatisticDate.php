@@ -12,8 +12,6 @@ declare(strict_types=1);
 namespace App\Crm\Application\Model\Statistic;
 
 /**
- * Class StatisticDate
- *
  * @package App\Crm\Application\Model\Statistic
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

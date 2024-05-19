@@ -11,6 +11,9 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Repository;
 
+use App\Crm\Application\Model\Revenue;
+use App\Crm\Application\Model\TimesheetStatistic;
+use App\Crm\Application\Utils\Pagination;
 use App\Crm\Domain\Entity\ActivityRate;
 use App\Crm\Domain\Entity\CustomerRate;
 use App\Crm\Domain\Entity\Project;
@@ -19,15 +22,12 @@ use App\Crm\Domain\Entity\RateInterface;
 use App\Crm\Domain\Entity\Team;
 use App\Crm\Domain\Entity\Timesheet;
 use App\Crm\Domain\Entity\TimesheetMeta;
-use App\User\Domain\Entity\User;
-use App\Crm\Application\Model\Revenue;
-use App\Crm\Application\Model\TimesheetStatistic;
 use App\Crm\Domain\Repository\Loader\TimesheetLoader;
 use App\Crm\Domain\Repository\Paginator\LoaderPaginator;
 use App\Crm\Domain\Repository\Paginator\PaginatorInterface;
 use App\Crm\Domain\Repository\Query\TimesheetQuery;
 use App\Crm\Domain\Repository\Result\TimesheetResult;
-use App\Crm\Application\Utils\Pagination;
+use App\User\Domain\Entity\User;
 use DateInterval;
 use DateTime;
 use Doctrine\DBAL\Types\Types;
@@ -44,22 +44,29 @@ class TimesheetRepository extends EntityRepository
 {
     use RepositorySearchTrait;
 
-    /** @deprecated since 2.0.35 */
+    /**
+     * @deprecated since 2.0.35
+     */
     public const STATS_QUERY_DURATION = 'duration';
-    /** @deprecated since 2.0.35 */
+    /**
+     * @deprecated since 2.0.35
+     */
     public const STATS_QUERY_RATE = 'rate';
-    /** @deprecated since 2.0.35 */
+    /**
+     * @deprecated since 2.0.35
+     */
     public const STATS_QUERY_USER = 'users';
-    /** @deprecated since 2.0.35 */
+    /**
+     * @deprecated since 2.0.35
+     */
     public const STATS_QUERY_AMOUNT = 'amount';
-    /** @deprecated since 2.0.35 */
+    /**
+     * @deprecated since 2.0.35
+     */
     public const STATS_QUERY_ACTIVE = 'active';
 
     /**
      * Fetches the raw data of a timesheet, to allow comparison e.g. of submitted and previously stored data.
-     *
-     * @param int $id
-     * @return array
      */
     public function getRawData(int $id): array
     {
@@ -75,7 +82,7 @@ class TimesheetRepository extends EntityRepository
                 'IDENTITY(p.customer) as customer',
                 'IDENTITY(t.project) as project',
                 'IDENTITY(t.activity) as activity',
-                'IDENTITY(t.user) as user'
+                'IDENTITY(t.user) as user',
             ])
             ->leftJoin(Project::class, 'p', Join::WITH, 'p.id = t.project')
             ->andWhere($qb->expr()->eq('t.id', ':id'))
@@ -109,6 +116,7 @@ class TimesheetRepository extends EntityRepository
             $em->commit();
         } catch (Exception $ex) {
             $em->rollback();
+
             throw $ex;
         }
     }
@@ -153,6 +161,7 @@ class TimesheetRepository extends EntityRepository
             $em->commit();
         } catch (Exception $ex) {
             $em->rollback();
+
             throw $ex;
         }
     }
@@ -190,7 +199,7 @@ class TimesheetRepository extends EntityRepository
             return 0;
         }
 
-        return (int) $tmp;
+        return (int)$tmp;
     }
 
     /**
@@ -229,58 +238,6 @@ class TimesheetRepository extends EntityRepository
         return $all;
     }
 
-    /**
-     * @param string|string[] $select
-     * @return int|mixed
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     */
-    private function queryTimeRange(string|array $select, ?\DateTimeInterface $begin, ?\DateTimeInterface $end, ?User $user, ?bool $billable = null): mixed
-    {
-        $selects = $select;
-        if (!\is_array($select)) {
-            $selects = [$select];
-        }
-
-        $qb = $this->getEntityManager()->createQueryBuilder();
-
-        $qb->from(Timesheet::class, 't');
-        foreach ($selects as $s) {
-            $qb->addSelect($s);
-        }
-
-        if (!empty($begin)) {
-            $qb
-                ->andWhere($qb->expr()->gte('t.begin', ':from'))
-                ->setParameter('from', $begin);
-        }
-
-        if (!empty($end)) {
-            $qb
-                ->andWhere($qb->expr()->lte('t.end', ':to'))
-                ->setParameter('to', $end);
-        }
-
-        if (null !== $user) {
-            $qb->andWhere('t.user = :user')
-                ->setParameter('user', $user);
-        }
-
-        if (null !== $billable) {
-            $qb->andWhere('t.billable = :billable')
-                ->setParameter('billable', $billable);
-        }
-
-        if (\is_array($select)) {
-            /* @phpstan-ignore-next-line */
-            return $qb->getQuery()->getOneOrNullResult();
-        }
-
-        /* @phpstan-ignore-next-line */
-        $result = $qb->getQuery()->getSingleScalarResult();
-
-        return empty($result) ? 0 : $result;
-    }
-
     public function getUserStatistics(User $user): TimesheetStatistic
     {
         $stats = new TimesheetStatistic();
@@ -288,7 +245,7 @@ class TimesheetRepository extends EntityRepository
         $allTimeData = $this->queryTimeRange([
             'COALESCE(SUM(t.duration), 0) as duration',
             'COALESCE(SUM(t.rate), 0) as rate',
-            'COUNT(t.id) as amount'
+            'COUNT(t.id) as amount',
         ], null, null, $user);
 
         $stats->setAmountTotal($allTimeData['rate']);
@@ -307,7 +264,7 @@ class TimesheetRepository extends EntityRepository
         $monthData = $this->queryTimeRange(
             [
                 'COALESCE(SUM(t.rate), 0) as rate',
-                'COALESCE(SUM(t.duration), 0) as duration'
+                'COALESCE(SUM(t.duration), 0) as duration',
             ],
             $begin,
             $end,
@@ -337,7 +294,7 @@ class TimesheetRepository extends EntityRepository
             ->andWhere($qb->expr()->isNull('t.end'))
             ->orderBy('t.begin', 'DESC');
 
-        if (null !== $user) {
+        if ($user !== null) {
             $qb->andWhere('t.user = :user');
             $qb->setParameter('user', $user);
         }
@@ -360,7 +317,7 @@ class TimesheetRepository extends EntityRepository
             ->andWhere($qb->expr()->isNull('t.end'))
         ;
 
-        if (null !== $user) {
+        if ($user !== null) {
             $qb
                 ->andWhere('t.user = :user')
                 ->groupBy('t.user')
@@ -368,7 +325,7 @@ class TimesheetRepository extends EntityRepository
             ;
         }
 
-        return (int) $qb->getQuery()->getSingleScalarResult();
+        return (int)$qb->getQuery()->getSingleScalarResult();
     }
 
     public function countActiveUsers(?\DateTimeInterface $begin, ?\DateTimeInterface $end, ?bool $billable = null): int
@@ -379,64 +336,7 @@ class TimesheetRepository extends EntityRepository
             return 0;
         }
 
-        return (int) $tmp;
-    }
-
-    /**
-     * This method causes me some headaches ...
-     *
-     * Activity permissions are currently not checked (which would be easy to add)
-     *
-     * Especially the following question is still un-answered!
-     *
-     * Should a teamlead:
-     * 1. see all records of his team-members, even if they recorded times for projects invisible to him
-     * 2. only see records for projects which can be accessed by him (current situation)
-     *
-     * @param array<Team> $teams
-     */
-    private function addPermissionCriteria(QueryBuilder $qb, ?User $user = null, array $teams = []): bool
-    {
-        // make sure that all queries without a user see all projects
-        if (null === $user && empty($teams)) {
-            return false;
-        }
-
-        // make sure that admins see all timesheet records
-        if (null !== $user && $user->canSeeAllData()) {
-            return false;
-        }
-
-        if (null !== $user) {
-            $teams = array_merge($teams, $user->getTeams());
-        }
-
-        if (empty($teams)) {
-            $qb->andWhere('SIZE(c.teams) = 0');
-            $qb->andWhere('SIZE(p.teams) = 0');
-
-            return true;
-        }
-
-        $orProject = $qb->expr()->orX(
-            'SIZE(p.teams) = 0',
-            $qb->expr()->isMemberOf(':teams', 'p.teams')
-        );
-        $qb->andWhere($orProject);
-
-        $orCustomer = $qb->expr()->orX(
-            'SIZE(c.teams) = 0',
-            $qb->expr()->isMemberOf(':teams', 'c.teams')
-        );
-        $qb->andWhere($orCustomer);
-
-        $ids = array_values(array_unique(array_map(function (Team $team) {
-            return $team->getId();
-        }, $teams)));
-
-        $qb->setParameter('teams', $ids);
-
-        return true;
+        return (int)$tmp;
     }
 
     public function getPagerfantaForQuery(TimesheetQuery $query): Pagination
@@ -444,28 +344,10 @@ class TimesheetRepository extends EntityRepository
         return new Pagination($this->getPaginatorForQuery($query), $query);
     }
 
-    private function getPaginatorForQuery(TimesheetQuery $query): PaginatorInterface
-    {
-        $qb = $this->getQueryBuilderForQuery($query);
-        $qb
-            ->resetDQLPart('select')
-            ->resetDQLPart('orderBy')
-            ->select($qb->expr()->count('t.id'))
-        ;
-        $counter = (int) $qb->getQuery()->getSingleScalarResult();
-
-        $qb = $this->getQueryBuilderForQuery($query);
-
-        return new LoaderPaginator(new TimesheetLoader($qb->getEntityManager()), $qb, $counter);
-    }
-
     /**
      * When switching $fullyHydrated to true, the call gets even more expensive.
      * You normally don't need this, unless you want to access deeply nested attributes for many entries.
      *
-     * @param TimesheetQuery $query
-     * @param bool $fullyHydrated
-     * @param bool $basicHydrated
      * @return Timesheet[]
      */
     public function getTimesheetsForQuery(TimesheetQuery $query, bool $fullyHydrated = false, bool $basicHydrated = true): iterable
@@ -483,188 +365,6 @@ class TimesheetRepository extends EntityRepository
     }
 
     /**
-     * @param QueryBuilder $qb
-     * @param bool $fullyHydrated
-     * @param bool $basicHydrated
-     * @return Timesheet[]
-     */
-    private function getHydratedResultsByQuery(QueryBuilder $qb, bool $fullyHydrated = false, bool $basicHydrated = true): iterable
-    {
-        $results = $qb->getQuery()->getResult();
-
-        $loader = new TimesheetLoader($qb->getEntityManager(), $fullyHydrated, $basicHydrated);
-        $loader->loadResults($results);
-
-        return $results;
-    }
-
-    private function getQueryBuilderForQuery(TimesheetQuery $query): QueryBuilder
-    {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-
-        $requiresProject = false;
-        $requiresCustomer = false;
-        $requiresActivity = false;
-
-        $qb
-            ->select('t')
-            ->from(Timesheet::class, 't')
-        ;
-
-        $orderBy = $query->getOrderBy();
-        switch ($orderBy) {
-            case 'project':
-                $orderBy = 'p.name';
-                $requiresProject = true;
-                break;
-            case 'customer':
-                $requiresCustomer = true;
-                $orderBy = 'c.name';
-                break;
-            case 'activity':
-                $requiresActivity = true;
-                $orderBy = 'a.name';
-                break;
-            default:
-                $orderBy = 't.' . $orderBy;
-                break;
-        }
-
-        $qb->addOrderBy($orderBy, $query->getOrder());
-
-        $user = [];
-        if (null !== $query->getUser()) {
-            $user[] = $query->getUser();
-        }
-
-        $user = array_merge($user, $query->getUsers());
-
-        if (\count($user) === 0 && null !== ($currentUser = $query->getCurrentUser()) && !$currentUser->canSeeAllData()) {
-            // make sure that the user himself is in the list of users, if he is part of a team
-            // if teams are used and the user is not a teamlead, the list of users would be empty and then leading to NOT limit the select by user IDs
-            $user[] = $currentUser;
-
-            if (!$query->hasTeams()) {
-                foreach ($currentUser->getTeams() as $team) {
-                    if ($currentUser->isTeamleadOf($team)) {
-                        $query->addTeam($team);
-                    }
-                }
-            }
-        }
-
-        foreach ($query->getTeams() as $team) {
-            foreach ($team->getUsers() as $teamUser) {
-                $user[] = $teamUser;
-            }
-        }
-
-        $userIds = array_unique(array_map(function (User $user) {
-            return $user->getId();
-        }, $user));
-
-        if (\count($userIds) > 0) {
-            $qb->andWhere($qb->expr()->in('t.user', $userIds));
-        }
-
-        if (null !== $query->getBegin()) {
-            $qb->andWhere($qb->expr()->gte('t.begin', ':begin'))
-                ->setParameter('begin', $query->getBegin());
-        }
-
-        if ($query->isRunning()) {
-            $qb->andWhere($qb->expr()->isNull('t.end'));
-        } elseif ($query->isStopped()) {
-            $qb->andWhere($qb->expr()->isNotNull('t.end'));
-        }
-
-        if (null !== $query->getEnd()) {
-            $qb->andWhere($qb->expr()->lte('t.begin', ':end'))
-                ->setParameter('end', $query->getEnd());
-        }
-
-        if ($query->isExported()) {
-            $qb->andWhere('t.exported = :exported')->setParameter('exported', true, Types::BOOLEAN);
-        } elseif ($query->isNotExported()) {
-            $qb->andWhere('t.exported = :exported')->setParameter('exported', false, Types::BOOLEAN);
-        }
-
-        if ($query->isBillable()) {
-            $qb->andWhere('t.billable = :billable')->setParameter('billable', true, Types::BOOLEAN);
-        } elseif ($query->isNotBillable()) {
-            $qb->andWhere('t.billable = :billable')->setParameter('billable', false, Types::BOOLEAN);
-        }
-
-        if (null !== $query->getModifiedAfter()) {
-            $qb->andWhere($qb->expr()->gte('t.modifiedAt', ':modified_at'))
-                ->setParameter('modified_at', $query->getModifiedAfter());
-        }
-
-        if ($query->hasActivities()) {
-            $qb->andWhere($qb->expr()->in('t.activity', ':activity'))
-                ->setParameter('activity', $query->getActivityIds());
-        }
-
-        if ($query->hasProjects()) {
-            $qb->andWhere($qb->expr()->in('t.project', ':project'))
-                ->setParameter('project', $query->getProjectIds());
-        } elseif ($query->hasCustomers()) {
-            $requiresCustomer = true;
-            $qb->andWhere($qb->expr()->in('p.customer', ':customer'))
-                ->setParameter('customer', $query->getCustomerIds());
-        }
-
-        $tags = $query->getTags();
-        if (\count($tags) > 0) {
-            $qb->andWhere($qb->expr()->isMemberOf(':tags', 't.tags'))
-                ->setParameter('tags', $tags);
-        }
-
-        $requiresTeams = $this->addPermissionCriteria($qb, $query->getCurrentUser(), $query->getTeams());
-
-        $this->addSearchTerm($qb, $query);
-
-        if ($requiresCustomer || $requiresProject || $requiresTeams) {
-            $qb->leftJoin('t.project', 'p');
-        }
-
-        if ($requiresCustomer || $requiresTeams) {
-            $qb->leftJoin('p.customer', 'c');
-        }
-
-        if ($requiresActivity) {
-            $qb->leftJoin('t.activity', 'a');
-        }
-
-        if ($query->getMaxResults() !== null) {
-            $qb->setMaxResults($query->getMaxResults());
-        }
-
-        return $qb;
-    }
-
-    private function getMetaFieldClass(): string
-    {
-        return TimesheetMeta::class;
-    }
-
-    private function getMetaFieldName(): string
-    {
-        return 'timesheet';
-    }
-
-    /**
-     * @return array<string>
-     */
-    private function getSearchableFields(): array
-    {
-        return ['t.description'];
-    }
-
-    /**
-     * @param User $user
-     * @param DateTime|null $startFrom
-     * @param int $limit
      * @return Timesheet[]
      */
     public function getRecentActivities(User $user, DateTime $startFrom = null, int $limit = 10): array
@@ -676,9 +376,6 @@ class TimesheetRepository extends EntityRepository
     }
 
     /**
-     * @param User $user
-     * @param DateTime|null $startFrom
-     * @param int $limit
      * @return array<int>
      */
     public function getRecentActivityIds(User $user, DateTime $startFrom = null, int $limit = 10): array
@@ -707,7 +404,7 @@ class TimesheetRepository extends EntityRepository
             ->setParameter('user', $user)
         ;
 
-        if (null !== $startFrom) {
+        if ($startFrom !== null) {
             $qb->andWhere($qb->expr()->gte('t.begin', ':begin'))
                 ->setParameter('begin', $startFrom);
         }
@@ -727,10 +424,7 @@ class TimesheetRepository extends EntityRepository
     }
 
     /**
-     * @param User $user
      * @param array<int> $ids
-     * @param bool $fullyHydrated
-     * @param bool $basicHydrated
      * @return array<Timesheet>
      */
     public function findTimesheetsById(User $user, array $ids, bool $fullyHydrated = false, bool $basicHydrated = true): array
@@ -780,7 +474,6 @@ class TimesheetRepository extends EntityRepository
     }
 
     /**
-     * @param Timesheet $timesheet
      * @return RateInterface[]
      */
     public function findMatchingRates(Timesheet $timesheet): array
@@ -861,7 +554,7 @@ class TimesheetRepository extends EntityRepository
             $qb->expr()->between(':begin', 't.begin', 't.end')
         );
 
-        if (null !== $timesheet->getEnd()) {
+        if ($timesheet->getEnd() !== null) {
             $or->add($qb->expr()->between(':end', 't.begin', 't.end'));
             $or->add($qb->expr()->between('t.begin', ':begin', ':end'));
             $or->add($qb->expr()->between('t.end', ':begin', ':end'));
@@ -891,11 +584,311 @@ class TimesheetRepository extends EntityRepository
         }
 
         try {
-            $result = (int) $qb->getQuery()->getSingleScalarResult();
+            $result = (int)$qb->getQuery()->getSingleScalarResult();
         } catch (Exception $ex) {
             return true;
         }
 
         return $result > 0;
+    }
+
+    /**
+     * @param string|string[] $select
+     * @return int|mixed
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    private function queryTimeRange(string|array $select, ?\DateTimeInterface $begin, ?\DateTimeInterface $end, ?User $user, ?bool $billable = null): mixed
+    {
+        $selects = $select;
+        if (!\is_array($select)) {
+            $selects = [$select];
+        }
+
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->from(Timesheet::class, 't');
+        foreach ($selects as $s) {
+            $qb->addSelect($s);
+        }
+
+        if (!empty($begin)) {
+            $qb
+                ->andWhere($qb->expr()->gte('t.begin', ':from'))
+                ->setParameter('from', $begin);
+        }
+
+        if (!empty($end)) {
+            $qb
+                ->andWhere($qb->expr()->lte('t.end', ':to'))
+                ->setParameter('to', $end);
+        }
+
+        if ($user !== null) {
+            $qb->andWhere('t.user = :user')
+                ->setParameter('user', $user);
+        }
+
+        if ($billable !== null) {
+            $qb->andWhere('t.billable = :billable')
+                ->setParameter('billable', $billable);
+        }
+
+        if (\is_array($select)) {
+            /* @phpstan-ignore-next-line */
+            return $qb->getQuery()->getOneOrNullResult();
+        }
+
+        /* @phpstan-ignore-next-line */
+        $result = $qb->getQuery()->getSingleScalarResult();
+
+        return empty($result) ? 0 : $result;
+    }
+
+    /**
+     * This method causes me some headaches ...
+     *
+     * Activity permissions are currently not checked (which would be easy to add)
+     *
+     * Especially the following question is still un-answered!
+     *
+     * Should a teamlead:
+     * 1. see all records of his team-members, even if they recorded times for projects invisible to him
+     * 2. only see records for projects which can be accessed by him (current situation)
+     *
+     * @param array<Team> $teams
+     */
+    private function addPermissionCriteria(QueryBuilder $qb, ?User $user = null, array $teams = []): bool
+    {
+        // make sure that all queries without a user see all projects
+        if ($user === null && empty($teams)) {
+            return false;
+        }
+
+        // make sure that admins see all timesheet records
+        if ($user !== null && $user->canSeeAllData()) {
+            return false;
+        }
+
+        if ($user !== null) {
+            $teams = array_merge($teams, $user->getTeams());
+        }
+
+        if (empty($teams)) {
+            $qb->andWhere('SIZE(c.teams) = 0');
+            $qb->andWhere('SIZE(p.teams) = 0');
+
+            return true;
+        }
+
+        $orProject = $qb->expr()->orX(
+            'SIZE(p.teams) = 0',
+            $qb->expr()->isMemberOf(':teams', 'p.teams')
+        );
+        $qb->andWhere($orProject);
+
+        $orCustomer = $qb->expr()->orX(
+            'SIZE(c.teams) = 0',
+            $qb->expr()->isMemberOf(':teams', 'c.teams')
+        );
+        $qb->andWhere($orCustomer);
+
+        $ids = array_values(array_unique(array_map(function (Team $team) {
+            return $team->getId();
+        }, $teams)));
+
+        $qb->setParameter('teams', $ids);
+
+        return true;
+    }
+
+    private function getPaginatorForQuery(TimesheetQuery $query): PaginatorInterface
+    {
+        $qb = $this->getQueryBuilderForQuery($query);
+        $qb
+            ->resetDQLPart('select')
+            ->resetDQLPart('orderBy')
+            ->select($qb->expr()->count('t.id'))
+        ;
+        $counter = (int)$qb->getQuery()->getSingleScalarResult();
+
+        $qb = $this->getQueryBuilderForQuery($query);
+
+        return new LoaderPaginator(new TimesheetLoader($qb->getEntityManager()), $qb, $counter);
+    }
+
+    /**
+     * @return Timesheet[]
+     */
+    private function getHydratedResultsByQuery(QueryBuilder $qb, bool $fullyHydrated = false, bool $basicHydrated = true): iterable
+    {
+        $results = $qb->getQuery()->getResult();
+
+        $loader = new TimesheetLoader($qb->getEntityManager(), $fullyHydrated, $basicHydrated);
+        $loader->loadResults($results);
+
+        return $results;
+    }
+
+    private function getQueryBuilderForQuery(TimesheetQuery $query): QueryBuilder
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $requiresProject = false;
+        $requiresCustomer = false;
+        $requiresActivity = false;
+
+        $qb
+            ->select('t')
+            ->from(Timesheet::class, 't')
+        ;
+
+        $orderBy = $query->getOrderBy();
+        switch ($orderBy) {
+            case 'project':
+                $orderBy = 'p.name';
+                $requiresProject = true;
+                break;
+            case 'customer':
+                $requiresCustomer = true;
+                $orderBy = 'c.name';
+                break;
+            case 'activity':
+                $requiresActivity = true;
+                $orderBy = 'a.name';
+                break;
+            default:
+                $orderBy = 't.' . $orderBy;
+                break;
+        }
+
+        $qb->addOrderBy($orderBy, $query->getOrder());
+
+        $user = [];
+        if ($query->getUser() !== null) {
+            $user[] = $query->getUser();
+        }
+
+        $user = array_merge($user, $query->getUsers());
+
+        if (\count($user) === 0 && null !== ($currentUser = $query->getCurrentUser()) && !$currentUser->canSeeAllData()) {
+            // make sure that the user himself is in the list of users, if he is part of a team
+            // if teams are used and the user is not a teamlead, the list of users would be empty and then leading to NOT limit the select by user IDs
+            $user[] = $currentUser;
+
+            if (!$query->hasTeams()) {
+                foreach ($currentUser->getTeams() as $team) {
+                    if ($currentUser->isTeamleadOf($team)) {
+                        $query->addTeam($team);
+                    }
+                }
+            }
+        }
+
+        foreach ($query->getTeams() as $team) {
+            foreach ($team->getUsers() as $teamUser) {
+                $user[] = $teamUser;
+            }
+        }
+
+        $userIds = array_unique(array_map(function (User $user) {
+            return $user->getId();
+        }, $user));
+
+        if (\count($userIds) > 0) {
+            $qb->andWhere($qb->expr()->in('t.user', $userIds));
+        }
+
+        if ($query->getBegin() !== null) {
+            $qb->andWhere($qb->expr()->gte('t.begin', ':begin'))
+                ->setParameter('begin', $query->getBegin());
+        }
+
+        if ($query->isRunning()) {
+            $qb->andWhere($qb->expr()->isNull('t.end'));
+        } elseif ($query->isStopped()) {
+            $qb->andWhere($qb->expr()->isNotNull('t.end'));
+        }
+
+        if ($query->getEnd() !== null) {
+            $qb->andWhere($qb->expr()->lte('t.begin', ':end'))
+                ->setParameter('end', $query->getEnd());
+        }
+
+        if ($query->isExported()) {
+            $qb->andWhere('t.exported = :exported')->setParameter('exported', true, Types::BOOLEAN);
+        } elseif ($query->isNotExported()) {
+            $qb->andWhere('t.exported = :exported')->setParameter('exported', false, Types::BOOLEAN);
+        }
+
+        if ($query->isBillable()) {
+            $qb->andWhere('t.billable = :billable')->setParameter('billable', true, Types::BOOLEAN);
+        } elseif ($query->isNotBillable()) {
+            $qb->andWhere('t.billable = :billable')->setParameter('billable', false, Types::BOOLEAN);
+        }
+
+        if ($query->getModifiedAfter() !== null) {
+            $qb->andWhere($qb->expr()->gte('t.modifiedAt', ':modified_at'))
+                ->setParameter('modified_at', $query->getModifiedAfter());
+        }
+
+        if ($query->hasActivities()) {
+            $qb->andWhere($qb->expr()->in('t.activity', ':activity'))
+                ->setParameter('activity', $query->getActivityIds());
+        }
+
+        if ($query->hasProjects()) {
+            $qb->andWhere($qb->expr()->in('t.project', ':project'))
+                ->setParameter('project', $query->getProjectIds());
+        } elseif ($query->hasCustomers()) {
+            $requiresCustomer = true;
+            $qb->andWhere($qb->expr()->in('p.customer', ':customer'))
+                ->setParameter('customer', $query->getCustomerIds());
+        }
+
+        $tags = $query->getTags();
+        if (\count($tags) > 0) {
+            $qb->andWhere($qb->expr()->isMemberOf(':tags', 't.tags'))
+                ->setParameter('tags', $tags);
+        }
+
+        $requiresTeams = $this->addPermissionCriteria($qb, $query->getCurrentUser(), $query->getTeams());
+
+        $this->addSearchTerm($qb, $query);
+
+        if ($requiresCustomer || $requiresProject || $requiresTeams) {
+            $qb->leftJoin('t.project', 'p');
+        }
+
+        if ($requiresCustomer || $requiresTeams) {
+            $qb->leftJoin('p.customer', 'c');
+        }
+
+        if ($requiresActivity) {
+            $qb->leftJoin('t.activity', 'a');
+        }
+
+        if ($query->getMaxResults() !== null) {
+            $qb->setMaxResults($query->getMaxResults());
+        }
+
+        return $qb;
+    }
+
+    private function getMetaFieldClass(): string
+    {
+        return TimesheetMeta::class;
+    }
+
+    private function getMetaFieldName(): string
+    {
+        return 'timesheet';
+    }
+
+    /**
+     * @return array<string>
+     */
+    private function getSearchableFields(): array
+    {
+        return ['t.description'];
     }
 }

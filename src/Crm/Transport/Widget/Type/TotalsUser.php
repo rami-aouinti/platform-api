@@ -12,19 +12,18 @@ declare(strict_types=1);
 namespace App\Crm\Transport\Widget\Type;
 
 use App\Crm\Domain\Repository\Query\UserQuery;
-use App\User\Infrastructure\Repository\UserRepository;
 use App\Crm\Transport\Widget\WidgetInterface;
+use App\User\Infrastructure\Repository\UserRepository;
 
 /**
- * Class TotalsUser
- *
  * @package App\Crm\Transport\Widget\Type
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class TotalsUser extends AbstractWidget
 {
-    public function __construct(private UserRepository $repository)
-    {
+    public function __construct(
+        private UserRepository $repository
+    ) {
     }
 
     /**

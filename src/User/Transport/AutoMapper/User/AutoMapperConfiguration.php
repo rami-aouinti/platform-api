@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\User\Transport\AutoMapper\User;
 
-use App\General\Transport\AutoMapper\RestAutoMapperConfiguration;
 use App\Blog\Application\DTO\Post\UserCreate;
 use App\Blog\Application\DTO\Post\UserPatch;
 use App\Blog\Application\DTO\Post\UserUpdate;
+use App\General\Transport\AutoMapper\RestAutoMapperConfiguration;
 
 /**
  * @package App\User

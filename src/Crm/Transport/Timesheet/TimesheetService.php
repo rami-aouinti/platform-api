@@ -11,9 +11,11 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Timesheet;
 
-use App\Crm\Transport\Configuration\SystemConfiguration;
+use App\Crm\Application\Validator\ValidationException;
+use App\Crm\Application\Validator\ValidationFailedException;
 use App\Crm\Domain\Entity\Timesheet;
-use App\User\Domain\Entity\User;
+use App\Crm\Domain\Repository\TimesheetRepository;
+use App\Crm\Transport\Configuration\SystemConfiguration;
 use App\Crm\Transport\Event\TimesheetCreatePostEvent;
 use App\Crm\Transport\Event\TimesheetCreatePreEvent;
 use App\Crm\Transport\Event\TimesheetDeleteMultiplePreEvent;
@@ -27,11 +29,9 @@ use App\Crm\Transport\Event\TimesheetUpdateMultiplePostEvent;
 use App\Crm\Transport\Event\TimesheetUpdateMultiplePreEvent;
 use App\Crm\Transport\Event\TimesheetUpdatePostEvent;
 use App\Crm\Transport\Event\TimesheetUpdatePreEvent;
-use App\Crm\Domain\Repository\TimesheetRepository;
-use App\Security\AccessDeniedException;
 use App\Crm\Transport\Timesheet\TrackingMode\TrackingModeInterface;
-use App\Crm\Application\Validator\ValidationException;
-use App\Crm\Application\Validator\ValidationFailedException;
+use App\Security\AccessDeniedException;
+use App\User\Domain\Entity\User;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -58,17 +58,13 @@ final class TimesheetService
 
     /**
      * Calls prepareNewTimesheet() automatically if $request is not null.
-     *
-     * @param User $user
-     * @param Request|null $request
-     * @return Timesheet
      */
     public function createNewTimesheet(User $user, ?Request $request = null): Timesheet
     {
         $timesheet = new Timesheet();
         $timesheet->setUser($user);
 
-        if (null !== $request) {
+        if ($request !== null) {
             $this->prepareNewTimesheet($timesheet, $request);
         }
 
@@ -77,7 +73,7 @@ final class TimesheetService
 
     public function prepareNewTimesheet(Timesheet $timesheet, ?Request $request = null): Timesheet
     {
-        if (null !== $timesheet->getId()) {
+        if ($timesheet->getId() !== null) {
             throw new InvalidArgumentException('Cannot prepare timesheet, already persisted');
         }
 
@@ -93,9 +89,6 @@ final class TimesheetService
     }
 
     /**
-     * @param Timesheet $timesheet
-     * @param Timesheet $copyFrom
-     * @return Timesheet
      * @throws ValidationFailedException for invalid timesheets or running timesheets that should be stopped
      * @throws InvalidArgumentException for already persisted timesheets
      * @throws AccessDeniedException if user is not allowed to start timesheet
@@ -110,23 +103,22 @@ final class TimesheetService
     }
 
     /**
-     * @param Timesheet $timesheet
-     * @return Timesheet
      * @throws ValidationFailedException for invalid timesheets or running timesheets that should be stopped
      * @throws InvalidArgumentException for already persisted timesheets
      * @throws AccessDeniedException if user is not allowed to start timesheet
      */
     public function saveNewTimesheet(Timesheet $timesheet): Timesheet
     {
-        if (null !== $timesheet->getId()) {
+        if ($timesheet->getId() !== null) {
             throw new InvalidArgumentException('Cannot create timesheet, already persisted');
         }
 
-        if (null === $timesheet->getEnd() && !$this->auth->isGranted('start', $timesheet)) {
+        if ($timesheet->getEnd() === null && !$this->auth->isGranted('start', $timesheet)) {
             throw new AccessDeniedException('You are not allowed to start this timesheet record');
         }
 
         $this->repository->begin();
+
         try {
             $this->validateTimesheet($timesheet);
             $this->fixTimezone($timesheet);
@@ -148,6 +140,7 @@ final class TimesheetService
             $this->repository->commit();
         } catch (\Exception $ex) {
             $this->repository->rollback();
+
             throw $ex;
         }
 
@@ -157,8 +150,6 @@ final class TimesheetService
     /**
      * Does NOT validate the given timesheet!
      *
-     * @param Timesheet $timesheet
-     * @return Timesheet
      * @throws \Exception
      */
     public function updateTimesheet(Timesheet $timesheet): Timesheet
@@ -175,8 +166,6 @@ final class TimesheetService
     /**
      * Does NOT validate the given timesheets!
      *
-     * @param array $timesheets
-     * @return array
      * @throws \Exception
      */
     public function updateMultipleTimesheets(array $timesheets): array
@@ -192,14 +181,12 @@ final class TimesheetService
      * Validates the given timesheet, especially important for not setting a wrong end date.
      * But also to check that all required data is set.
      *
-     * @param Timesheet $timesheet
-     * @param bool $validate
      * @throws ValidationException for already stopped timesheets
      * @throws ValidationFailedException
      */
     public function stopTimesheet(Timesheet $timesheet, bool $validate = true): void
     {
-        if (null !== $timesheet->getEnd()) {
+        if ($timesheet->getEnd() !== null) {
             // timesheet already stopped, nothing to do. in previous version, this method did throw a:
             // new ValidationException('Timesheet entry already stopped');
             // but this was removed, because it can happen in the frontend when using multiple tabs/devices and should
@@ -235,7 +222,32 @@ final class TimesheetService
     }
 
     /**
-     * @param Timesheet $timesheet
+     * @param array<string> $validationCodes
+     */
+    public function setIgnoreValidationCodes(array $validationCodes): void
+    {
+        $this->doNotValidateCodes = $validationCodes;
+    }
+
+    public function getActiveTrackingMode(): TrackingModeInterface
+    {
+        return $this->trackingModeService->getActiveMode();
+    }
+
+    public function stopAll(): int
+    {
+        $activeEntries = $this->repository->getActiveEntries();
+        $counter = 0;
+
+        foreach ($activeEntries as $timesheet) {
+            $this->stopTimesheet($timesheet, false);
+            $counter++;
+        }
+
+        return $counter;
+    }
+
+    /**
      * @param string[] $groups
      * @throws ValidationFailedException
      */
@@ -256,20 +268,10 @@ final class TimesheetService
     }
 
     /**
-     * @param array<string> $validationCodes
-     */
-    public function setIgnoreValidationCodes(array $validationCodes): void
-    {
-        $this->doNotValidateCodes = $validationCodes;
-    }
-
-    /**
      * Makes sure, that the timesheet record has the timezone of the user.
      *
      * This fixes #1442 and prevents a wrong time if a teamlead edits the
      * timesheet for an employee living in another timezone.
-     *
-     * @param Timesheet $timesheet
      */
     private function fixTimezone(Timesheet $timesheet)
     {
@@ -283,8 +285,6 @@ final class TimesheetService
      *
      * The given $timesheet will be ignored and not stopped (assuming it is the latest one that was re-started).
      *
-     * @param Timesheet $timesheet
-     * @return int
      * @throws ValidationException
      * @throws ValidationFailedException
      */
@@ -307,24 +307,6 @@ final class TimesheetService
                 $needsStop--;
                 $counter++;
             }
-        }
-
-        return $counter;
-    }
-
-    public function getActiveTrackingMode(): TrackingModeInterface
-    {
-        return $this->trackingModeService->getActiveMode();
-    }
-
-    public function stopAll(): int
-    {
-        $activeEntries = $this->repository->getActiveEntries();
-        $counter = 0;
-
-        foreach ($activeEntries as $timesheet) {
-            $this->stopTimesheet($timesheet, false);
-            $counter++;
         }
 
         return $counter;

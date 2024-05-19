@@ -22,8 +22,9 @@ final class StringToArrayTransformer implements DataTransformerInterface
     /**
      * @param non-empty-string $separator
      */
-    public function __construct(private readonly string $separator = ',')
-    {
+    public function __construct(
+        private readonly string $separator = ','
+    ) {
     }
 
     /**
@@ -51,7 +52,7 @@ final class StringToArrayTransformer implements DataTransformerInterface
     public function reverseTransform(mixed $value): mixed
     {
         // check for empty list
-        if ('' === $value || null === $value) {
+        if ($value === '' || $value === null) {
             return [];
         }
 

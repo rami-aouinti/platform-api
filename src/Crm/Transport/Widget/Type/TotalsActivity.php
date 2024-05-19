@@ -17,8 +17,9 @@ use App\Crm\Transport\Widget\WidgetInterface;
 
 final class TotalsActivity extends AbstractWidget
 {
-    public function __construct(private ActivityRepository $activity)
-    {
+    public function __construct(
+        private ActivityRepository $activity
+    ) {
     }
 
     public function getTitle(): string

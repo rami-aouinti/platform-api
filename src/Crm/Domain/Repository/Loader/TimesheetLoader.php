@@ -19,8 +19,11 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class TimesheetLoader implements LoaderInterface
 {
-    public function __construct(private EntityManagerInterface $entityManager, private bool $fullyHydrated = false, private bool $basicHydrated = true)
-    {
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private bool $fullyHydrated = false,
+        private bool $basicHydrated = true
+    ) {
     }
 
     /**

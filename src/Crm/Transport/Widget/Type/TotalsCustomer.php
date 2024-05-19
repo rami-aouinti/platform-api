@@ -17,8 +17,9 @@ use App\Crm\Transport\Widget\WidgetInterface;
 
 final class TotalsCustomer extends AbstractWidget
 {
-    public function __construct(private CustomerRepository $customer)
-    {
+    public function __construct(
+        private CustomerRepository $customer
+    ) {
     }
 
     public function getTitle(): string

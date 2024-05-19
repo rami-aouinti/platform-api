@@ -19,8 +19,10 @@ final class ProjectDetailsQuery
 {
     private ?Project $project = null;
 
-    public function __construct(private DateTime $today, private User $user)
-    {
+    public function __construct(
+        private DateTime $today,
+        private User $user
+    ) {
     }
 
     public function getToday(): DateTime

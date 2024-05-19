@@ -18,8 +18,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class CustomerCommentForm
- *
  * @package App\Crm\Transport\Form
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -40,7 +38,7 @@ final class CustomerCommentForm extends AbstractType
             'csrf_field_name' => '_token',
             'csrf_token_id' => 'admin_customer_comment',
             'attr' => [
-                'data-form-event' => 'kimai.customerComment'
+                'data-form-event' => 'kimai.customerComment',
             ],
         ]);
     }

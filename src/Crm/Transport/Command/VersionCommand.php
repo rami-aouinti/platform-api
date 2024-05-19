@@ -20,8 +20,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Class VersionCommand
- *
  * @package App\Crm\Transport\Command
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -49,7 +47,7 @@ final class VersionCommand extends Command
         }
 
         if ($input->getOption('number')) {
-            $io->writeln((string) Constants::VERSION_ID);
+            $io->writeln((string)Constants::VERSION_ID);
 
             return Command::SUCCESS;
         }

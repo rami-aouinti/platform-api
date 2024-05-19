@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Event;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Application\Reporting\ReportInterface;
+use App\User\Domain\Entity\User;
 use Symfony\Contracts\EventDispatcher\Event;
 
 final class ReportingEvent extends Event
@@ -22,8 +22,9 @@ final class ReportingEvent extends Event
      */
     private array $reports = [];
 
-    public function __construct(private User $user)
-    {
+    public function __construct(
+        private User $user
+    ) {
     }
 
     public function getUser(): User
@@ -31,7 +32,7 @@ final class ReportingEvent extends Event
         return $this->user;
     }
 
-    public function addReport(ReportInterface $report): ReportingEvent
+    public function addReport(ReportInterface $report): self
     {
         $this->reports[$report->getId()] = $report;
 

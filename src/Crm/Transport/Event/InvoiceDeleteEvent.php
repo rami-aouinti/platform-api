@@ -16,8 +16,9 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 final class InvoiceDeleteEvent extends Event
 {
-    public function __construct(private Invoice $invoice)
-    {
+    public function __construct(
+        private Invoice $invoice
+    ) {
     }
 
     public function getInvoice(): Invoice

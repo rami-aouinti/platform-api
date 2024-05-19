@@ -26,10 +26,10 @@ use Random\RandomException;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\String\AbstractUnicodeString;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use function Symfony\Component\String\u;
 use Throwable;
 
 use function array_map;
+use function Symfony\Component\String\u;
 
 /**
  * @package App\User
@@ -144,14 +144,8 @@ final class LoadUserData extends Fixture implements OrderedFixtureInterface
         return true;
     }
 
-    /**
-     * @param $user
-     *
-     * @return void
-     */
     private function createSetting($manager, $user): void
     {
-
         $setting = new Setting();
         $setting->setTitle('Bro Platform');
         $setting->setAuthor($user);
@@ -161,7 +155,6 @@ final class LoadUserData extends Fixture implements OrderedFixtureInterface
 
         $manager->persist($setting);
         $manager->flush();
-
     }
 
     private function createAddress(): Address
@@ -184,7 +177,7 @@ final class LoadUserData extends Fixture implements OrderedFixtureInterface
             $tag = new Tag($name);
 
             $manager->persist($tag);
-            $this->addReference('tag-'.$name, $tag);
+            $this->addReference('tag-' . $name, $tag);
         }
 
         $manager->flush();
@@ -213,7 +206,7 @@ final class LoadUserData extends Fixture implements OrderedFixtureInterface
                 $comment = new Comment();
                 $comment->setAuthor($commentAuthor);
                 $comment->setContent($this->getRandomText(random_int(255, 512)));
-                $comment->setPublishedAt(new \DateTimeImmutable('now + '.$i.'seconds'));
+                $comment->setPublishedAt(new \DateTimeImmutable('now + ' . $i . 'seconds'));
 
                 $post->addComment($comment);
             }
@@ -262,7 +255,7 @@ final class LoadUserData extends Fixture implements OrderedFixtureInterface
                 $this->slugger->slug($title)->lower(),
                 $this->getRandomText(),
                 $this->getPostContent(),
-                (new \DateTimeImmutable('now - '.$i.'days'))->setTime(random_int(8, 17), random_int(7, 49), random_int(0, 59)),
+                (new \DateTimeImmutable('now - ' . $i . 'days'))->setTime(random_int(8, 17), random_int(7, 49), random_int(0, 59)),
                 // Ensure that the first post is written by Jane Doe to simplify tests
                 $user,
                 $this->getRandomTags(),
@@ -377,10 +370,9 @@ final class LoadUserData extends Fixture implements OrderedFixtureInterface
 
         return array_map(function ($tagName) {
             /** @var Tag $tag */
-            $tag = $this->getReference('tag-'.$tagName);
+            $tag = $this->getReference('tag-' . $tagName);
 
             return $tag;
         }, $selectedTags);
     }
-
 }

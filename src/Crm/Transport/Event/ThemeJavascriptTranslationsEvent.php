@@ -51,7 +51,7 @@ final class ThemeJavascriptTranslationsEvent extends Event
         return $this->translations;
     }
 
-    public function setTranslation(string $key, string $translationKey, string $translationDomain = 'messages'): ThemeJavascriptTranslationsEvent
+    public function setTranslation(string $key, string $translationKey, string $translationDomain = 'messages'): self
     {
         $this->translations[$key] = [$translationKey, $translationDomain];
 

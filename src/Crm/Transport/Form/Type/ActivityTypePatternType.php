@@ -25,8 +25,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 final class ActivityTypePatternType extends AbstractType
 {
-    public function __construct(private readonly TranslatorInterface $translator)
-    {
+    public function __construct(
+        private readonly TranslatorInterface $translator
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -47,7 +48,7 @@ final class ActivityTypePatternType extends AbstractType
                 $number => ActivityHelper::PATTERN_NUMBER,
                 $name => ActivityHelper::PATTERN_NAME,
                 $comment => ActivityHelper::PATTERN_COMMENT,
-            ]
+            ],
         ]);
     }
 

@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Reporting\ProjectView;
 
-use App\Crm\Domain\Entity\Project;
 use App\Crm\Application\Model\BudgetStatisticModelInterface;
 use App\Crm\Application\Model\ProjectBudgetStatisticModel;
 use App\Crm\Application\Model\Statistic\BudgetStatistic;
+use App\Crm\Domain\Entity\Project;
 use DateTime;
 
 final class ProjectViewModel
@@ -24,8 +24,9 @@ final class ProjectViewModel
     private int $durationMonth = 0;
     private ?DateTime $lastRecord = null;
 
-    public function __construct(private ProjectBudgetStatisticModel $budgetStatisticModel)
-    {
+    public function __construct(
+        private ProjectBudgetStatisticModel $budgetStatisticModel
+    ) {
     }
 
     public function getProject(): Project
@@ -61,15 +62,6 @@ final class ProjectViewModel
     public function setDurationMonth(int $durationMonth): void
     {
         $this->durationMonth = $durationMonth;
-    }
-
-    private function getTotals(): BudgetStatistic
-    {
-        if ($this->budgetStatisticModel->getStatisticTotal() === null) {
-            throw new \InvalidArgumentException('Totals must not be null');
-        }
-
-        return $this->budgetStatisticModel->getStatisticTotal();
     }
 
     public function getDurationTotal(): int
@@ -119,5 +111,14 @@ final class ProjectViewModel
     public function getBudgetStatisticModel(): BudgetStatisticModelInterface
     {
         return $this->budgetStatisticModel;
+    }
+
+    private function getTotals(): BudgetStatistic
+    {
+        if ($this->budgetStatisticModel->getStatisticTotal() === null) {
+            throw new \InvalidArgumentException('Totals must not be null');
+        }
+
+        return $this->budgetStatisticModel->getStatisticTotal();
     }
 }

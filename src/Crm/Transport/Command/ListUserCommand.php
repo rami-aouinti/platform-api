@@ -19,16 +19,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Class ListUserCommand
- *
  * @package App\Crm\Transport\Command
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 #[AsCommand(name: 'kimai:user:list', description: 'List all users')]
 final class ListUserCommand extends Command
 {
-    public function __construct(private readonly UserRepository $repository)
-    {
+    public function __construct(
+        private readonly UserRepository $repository
+    ) {
         parent::__construct();
     }
 
@@ -44,7 +43,7 @@ final class ListUserCommand extends Command
                 $user->getEmail(),
                 implode(', ', $user->getRoles()),
                 $user->isEnabled() ? 'X' : '',
-                $user->getPasswordRequestedAt()?->format('Y-m-d H:i:s')
+                $user->getPasswordRequestedAt()?->format('Y-m-d H:i:s'),
             ];
         }
 

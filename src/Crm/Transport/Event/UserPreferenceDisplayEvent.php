@@ -27,8 +27,9 @@ final class UserPreferenceDisplayEvent extends Event
      */
     private array $preferences = [];
 
-    public function __construct(private string $location)
-    {
+    public function __construct(
+        private string $location
+    ) {
     }
 
     /**
@@ -46,8 +47,6 @@ final class UserPreferenceDisplayEvent extends Event
 
     /**
      * If you want to filter where the preference will be displayed, check the current location.
-     *
-     * @return string
      */
     public function getLocation(): string
     {

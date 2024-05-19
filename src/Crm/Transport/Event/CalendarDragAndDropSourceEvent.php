@@ -22,8 +22,10 @@ final class CalendarDragAndDropSourceEvent extends Event
      */
     private array $sources = [];
 
-    public function __construct(private User $user, private int $maxEntries)
-    {
+    public function __construct(
+        private User $user,
+        private int $maxEntries
+    ) {
     }
 
     public function getUser(): User
@@ -36,7 +38,7 @@ final class CalendarDragAndDropSourceEvent extends Event
         return $this->maxEntries;
     }
 
-    public function addSource(DragAndDropSource $source): CalendarDragAndDropSourceEvent
+    public function addSource(DragAndDropSource $source): self
     {
         $this->sources[] = $source;
 
@@ -46,7 +48,7 @@ final class CalendarDragAndDropSourceEvent extends Event
     public function removeSource(DragAndDropSource $source): bool
     {
         $key = array_search($source, $this->sources, true);
-        if (false === $key) {
+        if ($key === false) {
             return false;
         }
 

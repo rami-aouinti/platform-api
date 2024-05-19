@@ -11,17 +11,18 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Timesheet;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Application\Model\DailyStatistic;
 use App\Crm\Application\Model\MonthlyStatistic;
 use App\Crm\Domain\Repository\Query\TimesheetStatisticQuery;
 use App\Crm\Domain\Repository\TimesheetRepository;
+use App\User\Domain\Entity\User;
 use DateTimeInterface;
 
 final class TimesheetStatisticService
 {
-    public function __construct(private readonly TimesheetRepository $repository)
-    {
+    public function __construct(
+        private readonly TimesheetRepository $repository
+    ) {
     }
 
     /**
@@ -84,12 +85,12 @@ final class TimesheetStatisticService
                 continue;
             }
 
-            $day->setTotalDuration($day->getTotalDuration() + (int) $row['duration']);
-            $day->setTotalRate($day->getTotalRate() + (float) $row['rate']);
-            $day->setTotalInternalRate($day->getTotalInternalRate() + (float) $row['internalRate']);
+            $day->setTotalDuration($day->getTotalDuration() + (int)$row['duration']);
+            $day->setTotalRate($day->getTotalRate() + (float)$row['rate']);
+            $day->setTotalInternalRate($day->getTotalInternalRate() + (float)$row['internalRate']);
             if ($row['billable']) {
-                $day->setBillableRate((float) $row['rate']);
-                $day->setBillableDuration((int) $row['duration']);
+                $day->setBillableRate((float)$row['rate']);
+                $day->setBillableDuration((int)$row['duration']);
             }
         }
 
@@ -98,10 +99,7 @@ final class TimesheetStatisticService
 
     /**
      * @internal only for core development
-     * @param DateTimeInterface $begin
-     * @param DateTimeInterface $end
      * @param User[] $users
-     * @return array
      */
     public function getDailyStatisticsGrouped(DateTimeInterface $begin, DateTimeInterface $end, array $users): array
     {
@@ -109,7 +107,7 @@ final class TimesheetStatisticService
         $usersById = [];
 
         foreach ($users as $user) {
-            $uid = (string) $user->getId();
+            $uid = (string)$user->getId();
             $usersById[$uid] = $user;
             if (!isset($stats[$uid])) {
                 $stats[$uid] = [];
@@ -142,14 +140,20 @@ final class TimesheetStatisticService
         $results = $qb->getQuery()->getResult();
 
         foreach ($results as $row) {
-            $uid = (string) $row['user'];
-            $pid = (string) $row['project'];
-            $aid = (string) $row['activity'];
+            $uid = (string)$row['user'];
+            $pid = (string)$row['project'];
+            $aid = (string)$row['activity'];
             if (!isset($stats[$uid][$pid])) {
-                $stats[$uid][$pid] = ['project' => $pid, 'activities' => []];
+                $stats[$uid][$pid] = [
+                    'project' => $pid,
+                    'activities' => [],
+                ];
             }
             if (!isset($stats[$uid][$pid]['activities'][$aid])) {
-                $stats[$uid][$pid]['activities'][$aid] = ['activity' => $aid, 'data' => new DailyStatistic($begin, $end, $usersById[$uid])];
+                $stats[$uid][$pid]['activities'][$aid] = [
+                    'activity' => $aid,
+                    'data' => new DailyStatistic($begin, $end, $usersById[$uid]),
+                ];
             }
 
             /** @var DailyStatistic $days */
@@ -161,12 +165,12 @@ final class TimesheetStatisticService
                 continue;
             }
 
-            $day->setTotalDuration($day->getTotalDuration() + (int) $row['duration']);
-            $day->setTotalRate($day->getTotalRate() + (float) $row['rate']);
-            $day->setTotalInternalRate($day->getTotalInternalRate() + (float) $row['internalRate']);
+            $day->setTotalDuration($day->getTotalDuration() + (int)$row['duration']);
+            $day->setTotalRate($day->getTotalRate() + (float)$row['rate']);
+            $day->setTotalInternalRate($day->getTotalInternalRate() + (float)$row['internalRate']);
             if ($row['billable']) {
-                $day->setBillableRate((float) $row['rate']);
-                $day->setBillableDuration((int) $row['duration']);
+                $day->setBillableRate((float)$row['rate']);
+                $day->setBillableDuration((int)$row['duration']);
             }
         }
 
@@ -176,7 +180,6 @@ final class TimesheetStatisticService
     /**
      * @internal only for core development
      * @param User[] $users
-     * @return array
      */
     public function getMonthlyStatisticsGrouped(DateTimeInterface $begin, DateTimeInterface $end, array $users): array
     {
@@ -184,7 +187,7 @@ final class TimesheetStatisticService
         $usersById = [];
 
         foreach ($users as $user) {
-            $uid = (string) $user->getId();
+            $uid = (string)$user->getId();
             $usersById[$uid] = $user;
             if (!isset($stats[$uid])) {
                 $stats[$uid] = [];
@@ -219,31 +222,37 @@ final class TimesheetStatisticService
         $results = $qb->getQuery()->getResult();
 
         foreach ($results as $row) {
-            $uid = (string) $row['user'];
-            $pid = (string) $row['project'];
-            $aid = (string) $row['activity'];
+            $uid = (string)$row['user'];
+            $pid = (string)$row['project'];
+            $aid = (string)$row['activity'];
             if (!isset($stats[$uid][$pid])) {
-                $stats[$uid][$pid] = ['project' => $pid, 'activities' => []];
+                $stats[$uid][$pid] = [
+                    'project' => $pid,
+                    'activities' => [],
+                ];
             }
             if (!isset($stats[$uid][$pid]['activities'][$aid])) {
-                $stats[$uid][$pid]['activities'][$aid] = ['activity' => $aid, 'data' => new MonthlyStatistic($begin, $end, $usersById[$uid])];
+                $stats[$uid][$pid]['activities'][$aid] = [
+                    'activity' => $aid,
+                    'data' => new MonthlyStatistic($begin, $end, $usersById[$uid]),
+                ];
             }
 
             /** @var MonthlyStatistic $months */
             $months = $stats[$uid][$pid]['activities'][$aid]['data'];
-            $month = $months->getMonth((string) $row['year'], (string) $row['month']);
+            $month = $months->getMonth((string)$row['year'], (string)$row['month']);
 
             if ($month === null) {
                 // timezone differences
                 continue;
             }
 
-            $month->setTotalDuration($month->getTotalDuration() + (int) $row['duration']);
-            $month->setTotalRate($month->getTotalRate() + (float) $row['rate']);
-            $month->setTotalInternalRate($month->getTotalInternalRate() + (float) $row['internalRate']);
+            $month->setTotalDuration($month->getTotalDuration() + (int)$row['duration']);
+            $month->setTotalRate($month->getTotalRate() + (float)$row['rate']);
+            $month->setTotalInternalRate($month->getTotalInternalRate() + (float)$row['internalRate']);
             if ($row['billable']) {
-                $month->setBillableRate((float) $row['rate']);
-                $month->setBillableDuration((int) $row['duration']);
+                $month->setBillableRate((float)$row['rate']);
+                $month->setBillableDuration((int)$row['duration']);
             }
         }
 
@@ -263,7 +272,7 @@ final class TimesheetStatisticService
             return null;
         }
 
-        return new \DateTimeImmutable((string) $result, new \DateTimeZone($user->getTimezone()));
+        return new \DateTimeImmutable((string)$result, new \DateTimeZone($user->getTimezone()));
     }
 
     /**
@@ -323,12 +332,12 @@ final class TimesheetStatisticService
                 continue;
             }
 
-            $month->setTotalDuration($month->getTotalDuration() + (int) $row['duration']);
-            $month->setTotalRate($month->getTotalRate() + (float) $row['rate']);
-            $month->setTotalInternalRate($month->getTotalInternalRate() + (float) $row['internalRate']);
+            $month->setTotalDuration($month->getTotalDuration() + (int)$row['duration']);
+            $month->setTotalRate($month->getTotalRate() + (float)$row['rate']);
+            $month->setTotalInternalRate($month->getTotalInternalRate() + (float)$row['internalRate']);
             if ($row['billable']) {
-                $month->setBillableRate((float) $row['rate']);
-                $month->setBillableDuration((int) $row['duration']);
+                $month->setBillableRate((float)$row['rate']);
+                $month->setBillableDuration((int)$row['duration']);
             }
         }
 

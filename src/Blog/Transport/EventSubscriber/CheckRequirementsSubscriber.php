@@ -60,7 +60,7 @@ final readonly class CheckRequirementsSubscriber implements EventSubscriberInter
      * or not to display a better error message.
      *
      * @throws Exception
-*/
+     */
     public function handleConsoleError(ConsoleErrorEvent $event): void
     {
         $commandNames = ['doctrine:fixtures:load', 'doctrine:database:create', 'doctrine:schema:create', 'doctrine:database:drop'];
@@ -78,7 +78,7 @@ final readonly class CheckRequirementsSubscriber implements EventSubscriberInter
      * and then, it checks if the required 'sqlite3' PHP extension is enabled.
      *
      * @throws Exception
-*/
+     */
     public function handleKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
@@ -99,7 +99,6 @@ final readonly class CheckRequirementsSubscriber implements EventSubscriberInter
      * Checks if the application is using SQLite as its database.
      *
      * @throws Exception
-     * @return bool
      */
     private function isSQLitePlatform(): bool
     {

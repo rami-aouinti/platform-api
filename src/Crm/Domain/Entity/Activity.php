@@ -21,8 +21,6 @@ use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class Activity
- *
  * @package App\Crm\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -80,13 +78,17 @@ class Activity implements EntityWithMetaFields, EntityWithBudget
     /**
      * Whether this activity is visible and can be selected
      */
-    #[ORM\Column(name: 'visible', type: 'boolean', nullable: false, options: ['default' => true])]
+    #[ORM\Column(name: 'visible', type: 'boolean', nullable: false, options: [
+        'default' => true,
+    ])]
     #[Assert\NotNull]
     #[Serializer\Expose]
     #[Serializer\Groups(['Default'])]
     #[Exporter\Expose(label: 'visible', type: 'boolean')]
     private bool $visible = true;
-    #[ORM\Column(name: 'billable', type: 'boolean', nullable: false, options: ['default' => true])]
+    #[ORM\Column(name: 'billable', type: 'boolean', nullable: false, options: [
+        'default' => true,
+    ])]
     #[Assert\NotNull]
     #[Serializer\Expose]
     #[Serializer\Groups(['Default'])]
@@ -132,6 +134,34 @@ class Activity implements EntityWithMetaFields, EntityWithBudget
         $this->teams = new ArrayCollection();
     }
 
+    public function __toString(): string
+    {
+        return $this->getName();
+    }
+
+    public function __clone()
+    {
+        if ($this->id !== null) {
+            $this->id = null;
+        }
+
+        $currentTeams = $this->teams;
+        $this->teams = new ArrayCollection();
+        /** @var Team $team */
+        foreach ($currentTeams as $team) {
+            $this->addTeam($team);
+        }
+
+        $currentMeta = $this->meta;
+        $this->meta = new ArrayCollection();
+        /** @var ActivityMeta $meta */
+        foreach ($currentMeta as $meta) {
+            $newMeta = clone $meta;
+            $newMeta->setEntity($this);
+            $this->setMetaField($newMeta);
+        }
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -142,14 +172,14 @@ class Activity implements EntityWithMetaFields, EntityWithBudget
         return $this->project;
     }
 
-    public function setProject(?Project $project): Activity
+    public function setProject(?Project $project): self
     {
         $this->project = $project;
 
         return $this;
     }
 
-    public function setName(string $name): Activity
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -161,7 +191,7 @@ class Activity implements EntityWithMetaFields, EntityWithBudget
         return $this->name;
     }
 
-    public function setComment(?string $comment): Activity
+    public function setComment(?string $comment): self
     {
         $this->comment = $comment;
 
@@ -173,7 +203,7 @@ class Activity implements EntityWithMetaFields, EntityWithBudget
         return $this->comment;
     }
 
-    public function setVisible(bool $visible): Activity
+    public function setVisible(bool $visible): self
     {
         $this->visible = $visible;
 
@@ -293,33 +323,5 @@ class Activity implements EntityWithMetaFields, EntityWithBudget
     public function getNumber(): ?string
     {
         return $this->number;
-    }
-
-    public function __toString(): string
-    {
-        return $this->getName();
-    }
-
-    public function __clone()
-    {
-        if ($this->id !== null) {
-            $this->id = null;
-        }
-
-        $currentTeams = $this->teams;
-        $this->teams = new ArrayCollection();
-        /** @var Team $team */
-        foreach ($currentTeams as $team) {
-            $this->addTeam($team);
-        }
-
-        $currentMeta = $this->meta;
-        $this->meta = new ArrayCollection();
-        /** @var ActivityMeta $meta */
-        foreach ($currentMeta as $meta) {
-            $newMeta = clone $meta;
-            $newMeta->setEntity($this);
-            $this->setMetaField($newMeta);
-        }
     }
 }

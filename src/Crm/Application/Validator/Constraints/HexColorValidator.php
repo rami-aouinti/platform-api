@@ -29,7 +29,7 @@ final class HexColorValidator extends ConstraintValidator
             return;
         }
 
-        if (!\is_string($color) || 1 !== preg_match('/^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/i', $color)) {
+        if (!\is_string($color) || preg_match('/^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/i', $color) !== 1) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $this->formatValue($color))
                 ->setCode(HexColor::HEX_COLOR_ERROR)

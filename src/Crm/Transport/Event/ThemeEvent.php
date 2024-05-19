@@ -30,8 +30,10 @@ class ThemeEvent extends Event
     /**
      * @param array<string, mixed|array<mixed>> $payload
      */
-    public function __construct(private ?User $user = null, protected array $payload = [])
-    {
+    public function __construct(
+        private ?User $user = null,
+        protected array $payload = []
+    ) {
     }
 
     public function getUser(): ?User
@@ -44,7 +46,7 @@ class ThemeEvent extends Event
         return $this->content;
     }
 
-    public function addContent(string $content): ThemeEvent
+    public function addContent(string $content): self
     {
         $this->content .= $content;
 

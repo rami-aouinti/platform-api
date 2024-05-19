@@ -37,8 +37,8 @@ final class ProjectViewForm extends AbstractType
             'choices' => [
                 'all' => null,
                 'includeWithBudget' => true,
-                'includeNoBudget' => false
-            ]
+                'includeNoBudget' => false,
+            ],
         ]);
         $builder->add('includeNoWork', CheckboxType::class, [
             'required' => false,

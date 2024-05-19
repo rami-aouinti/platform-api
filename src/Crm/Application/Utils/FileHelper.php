@@ -18,8 +18,9 @@ final class FileHelper
 {
     private Filesystem $filesystem;
 
-    public function __construct(private string $dataDir)
-    {
+    public function __construct(
+        private string $dataDir
+    ) {
         $this->filesystem = new Filesystem();
     }
 
@@ -70,13 +71,13 @@ final class FileHelper
     public static function convertToAsciiFilename(string $filename): string
     {
         $filename = new UnicodeString($filename);
-        $filename = (string) $filename->collapseWhitespace()->trim()->replace(PHP_EOL, '')->replace(' ', '_');
+        $filename = (string)$filename->collapseWhitespace()->trim()->replace(PHP_EOL, '')->replace(' ', '_');
 
         $dangerousCharacters = ['"', "'", '&', '/', '\\', '?', '#', '%'];
         $filename = str_replace($dangerousCharacters, ' ', $filename);
 
         $filename = new UnicodeString($filename);
-        $filename = (string) $filename->collapseWhitespace()->replace(' ', '_')->ascii()->trim();
+        $filename = (string)$filename->collapseWhitespace()->replace(' ', '_')->ascii()->trim();
         $filename = preg_replace('/[^a-zA-Z0-9\x7f-\xff\-]++/', ' ', $filename);
         $filename = str_replace(' ', '_', trim($filename));
 

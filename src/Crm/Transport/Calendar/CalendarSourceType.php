@@ -12,8 +12,6 @@ declare(strict_types=1);
 namespace App\Crm\Transport\Calendar;
 
 /**
- * Class CalendarSourceType
- *
  * @package App\Crm\Transport\Calendar
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

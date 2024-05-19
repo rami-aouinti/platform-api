@@ -38,8 +38,7 @@ final class TimesheetSubscriber implements EventSubscriber, DataSubscriberInterf
     public function __construct(
         #[TaggedIterator(CalculatorInterface::class)]
         private readonly iterable $calculators
-    )
-    {
+    ) {
     }
 
     public function getSubscribedEvents(): array

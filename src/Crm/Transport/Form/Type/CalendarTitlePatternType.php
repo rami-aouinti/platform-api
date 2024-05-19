@@ -34,8 +34,9 @@ final class CalendarTitlePatternType extends AbstractType
     public const PATTERN_CUSTOMER_PROJECT = self::PATTERN_CUSTOMER . self::SPACER . self::PATTERN_PROJECT;
     public const PATTERN_PROJECT_ACTIVITY = self::PATTERN_PROJECT . self::SPACER . self::PATTERN_ACTIVITY;
 
-    public function __construct(private TranslatorInterface $translator)
-    {
+    public function __construct(
+        private TranslatorInterface $translator
+    ) {
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -49,18 +50,18 @@ final class CalendarTitlePatternType extends AbstractType
         $resolver->setDefaults([
             'label' => 'choice_pattern',
             'choices' => [
-                $activity => CalendarTitlePatternType::PATTERN_ACTIVITY,
-                $project => CalendarTitlePatternType::PATTERN_PROJECT,
-                $customer => CalendarTitlePatternType::PATTERN_CUSTOMER,
-                $description => CalendarTitlePatternType::PATTERN_DESCRIPTION,
-                $duration => CalendarTitlePatternType::PATTERN_DURATION,
-                $activity . self::SPACER . $description => CalendarTitlePatternType::PATTERN_ACTIVITY_DESCRIPTION,
-                $project . self::SPACER . $description => CalendarTitlePatternType::PATTERN_PROJECT_DESCRIPTION,
-                $customer . self::SPACER . $description => CalendarTitlePatternType::PATTERN_CUSTOMER_DESCRIPTION,
-                $project . self::SPACER . $customer => CalendarTitlePatternType::PATTERN_PROJECT_CUSTOMER,
-                $customer . self::SPACER . $project => CalendarTitlePatternType::PATTERN_CUSTOMER_PROJECT,
-                $project . self::SPACER . $activity => CalendarTitlePatternType::PATTERN_PROJECT_ACTIVITY,
-            ]
+                $activity => self::PATTERN_ACTIVITY,
+                $project => self::PATTERN_PROJECT,
+                $customer => self::PATTERN_CUSTOMER,
+                $description => self::PATTERN_DESCRIPTION,
+                $duration => self::PATTERN_DURATION,
+                $activity . self::SPACER . $description => self::PATTERN_ACTIVITY_DESCRIPTION,
+                $project . self::SPACER . $description => self::PATTERN_PROJECT_DESCRIPTION,
+                $customer . self::SPACER . $description => self::PATTERN_CUSTOMER_DESCRIPTION,
+                $project . self::SPACER . $customer => self::PATTERN_PROJECT_CUSTOMER,
+                $customer . self::SPACER . $project => self::PATTERN_CUSTOMER_PROJECT,
+                $project . self::SPACER . $activity => self::PATTERN_PROJECT_ACTIVITY,
+            ],
         ]);
     }
 

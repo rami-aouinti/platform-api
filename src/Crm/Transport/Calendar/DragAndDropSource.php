@@ -11,9 +11,6 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Calendar;
 
-/**
- *
- */
 interface DragAndDropSource
 {
     public function getTitle(): string;
@@ -41,8 +38,6 @@ interface DragAndDropSource
 
     /**
      * If you want to customize the item rendering, you have to return a path to your include here.
-     *
-     * @return string|null
      */
     public function getBlockInclude(): ?string;
 }

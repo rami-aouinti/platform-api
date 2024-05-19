@@ -25,8 +25,11 @@ use Symfony\Component\Security\Http\EntryPoint\Exception\NotAnEntryPointExceptio
 
 final class LdapAuthenticator implements AuthenticationEntryPointInterface, InteractiveAuthenticatorInterface
 {
-    public function __construct(private AuthenticatorInterface $authenticator, private LdapConfiguration $configuration, private LoggerInterface $logger)
-    {
+    public function __construct(
+        private AuthenticatorInterface $authenticator,
+        private LdapConfiguration $configuration,
+        private LoggerInterface $logger
+    ) {
     }
 
     public function supports(Request $request): bool

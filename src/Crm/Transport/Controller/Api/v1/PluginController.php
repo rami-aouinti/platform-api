@@ -11,8 +11,9 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Controller\Api\v1;
 
-use App\Crm\Transport\Plugin\PluginManager;
 use App\Crm\Application\Utils\PageSetup;
+use App\Crm\Transport\Plugin\PluginManager;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -21,8 +22,6 @@ use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
- * Class PluginController
- *
  * @package App\Crm\Transport\Controller\Api\v1
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -46,10 +45,13 @@ final class PluginController extends AbstractController
             'page_setup' => $page,
             'plugins' => $plugins,
             'installed' => $installed,
-            'extensions' => $this->getPluginInformation($client, $cache)
+            'extensions' => $this->getPluginInformation($client, $cache),
         ]);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     private function getPluginInformation(HttpClientInterface $client, CacheInterface $cache): array
     {
         return $cache->get('kimai.marketplace_extensions', function (ItemInterface $item) use ($client) {

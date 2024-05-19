@@ -15,8 +15,6 @@ use App\User\Domain\Entity\User;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Class DashboardEvent
- *
  * @package App\Crm\Transport\Event
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -27,8 +25,9 @@ final class DashboardEvent extends Event
      */
     private array $widgets = [];
 
-    public function __construct(private User $user)
-    {
+    public function __construct(
+        private User $user
+    ) {
     }
 
     /**
@@ -44,10 +43,6 @@ final class DashboardEvent extends Event
     /**
      * Adding a widget here will add it to the default dashboard settings for users,
      * which do not yet have their own dashboard configured.
-     *
-     * @param string $widget
-     * @param int|null $position
-     * @return void
      */
     public function addWidget(string $widget, ?int $position = null): void
     {

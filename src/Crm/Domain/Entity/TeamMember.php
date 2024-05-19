@@ -11,15 +11,13 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Entity;
 
+use App\User\Domain\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\User\Domain\Entity\User;
 
 /**
- * Class TeamMember
- *
  * @package App\Crm\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -48,11 +46,20 @@ class TeamMember
     #[Serializer\Groups(['Default', 'Entity', 'User_Entity'])]
     #[OA\Property(ref: '#/components/schemas/Team')]
     private ?Team $team = null;
-    #[ORM\Column(name: 'teamlead', type: 'boolean', nullable: false, options: ['default' => false])]
+    #[ORM\Column(name: 'teamlead', type: 'boolean', nullable: false, options: [
+        'default' => false,
+    ])]
     #[Assert\NotNull]
     #[Serializer\Expose]
     #[Serializer\Groups(['Default', 'Entity', 'Team_Entity', 'User_Entity'])]
     private bool $teamlead = false;
+
+    public function __clone()
+    {
+        if ($this->id !== null) {
+            $this->id = null;
+        }
+    }
 
     public function getId(): ?int
     {
@@ -87,12 +94,5 @@ class TeamMember
     public function setTeam(?Team $team): void
     {
         $this->team = $team;
-    }
-
-    public function __clone()
-    {
-        if ($this->id !== null) {
-            $this->id = null;
-        }
     }
 }

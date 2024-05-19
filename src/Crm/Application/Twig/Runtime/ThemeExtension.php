@@ -10,12 +10,12 @@
 namespace App\Crm\Application\Twig\Runtime;
 
 use App\Crm\Application\Configuration\SystemConfiguration;
+use App\Crm\Application\Utils\Color;
 use App\Crm\Constants;
-use App\User\Domain\Entity\User;
 use App\Event\PageActionsEvent;
 use App\Event\ThemeEvent;
 use App\Event\ThemeJavascriptTranslationsEvent;
-use App\Crm\Application\Utils\Color;
+use App\User\Domain\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -24,15 +24,16 @@ use Twig\Extension\RuntimeExtensionInterface;
 
 final class ThemeExtension implements RuntimeExtensionInterface
 {
-    public function __construct(private EventDispatcherInterface $eventDispatcher, private TranslatorInterface $translator, private SystemConfiguration $configuration, private Security $security)
-    {
+    public function __construct(
+        private EventDispatcherInterface $eventDispatcher,
+        private TranslatorInterface $translator,
+        private SystemConfiguration $configuration,
+        private Security $security
+    ) {
     }
 
     /**
-     * @param Environment $environment
-     * @param string $eventName
      * @param array<string, mixed> $payload
-     * @return ThemeEvent
      */
     public function trigger(Environment $environment, string $eventName, array $payload = []): ThemeEvent
     {
@@ -75,9 +76,21 @@ final class ThemeExtension implements RuntimeExtensionInterface
 
     public function getProgressbarClass(float $percent, ?bool $reverseColors = false): string
     {
-        $colors = ['xl' => 'bg-red', 'l' => 'bg-warning', 'm' => 'bg-green', 's' => 'bg-green', 'e' => ''];
-        if (true === $reverseColors) {
-            $colors = ['s' => 'bg-red', 'm' => 'bg-warning', 'l' => 'bg-green', 'xl' => 'bg-green', 'e' => ''];
+        $colors = [
+            'xl' => 'bg-red',
+            'l' => 'bg-warning',
+            'm' => 'bg-green',
+            's' => 'bg-green',
+            'e' => '',
+        ];
+        if ($reverseColors === true) {
+            $colors = [
+                's' => 'bg-red',
+                'm' => 'bg-warning',
+                'l' => 'bg-green',
+                'xl' => 'bg-green',
+                'e' => '',
+            ];
         }
 
         if ($percent > 90) {

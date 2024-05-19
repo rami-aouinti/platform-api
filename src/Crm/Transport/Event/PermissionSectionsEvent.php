@@ -24,7 +24,7 @@ final class PermissionSectionsEvent extends Event
      */
     private array $sections = [];
 
-    public function addSection(PermissionSectionInterface $section): PermissionSectionsEvent
+    public function addSection(PermissionSectionInterface $section): self
     {
         $this->sections[] = $section;
 

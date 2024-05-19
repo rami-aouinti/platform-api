@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Invoice\Hydrator;
 
-use App\Crm\Transport\Invoice\InvoiceModel;
 use App\Crm\Application\Model\BudgetStatisticModel;
+use App\Crm\Transport\Invoice\InvoiceModel;
 
 trait BudgetHydratorTrait
 {

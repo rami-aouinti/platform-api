@@ -19,8 +19,9 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 final class TimesheetLongRunningValidator extends ConstraintValidator
 {
-    public function __construct(private readonly SystemConfiguration $systemConfiguration)
-    {
+    public function __construct(
+        private readonly SystemConfiguration $systemConfiguration
+    ) {
     }
 
     public function validate(mixed $value, Constraint $constraint): void

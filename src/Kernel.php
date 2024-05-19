@@ -10,17 +10,17 @@ use App\Crm\DependencyInjection\Compiler\ExportServiceCompilerPass;
 use App\Crm\DependencyInjection\Compiler\InvoiceServiceCompilerPass;
 use App\Crm\DependencyInjection\Compiler\TwigContextCompilerPass;
 use App\Crm\DependencyInjection\Compiler\WidgetCompilerPass;
-use Symfony\Component\DependencyInjection\Compiler\PassConfig;
-use Symfony\Component\Config\Loader\LoaderInterface;
 use App\Crm\Transport\Plugin\PluginInterface;
 use App\Crm\Transport\Plugin\PluginMetadata;
 use App\General\Application\Compiler\StopwatchCompilerPass;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
+use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
+use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 /**
@@ -33,30 +33,14 @@ class Kernel extends BaseKernel
     public const PLUGIN_DIRECTORY = '/var/plugins';
     public const CONFIG_EXTS = '.{php,yaml}';
 
-
-    /**
-     * @return string
-     */
     public function getCacheDir(): string
     {
         return $this->getProjectDir() . '/var/cache/' . $this->environment;
     }
 
-    /**
-     * @return string
-     */
     public function getLogDir(): string
     {
         return $this->getProjectDir() . '/var/log';
-    }
-
-    protected function build(ContainerBuilder $container): void
-    {
-        parent::build($container);
-
-        if ($this->environment === 'dev') {
-            $container->addCompilerPass(new StopwatchCompilerPass());
-        }
     }
 
     /**
@@ -89,6 +73,54 @@ class Kernel extends BaseKernel
                 yield $plugin;
             }
         }
+    }
+
+    protected function build(ContainerBuilder $container): void
+    {
+        parent::build($container);
+
+        if ($this->environment === 'dev') {
+            $container->addCompilerPass(new StopwatchCompilerPass());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
+    {
+        $container->registerExtension(new AppExtension());
+
+        $container->setParameter('container.autowiring.strict_mode', true);
+        $container->setParameter('.container.dumper.inline_class_loader', true);
+        $confDir = $this->getProjectDir() . '/config';
+
+        // using this one instead of $loader->load($confDir . '/packages/*' . self::CONFIG_EXTS, 'glob');
+        // to get rid of the local.yaml from the list: we load it afterward explicit
+        $finder = (new Finder())
+            ->files()
+            ->in([$confDir . '/packages/'])
+            ->name('*' . self::CONFIG_EXTS)
+            ->notName('local.yaml')
+            ->sortByName()
+            ->followLinks()
+        ;
+
+        /** @var SplFileInfo $file */
+        foreach ($finder as $file) {
+            $loader->load($file->getPathname());
+        }
+
+        if (is_file($confDir . '/packages/local.yaml')) {
+            $loader->load($confDir . '/packages/local.yaml');
+        }
+        $loader->load($confDir . '/services' . self::CONFIG_EXTS, 'glob');
+        $loader->load($confDir . '/services_' . $this->environment . self::CONFIG_EXTS, 'glob');
+
+        $container->addCompilerPass(new TwigContextCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, -1000);
+        $container->addCompilerPass(new InvoiceServiceCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, -1000);
+        $container->addCompilerPass(new ExportServiceCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, -1000);
+        $container->addCompilerPass(new WidgetCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, -1000);
     }
 
     /**
@@ -133,46 +165,6 @@ class Kernel extends BaseKernel
         }
 
         return $plugins;
-    }
-
-
-    /**
-     * @throws Exception
-     */
-    protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
-    {
-        $container->registerExtension(new AppExtension());
-
-        $container->setParameter('container.autowiring.strict_mode', true);
-        $container->setParameter('.container.dumper.inline_class_loader', true);
-        $confDir = $this->getProjectDir() . '/config';
-
-        // using this one instead of $loader->load($confDir . '/packages/*' . self::CONFIG_EXTS, 'glob');
-        // to get rid of the local.yaml from the list: we load it afterward explicit
-        $finder = (new Finder())
-            ->files()
-            ->in([$confDir . '/packages/'])
-            ->name('*' . self::CONFIG_EXTS)
-            ->notName('local.yaml')
-            ->sortByName()
-            ->followLinks()
-        ;
-
-        /** @var SplFileInfo $file */
-        foreach ($finder as $file) {
-            $loader->load($file->getPathname());
-        }
-
-        if (is_file($confDir . '/packages/local.yaml')) {
-            $loader->load($confDir . '/packages/local.yaml');
-        }
-        $loader->load($confDir . '/services' . self::CONFIG_EXTS, 'glob');
-        $loader->load($confDir . '/services_' . $this->environment . self::CONFIG_EXTS, 'glob');
-
-        $container->addCompilerPass(new TwigContextCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, -1000);
-        $container->addCompilerPass(new InvoiceServiceCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, -1000);
-        $container->addCompilerPass(new ExportServiceCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, -1000);
-        $container->addCompilerPass(new WidgetCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, -1000);
     }
 
     private function configureRoutes(RoutingConfigurator $routes): void // @phpstan-ignore-line

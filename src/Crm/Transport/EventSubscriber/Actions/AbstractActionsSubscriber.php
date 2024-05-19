@@ -23,22 +23,10 @@ abstract class AbstractActionsSubscriber implements EventSubscriberInterface
 {
     private ?string $locale = null;
 
-    public function __construct(private AuthorizationCheckerInterface $auth, private UrlGeneratorInterface $urlGenerator)
-    {
-    }
-
-    protected function isGranted($attributes, $subject = null): bool
-    {
-        return $this->auth->isGranted($attributes, $subject);
-    }
-
-    protected function path(string $route, array $parameters = []): string
-    {
-        if ($this->locale !== null) {
-            $parameters['_locale'] = $this->locale;
-        }
-
-        return $this->urlGenerator->generate($route, $parameters);
+    public function __construct(
+        private AuthorizationCheckerInterface $auth,
+        private UrlGeneratorInterface $urlGenerator
+    ) {
     }
 
     public static function getSubscribedEvents(): array
@@ -63,5 +51,19 @@ abstract class AbstractActionsSubscriber implements EventSubscriberInterface
     public function onActions(PageActionsEvent $event): void
     {
         // non abstract - so the usage is completely optional
+    }
+
+    protected function isGranted($attributes, $subject = null): bool
+    {
+        return $this->auth->isGranted($attributes, $subject);
+    }
+
+    protected function path(string $route, array $parameters = []): string
+    {
+        if ($this->locale !== null) {
+            $parameters['_locale'] = $this->locale;
+        }
+
+        return $this->urlGenerator->generate($route, $parameters);
     }
 }

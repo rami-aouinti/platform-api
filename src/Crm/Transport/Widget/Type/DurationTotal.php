@@ -17,8 +17,9 @@ use App\Crm\Transport\Widget\WidgetInterface;
 
 final class DurationTotal extends AbstractCounterDuration
 {
-    public function __construct(private TimesheetRepository $repository)
-    {
+    public function __construct(
+        private TimesheetRepository $repository
+    ) {
     }
 
     /**
@@ -27,7 +28,9 @@ final class DurationTotal extends AbstractCounterDuration
      */
     public function getOptions(array $options = []): array
     {
-        return array_merge(['color' => WidgetInterface::COLOR_TOTAL], parent::getOptions($options));
+        return array_merge([
+            'color' => WidgetInterface::COLOR_TOTAL,
+        ], parent::getOptions($options));
     }
 
     public function getPermissions(): array

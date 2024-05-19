@@ -30,7 +30,7 @@ final class ClosestRounding implements RoundingInterface
         $seconds = $minutes * 60;
         $diff = $timestamp % $seconds;
 
-        if (0 === $diff) {
+        if ($diff === 0) {
             return;
         }
 
@@ -53,7 +53,7 @@ final class ClosestRounding implements RoundingInterface
         $seconds = $minutes * 60;
         $diff = $timestamp % $seconds;
 
-        if (0 === $diff) {
+        if ($diff === 0) {
             return;
         }
 
@@ -76,7 +76,7 @@ final class ClosestRounding implements RoundingInterface
         $seconds = $minutes * 60;
         $diff = $timestamp % $seconds;
 
-        if (0 === $diff) {
+        if ($diff === 0) {
             return;
         }
 

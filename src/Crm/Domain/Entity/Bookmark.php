@@ -11,14 +11,12 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Entity;
 
+use App\User\Domain\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\User\Domain\Entity\User;
 
 /**
- * Class Bookmark
- *
  * @package App\Crm\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -51,6 +49,13 @@ class Bookmark
     private ?string $name = null;
     #[ORM\Column(name: 'content', type: 'text', nullable: false)]
     private ?string $content = null;
+
+    public function __clone()
+    {
+        if ($this->id) {
+            $this->id = null;
+        }
+    }
 
     public function getId(): ?int
     {
@@ -99,12 +104,5 @@ class Bookmark
         }
 
         return json_decode($this->content, true);
-    }
-
-    public function __clone()
-    {
-        if ($this->id) {
-            $this->id = null;
-        }
     }
 }

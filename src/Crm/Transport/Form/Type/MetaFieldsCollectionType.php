@@ -40,13 +40,13 @@ final class MetaFieldsCollectionType extends AbstractType
                     }
 
                     // prevents unconfigured values from showing up in the form
-                    if (null === $collectionItem->getType()) {
+                    if ($collectionItem->getType() === null) {
                         continue;
                     }
 
                     if ($options['fields_required'] !== null) {
                         // TODO required select-fields can receive an empty value
-                        $collectionItem->setIsRequired((bool) $options['fields_required']);
+                        $collectionItem->setIsRequired((bool)$options['fields_required']);
                     }
 
                     $collection->set($collectionItem->getName(), $collectionItem);
@@ -61,7 +61,9 @@ final class MetaFieldsCollectionType extends AbstractType
     {
         $resolver->setDefaults([
             'entry_type' => EntityMetaDefinitionType::class,
-            'entry_options' => ['label' => false],
+            'entry_options' => [
+                'label' => false,
+            ],
             'allow_add' => false,
             'allow_delete' => false,
             'fields_required' => null,

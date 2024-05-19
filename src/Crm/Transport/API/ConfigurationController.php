@@ -25,8 +25,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[OA\Tag(name: 'Default')]
 final class ConfigurationController extends BaseApiController
 {
-    public function __construct(private readonly ViewHandlerInterface $viewHandler)
-    {
+    public function __construct(
+        private readonly ViewHandlerInterface $viewHandler
+    ) {
     }
 
     /**

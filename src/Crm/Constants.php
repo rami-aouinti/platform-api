@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of the Kimai time-tracking app.
+ * This file is part of the Platform time-tracking app.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace App\Crm;
 
 /**
- * Some "very" global constants for Kimai.
+ * Some "very" global constants for Platform.
  */
 class Constants
 {
@@ -27,19 +27,19 @@ class Constants
     /**
      * The software name
      */
-    public const SOFTWARE = 'Kimai';
+    public const SOFTWARE = 'Platform';
     /**
      * Used in multiple views
      */
-    public const GITHUB = 'https://github.com/kimai/kimai/';
+    public const GITHUB = 'https://github.com/rami-aouinti';
     /**
      * The GitHub repository name
      */
-    public const GITHUB_REPO = 'kimai/kimai';
+    public const GITHUB_REPO = 'platform-api';
     /**
      * Homepage, used in multiple views
      */
-    public const HOMEPAGE = 'https://www.kimai.org';
+    public const HOMEPAGE = 'https://ramyworld.de/';
     /**
      * Default color for Customer, Project and Activity entities
      */

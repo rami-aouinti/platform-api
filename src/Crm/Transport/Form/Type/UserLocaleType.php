@@ -26,8 +26,7 @@ final class UserLocaleType extends AbstractType
     public function __construct(
         private readonly UrlGeneratorInterface $router,
         private readonly TranslatorInterface $translator
-    )
-    {
+    ) {
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -38,7 +37,7 @@ final class UserLocaleType extends AbstractType
         $resolver->setDefaults([
             'label' => 'locale',
             'help_html' => true,
-            'help' => sprintf('<a href="%1$s" target="help_locales">%2$s</a>', $route, $moreLink)
+            'help' => sprintf('<a href="%1$s" target="help_locales">%2$s</a>', $route, $moreLink),
         ]);
     }
 

@@ -17,8 +17,8 @@ use App\Crm\Domain\Repository\ProjectRepository;
 use App\Crm\Domain\Repository\Query\ExportQuery;
 use App\Crm\Domain\Repository\Query\TimesheetQuery;
 use App\Crm\Domain\Repository\TeamRepository;
-use App\User\Infrastructure\Repository\UserRepository;
 use App\Crm\Transport\Timesheet\DateTimeFactory;
+use App\User\Infrastructure\Repository\UserRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -34,8 +34,6 @@ use Symfony\Contracts\Translation\LocaleAwareInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * Class ExportCreateCommand
- *
  * @package App\Crm\Transport\Command
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -86,15 +84,12 @@ final class ExportCreateCommand extends Command
         switch ($input->getOption('exported')) {
             case null:
                 break;
-
             case 'all':
                 $exportedFilter = TimesheetQuery::STATE_ALL;
                 break;
-
             case 'exported':
                 $exportedFilter = TimesheetQuery::STATE_EXPORTED;
                 break;
-
             default:
                 $io->error('Unknown "exported" filter given');
 
@@ -233,7 +228,7 @@ final class ExportCreateCommand extends Command
         if (\is_string($username) && !empty($username)) {
             try {
                 $user = $this->userRepository->loadUserByIdentifier($username);
-            } catch(\Exception) {
+            } catch (\Exception) {
                 $io->error(
                     sprintf('The given username "%s" could not be resolved', $username)
                 );

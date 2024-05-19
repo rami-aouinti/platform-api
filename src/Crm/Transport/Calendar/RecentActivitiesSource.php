@@ -12,8 +12,6 @@ declare(strict_types=1);
 namespace App\Crm\Transport\Calendar;
 
 /**
- * Class RecentActivitiesSource
- *
  * @package App\Crm\Transport\Calendar
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -22,8 +20,9 @@ final readonly class RecentActivitiesSource implements DragAndDropSource
     /**
      * @param DragAndDropEntry[] $entries
      */
-    public function __construct(private array $entries)
-    {
+    public function __construct(
+        private array $entries
+    ) {
     }
 
     public function getTitle(): string
@@ -51,7 +50,9 @@ final readonly class RecentActivitiesSource implements DragAndDropSource
      */
     public function getRouteParams(): array
     {
-        return ['full' => 'true'];
+        return [
+            'full' => 'true',
+        ];
     }
 
     /**

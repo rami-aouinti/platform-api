@@ -19,8 +19,9 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 final class InvoiceMetaDefinitionEvent extends Event
 {
-    public function __construct(private Invoice $entity)
-    {
+    public function __construct(
+        private Invoice $entity
+    ) {
     }
 
     public function getEntity(): Invoice

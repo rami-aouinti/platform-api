@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Form;
 
+use App\Crm\Application\Reporting\YearByUser\YearByUser;
 use App\Crm\Transport\Form\Type\UserType;
 use App\Crm\Transport\Form\Type\YearPickerType;
-use App\Crm\Application\Reporting\YearByUser\YearByUser;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -31,7 +31,7 @@ final class YearByUserForm extends AbstractType
         if ($options['include_user']) {
             $builder->add('user', UserType::class, [
                 'width' => false,
-                'include_current_user_if_system_account' => true
+                'include_current_user_if_system_account' => true,
             ]);
         }
     }

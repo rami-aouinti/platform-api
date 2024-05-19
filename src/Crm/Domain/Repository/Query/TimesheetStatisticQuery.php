@@ -25,8 +25,7 @@ final class TimesheetStatisticQuery
         private readonly \DateTimeInterface $begin,
         private readonly \DateTimeInterface $end,
         private array $users
-    )
-    {
+    ) {
     }
 
     public function getBegin(): \DateTimeInterface

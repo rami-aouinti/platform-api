@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace App\Crm\Domain\Entity;
 
 use App\Crm\Transport\Form\Type\YesNoType;
+use App\User\Domain\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -19,11 +20,8 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\User\Domain\Entity\User;
 
 /**
- * Class UserPreference
- *
  * @package App\Crm\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -79,7 +77,6 @@ class UserPreference
     private array $constraints = [];
     /**
      * An array of options for the form element
-     * @var array
      */
     private array $options = [];
     private int $order = 1000;
@@ -96,7 +93,7 @@ class UserPreference
         return $this->id;
     }
 
-    public function setId(int $id): UserPreference
+    public function setId(int $id): self
     {
         $this->id = $id;
 
@@ -108,7 +105,7 @@ class UserPreference
         return $this->user;
     }
 
-    public function setUser(User $user): UserPreference
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
@@ -131,17 +128,12 @@ class UserPreference
         return $this->sanitizeName($name) === $this->getName();
     }
 
-    private function sanitizeName(?string $name): string
-    {
-        return str_replace(['.', '-'], '_', $name);
-    }
-
     public function getValue(): bool|int|float|string|null
     {
         return match ($this->type) {
-            YesNoType::class, CheckboxType::class => (bool) $this->value,
-            IntegerType::class => (int) $this->value,
-            NumberType::class => (float) $this->value,
+            YesNoType::class, CheckboxType::class => (bool)$this->value,
+            IntegerType::class => (int)$this->value,
+            NumberType::class => (float)$this->value,
             default => $this->value,
         };
     }
@@ -151,9 +143,8 @@ class UserPreference
      * integer, float, string, boolean or null
      *
      * @param mixed $value
-     * @return UserPreference
      */
-    public function setValue($value): UserPreference
+    public function setValue($value): self
     {
         $this->value = $value;
 
@@ -163,7 +154,7 @@ class UserPreference
     /**
      * Sets the form type to edit that setting.
      */
-    public function setType(string $type): UserPreference
+    public function setType(string $type): self
     {
         $this->type = $type;
 
@@ -180,7 +171,7 @@ class UserPreference
         return $this->enabled;
     }
 
-    public function setEnabled(bool $enabled): UserPreference
+    public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
 
@@ -203,7 +194,6 @@ class UserPreference
     /**
      * Adds a constraint which is used for validation of the value.
      *
-     * @param Constraint $constraint
      * @return $this
      */
     public function addConstraint(Constraint $constraint)
@@ -223,11 +213,8 @@ class UserPreference
 
     /**
      * Set an array of options for the FormType.
-     *
-     * @param array $options
-     * @return UserPreference
      */
-    public function setOptions(array $options): UserPreference
+    public function setOptions(array $options): self
     {
         $this->options = $options;
 
@@ -236,8 +223,6 @@ class UserPreference
 
     /**
      * Returns an array with options for the FormType.
-     *
-     * @return array
      */
     public function getOptions(): array
     {
@@ -258,14 +243,14 @@ class UserPreference
         return $this->order;
     }
 
-    public function setOrder(int $order): UserPreference
+    public function setOrder(int $order): self
     {
         $this->order = $order;
 
         return $this;
     }
 
-    public function setSection(string $section): UserPreference
+    public function setSection(string $section): self
     {
         $this->section = $section;
 
@@ -275,5 +260,10 @@ class UserPreference
     public function getSection(): string
     {
         return $this->section;
+    }
+
+    private function sanitizeName(?string $name): string
+    {
+        return str_replace(['.', '-'], '_', $name);
     }
 }

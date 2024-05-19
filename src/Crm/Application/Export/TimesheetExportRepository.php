@@ -16,15 +16,14 @@ use App\Crm\Domain\Repository\Query\ExportQuery;
 use App\Crm\Domain\Repository\TimesheetRepository;
 
 /**
- * Class TimesheetExportRepository
- *
  * @package App\Crm\Application\Export
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class TimesheetExportRepository implements ExportRepositoryInterface
 {
-    public function __construct(private TimesheetRepository $repository)
-    {
+    public function __construct(
+        private TimesheetRepository $repository
+    ) {
     }
 
     /**

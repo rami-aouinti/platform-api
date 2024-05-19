@@ -24,18 +24,16 @@ final class PermissionsEvent extends Event
     private array $sections = [];
 
     /**
-     * @param string $section
      * @param string[] $permissions
-     * @return PermissionsEvent
      */
-    public function addPermissions(string $section, array $permissions): PermissionsEvent
+    public function addPermissions(string $section, array $permissions): self
     {
         $this->sections[$section] = $permissions;
 
         return $this;
     }
 
-    public function removePermission(string $section, string $permission): PermissionsEvent
+    public function removePermission(string $section, string $permission): self
     {
         if (\array_key_exists($section, $this->sections)) {
             if (($key = array_search($permission, $this->sections[$section])) !== false) {
@@ -51,7 +49,7 @@ final class PermissionsEvent extends Event
         return \array_key_exists($section, $this->sections);
     }
 
-    public function removeSection(string $section): PermissionsEvent
+    public function removeSection(string $section): self
     {
         if (\array_key_exists($section, $this->sections)) {
             unset($this->sections[$section]);

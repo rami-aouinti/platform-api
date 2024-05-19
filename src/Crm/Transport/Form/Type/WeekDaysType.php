@@ -44,7 +44,7 @@ final class WeekDaysType extends AbstractType
             'Thursday' => 'thursday',
             'Friday' => 'friday',
             'Saturday' => 'saturday',
-            'Sunday' => 'sunday'
+            'Sunday' => 'sunday',
         ];
 
         $resolver->setDefaults([

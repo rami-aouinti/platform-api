@@ -17,8 +17,6 @@ use Symfony\WebpackEncoreBundle\Asset\EntrypointLookupInterface;
 use Twig\Extension\RuntimeExtensionInterface;
 
 /**
- * Class EncoreExtension
- *
  * @package App\Crm\Application\Twig\Runtime
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -27,8 +25,7 @@ final readonly class EncoreExtension implements RuntimeExtensionInterface, Servi
     public function __construct(
         private ContainerInterface $container,
         private string $projectDirectory
-    )
-    {
+    ) {
     }
 
     public static function getSubscribedServices(): array

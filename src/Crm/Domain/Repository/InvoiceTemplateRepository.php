@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace App\Crm\Domain\Repository;
 
+use App\Crm\Application\Utils\Pagination;
 use App\Crm\Domain\Entity\InvoiceTemplate;
 use App\Crm\Domain\Repository\Paginator\PaginatorInterface;
 use App\Crm\Domain\Repository\Paginator\QueryBuilderPaginator;
 use App\Crm\Domain\Repository\Query\BaseQuery;
-use App\Crm\Application\Utils\Pagination;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 
@@ -40,25 +40,6 @@ class InvoiceTemplateRepository extends EntityRepository
         return $qb;
     }
 
-    private function getQueryBuilderForQuery(BaseQuery $query): QueryBuilder
-    {
-        $qb = $this->getEntityManager()->createQueryBuilder();
-
-        $qb->select('t')
-            ->from(InvoiceTemplate::class, 't')
-            ->orderBy('t.name');
-
-        return $qb;
-    }
-
-    protected function getPaginatorForQuery(BaseQuery $query): PaginatorInterface
-    {
-        $counter = $this->countTemplatesForQuery($query);
-        $qb = $this->getQueryBuilderForQuery($query);
-
-        return new QueryBuilderPaginator($qb, $counter);
-    }
-
     public function getPagerfantaForQuery(BaseQuery $query): Pagination
     {
         return new Pagination($this->getPaginatorForQuery($query), $query);
@@ -73,7 +54,7 @@ class InvoiceTemplateRepository extends EntityRepository
             ->select($qb->expr()->countDistinct('t.id'))
         ;
 
-        return (int) $qb->getQuery()->getSingleScalarResult();
+        return (int)$qb->getQuery()->getSingleScalarResult();
     }
 
     public function saveTemplate(InvoiceTemplate $template): void
@@ -86,5 +67,24 @@ class InvoiceTemplateRepository extends EntityRepository
     {
         $this->getEntityManager()->remove($template);
         $this->getEntityManager()->flush();
+    }
+
+    protected function getPaginatorForQuery(BaseQuery $query): PaginatorInterface
+    {
+        $counter = $this->countTemplatesForQuery($query);
+        $qb = $this->getQueryBuilderForQuery($query);
+
+        return new QueryBuilderPaginator($qb, $counter);
+    }
+
+    private function getQueryBuilderForQuery(BaseQuery $query): QueryBuilder
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+
+        $qb->select('t')
+            ->from(InvoiceTemplate::class, 't')
+            ->orderBy('t.name');
+
+        return $qb;
     }
 }

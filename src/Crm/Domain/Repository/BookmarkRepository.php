@@ -31,14 +31,6 @@ class BookmarkRepository extends EntityRepository
         $this->clearCache($bookmark->getUser());
     }
 
-    private function clearCache(User $user): void
-    {
-        $key = 'user_' . $user->getId();
-        if (\array_key_exists($key, $this->userCache)) {
-            unset($this->userCache[$key]);
-        }
-    }
-
     public function deleteBookmark(Bookmark $bookmark)
     {
         $em = $this->getEntityManager();
@@ -59,7 +51,9 @@ class BookmarkRepository extends EntityRepository
 
         if (!\array_key_exists($key, $this->userCache)) {
             $this->userCache[$key] = [];
-            $all = $this->findBy(['user' => $user->getId()]);
+            $all = $this->findBy([
+                'user' => $user->getId(),
+            ]);
             foreach ($all as $item) {
                 $this->userCache[$key][$item->getType()][mb_substr($item->getName(), 0, 50)] = $item;
             }
@@ -74,5 +68,13 @@ class BookmarkRepository extends EntityRepository
         }
 
         return $this->userCache[$key][$type][$name];
+    }
+
+    private function clearCache(User $user): void
+    {
+        $key = 'user_' . $user->getId();
+        if (\array_key_exists($key, $this->userCache)) {
+            unset($this->userCache[$key]);
+        }
     }
 }

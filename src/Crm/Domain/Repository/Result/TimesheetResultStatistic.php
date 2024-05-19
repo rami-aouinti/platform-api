@@ -13,8 +13,10 @@ namespace App\Crm\Domain\Repository\Result;
 
 final class TimesheetResultStatistic
 {
-    public function __construct(private int $count, private int $duration)
-    {
+    public function __construct(
+        private int $count,
+        private int $duration
+    ) {
     }
 
     public function getCount(): int

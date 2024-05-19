@@ -17,8 +17,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class ActivityRate
- *
  * @package App\Crm\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -37,7 +35,7 @@ class ActivityRate implements RateInterface
     #[Assert\NotNull]
     private ?Activity $activity = null;
 
-    public function setActivity(?Activity $activity): ActivityRate
+    public function setActivity(?Activity $activity): self
     {
         $this->activity = $activity;
 

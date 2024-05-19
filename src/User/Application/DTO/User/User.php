@@ -201,11 +201,11 @@ class User extends RestDto
 
         return $this;
     }
-    public  function getGoogleId(): ?string
+    public function getGoogleId(): ?string
     {
         return $this->googleId;
     }
-    public  function setGoogleId(?string $googleId):self
+    public function setGoogleId(?string $googleId): self
     {
         $this->setVisited('googleId');
         $this->googleId = $googleId;

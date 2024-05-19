@@ -11,15 +11,13 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Export;
 
+use App\Crm\Application\Utils\FileHelper;
 use App\Crm\Domain\Entity\Customer;
 use App\Crm\Domain\Entity\Project;
-use App\User\Domain\Entity\User;
 use App\Crm\Domain\Repository\Query\TimesheetQuery;
-use App\Crm\Application\Utils\FileHelper;
+use App\User\Domain\Entity\User;
 
 /**
- * Class ExportFilename
- *
  * @package App\Crm\Application\Export
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -48,19 +46,9 @@ final class ExportFilename
         }
     }
 
-    private function getCustomerName(Customer $customer): string
+    public function __toString(): string
     {
-        $company = $customer->getCompany();
-        if (empty($company)) {
-            $company = $customer->getName();
-        }
-
-        return $company;
-    }
-
-    private function convert(string $filename): string
-    {
-        return FileHelper::convertToAsciiFilename($filename);
+        return $this->getFilename();
     }
 
     public function getFilename(): string
@@ -99,8 +87,18 @@ final class ExportFilename
         return $this->filename;
     }
 
-    public function __toString(): string
+    private function getCustomerName(Customer $customer): string
     {
-        return $this->getFilename();
+        $company = $customer->getCompany();
+        if (empty($company)) {
+            $company = $customer->getName();
+        }
+
+        return $company;
+    }
+
+    private function convert(string $filename): string
+    {
+        return FileHelper::convertToAsciiFilename($filename);
     }
 }

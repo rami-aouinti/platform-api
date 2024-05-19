@@ -20,7 +20,6 @@ final class TeamValidator extends ConstraintValidator
 {
     /**
      * @param TeamEntity $value
-     * @param Constraint $constraint
      */
     public function validate(mixed $value, Constraint $constraint): void
     {

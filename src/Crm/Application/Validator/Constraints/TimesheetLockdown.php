@@ -20,9 +20,6 @@ final class TimesheetLockdown extends TimesheetConstraint
     ];
 
     public string $message = 'This period is locked, please choose a later date.';
-    /**
-     * @var \DateTime|string|null
-     */
     public \DateTime|string|null $now;
 
     public function getTargets(): string

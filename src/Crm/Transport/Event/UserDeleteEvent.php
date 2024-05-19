@@ -15,8 +15,10 @@ use App\User\Domain\Entity\User;
 
 class UserDeleteEvent extends AbstractUserEvent
 {
-    public function __construct(User $user, private ?User $replacement = null)
-    {
+    public function __construct(
+        User $user,
+        private ?User $replacement = null
+    ) {
         parent::__construct($user);
     }
 

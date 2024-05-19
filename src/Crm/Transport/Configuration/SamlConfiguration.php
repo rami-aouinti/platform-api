@@ -13,8 +13,9 @@ namespace App\Crm\Transport\Configuration;
 
 final class SamlConfiguration implements SamlConfigurationInterface
 {
-    public function __construct(private SystemConfiguration $configuration)
-    {
+    public function __construct(
+        private SystemConfiguration $configuration
+    ) {
     }
 
     public function isActivated(): bool

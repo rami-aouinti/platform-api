@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Form\Type;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Domain\Entity\UserPreference;
+use App\User\Domain\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -42,7 +42,7 @@ final class UserPreferencesCollectionType extends AbstractType
                     }
 
                     // prevents unconfigured values from showing up in the form
-                    if (null === $collectionItem->getType()) {
+                    if ($collectionItem->getType() === null) {
                         continue;
                     }
 
@@ -58,7 +58,9 @@ final class UserPreferencesCollectionType extends AbstractType
     {
         $resolver->setDefaults([
             'entry_type' => UserPreferenceType::class,
-            'entry_options' => ['label' => false],
+            'entry_options' => [
+                'label' => false,
+            ],
             'allow_add' => false,
             'allow_delete' => false,
             'label' => false,

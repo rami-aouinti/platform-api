@@ -19,8 +19,10 @@ use Symfony\Component\Mime\RawMessage;
 
 final class KimaiMailer implements MailerInterface
 {
-    public function __construct(private readonly MailConfiguration $configuration, private readonly MailerInterface $mailer)
-    {
+    public function __construct(
+        private readonly MailConfiguration $configuration,
+        private readonly MailerInterface $mailer
+    ) {
     }
 
     public function send(RawMessage $message, Envelope $envelope = null): void

@@ -13,9 +13,6 @@ namespace App\Crm\Application\Export;
 
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-/**
- *
- */
 #[AutoconfigureTag]
 interface RendererInterface extends ExportRendererInterface
 {

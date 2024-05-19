@@ -22,14 +22,18 @@ abstract class AbstractPluginExtension extends Extension
             'tabler_bundle.icons',
             array_merge(
                 $container->getParameter('tabler_bundle.icons'),
-                [$name => $icon]
+                [
+                    $name => $icon,
+                ]
             )
         );
     }
 
     protected function registerBundleConfiguration(ContainerBuilder $container, array $configs): void
     {
-        $bundleConfig = [$this->getAlias() => $configs];
+        $bundleConfig = [
+            $this->getAlias() => $configs,
+        ];
 
         if ($container->hasParameter('kimai.bundles.config')) {
             $config = $container->getParameter('kimai.bundles.config');

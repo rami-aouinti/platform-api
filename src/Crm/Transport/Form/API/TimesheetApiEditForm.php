@@ -22,40 +22,11 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class TimesheetApiEditForm
- *
  * @package App\Crm\Transport\Form\API
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class TimesheetApiEditForm extends TimesheetEditForm
 {
-    protected function addBillable(FormBuilderInterface $builder, array $options): void
-    {
-        if (!$options['include_billable']) {
-            return;
-        }
-
-        $builder->add('billable', BillableType::class);
-
-        $builder->addEventListener(
-            FormEvents::PRE_SUBMIT,
-            function (FormEvent $event) {
-                $data = $event->getData();
-                if (\array_key_exists('billable', $data)) {
-                    $data['billableMode'] = Timesheet::BILLABLE_AUTOMATIC;
-                    $event->getForm()->add('billableMode', TimesheetBillableType::class, []);
-                    $billable = $data['billable'] === null ? false : (bool) $data['billable'];
-                    if ($billable === true) {
-                        $data['billableMode'] = Timesheet::BILLABLE_YES;
-                    } elseif ($billable === false) {
-                        $data['billableMode'] = Timesheet::BILLABLE_NO;
-                    }
-                }
-                $event->setData($data);
-            }
-        );
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         parent::buildForm($builder, $options);
@@ -86,21 +57,6 @@ final class TimesheetApiEditForm extends TimesheetEditForm
         }
     }
 
-    protected function addBegin(FormBuilderInterface $builder, array $dateTimeOptions, array $options = []): void
-    {
-        $builder->add('begin', DateTimeApiType::class, array_merge($dateTimeOptions, [
-            'label' => 'begin',
-        ]));
-    }
-
-    protected function addEnd(FormBuilderInterface $builder, array $dateTimeOptions, array $options = []): void
-    {
-        $builder->add('end', DateTimeApiType::class, array_merge($dateTimeOptions, [
-            'label' => 'end',
-            'required' => false,
-        ]));
-    }
-
     public function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);
@@ -115,5 +71,46 @@ final class TimesheetApiEditForm extends TimesheetEditForm
             'include_billable' => true,
             'include_rate' => true,
         ]);
+    }
+    protected function addBillable(FormBuilderInterface $builder, array $options): void
+    {
+        if (!$options['include_billable']) {
+            return;
+        }
+
+        $builder->add('billable', BillableType::class);
+
+        $builder->addEventListener(
+            FormEvents::PRE_SUBMIT,
+            function (FormEvent $event) {
+                $data = $event->getData();
+                if (\array_key_exists('billable', $data)) {
+                    $data['billableMode'] = Timesheet::BILLABLE_AUTOMATIC;
+                    $event->getForm()->add('billableMode', TimesheetBillableType::class, []);
+                    $billable = $data['billable'] === null ? false : (bool)$data['billable'];
+                    if ($billable === true) {
+                        $data['billableMode'] = Timesheet::BILLABLE_YES;
+                    } elseif ($billable === false) {
+                        $data['billableMode'] = Timesheet::BILLABLE_NO;
+                    }
+                }
+                $event->setData($data);
+            }
+        );
+    }
+
+    protected function addBegin(FormBuilderInterface $builder, array $dateTimeOptions, array $options = []): void
+    {
+        $builder->add('begin', DateTimeApiType::class, array_merge($dateTimeOptions, [
+            'label' => 'begin',
+        ]));
+    }
+
+    protected function addEnd(FormBuilderInterface $builder, array $dateTimeOptions, array $options = []): void
+    {
+        $builder->add('end', DateTimeApiType::class, array_merge($dateTimeOptions, [
+            'label' => 'end',
+            'required' => false,
+        ]));
     }
 }

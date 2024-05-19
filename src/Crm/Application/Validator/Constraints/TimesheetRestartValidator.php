@@ -23,8 +23,7 @@ final class TimesheetRestartValidator extends ConstraintValidator
     public function __construct(
         private readonly Security $security,
         private readonly TrackingModeService $trackingModeService
-    )
-    {
+    ) {
     }
 
     public function validate(mixed $value, Constraint $constraint): void
@@ -40,7 +39,7 @@ final class TimesheetRestartValidator extends ConstraintValidator
         // special case that would otherwise need to be validated in several controllers:
         // an entry is edited and the end date is removed (or duration deleted) would restart the record,
         // which might be disallowed for the current user
-        if (null !== $value->getEnd()) {
+        if ($value->getEnd() !== null) {
             return;
         }
 
@@ -48,7 +47,7 @@ final class TimesheetRestartValidator extends ConstraintValidator
             return;
         }
 
-        if (null !== $this->security->getUser() && $this->security->isGranted('start', $value)) {
+        if ($this->security->getUser() !== null && $this->security->isGranted('start', $value)) {
             return;
         }
 

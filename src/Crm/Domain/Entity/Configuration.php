@@ -16,8 +16,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class Configuration
- *
  * @package App\Crm\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -45,19 +43,12 @@ class Configuration
         return $this->id;
     }
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     * @return Configuration
-     */
-    public function setName(string $name): Configuration
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -68,22 +59,19 @@ class Configuration
      * Given $value will not be serialized before its stored,
      * so it should be a scalar type that can be casted to string.
      */
-    public function setValue(string|int|bool|null $value): Configuration
+    public function setValue(string|int|bool|null $value): self
     {
-        if (null === $value) {
+        if ($value === null) {
             $this->value = null;
         } elseif ($value === false) {
             $this->value = '0';
         } else {
-            $this->value = (string) $value;
+            $this->value = (string)$value;
         }
 
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getValue(): ?string
     {
         return $this->value;

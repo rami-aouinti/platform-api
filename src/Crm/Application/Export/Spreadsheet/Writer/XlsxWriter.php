@@ -32,17 +32,17 @@ final class XlsxWriter implements WriterInterface
      * - freeze (string, default: null)    Coordinate of a column to freeze, like: D2
      * - autofilter (bool, default true)  Enable auto filter for header row
      *
-     * @param Spreadsheet $spreadsheet
-     * @param array $options
-     * @return \SplFileInfo
      * @throws \Exception
      */
     public function save(Spreadsheet $spreadsheet, array $options = []): \SplFileInfo
     {
-        $options = array_merge(['autofilter' => true, 'freeze' => null], $options);
+        $options = array_merge([
+            'autofilter' => true,
+            'freeze' => null,
+        ], $options);
 
         $filename = @tempnam(sys_get_temp_dir(), 'kimai-export-xlsx');
-        if (false === $filename) {
+        if ($filename === false) {
             throw new \Exception('Could not open temporary file');
         }
 
@@ -52,7 +52,7 @@ final class XlsxWriter implements WriterInterface
         $highestColumn = $sheet->getHighestColumn();
 
         // Enable auto filter for header row
-        if (false !== $options['autofilter']) {
+        if ($options['autofilter'] !== false) {
             $sheet->setAutoFilter('A1:' . $highestColumn . '1');
         }
 
@@ -68,7 +68,7 @@ final class XlsxWriter implements WriterInterface
             $col = $sheet->getColumnDimension($columnName);
 
             // If no other width is specified (which defaults to -1)
-            if ((int) $col->getWidth() === -1) {
+            if ((int)$col->getWidth() === -1) {
                 $col->setAutoSize(true);
             }
         }

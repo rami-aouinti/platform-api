@@ -73,6 +73,11 @@ class Tag implements \JsonSerializable
         $this->name = $name;
     }
 
+    public function __toString(): string
+    {
+        return $this->name;
+    }
+
     public function getId(): string
     {
         return $this->id->toString();
@@ -89,11 +94,6 @@ class Tag implements \JsonSerializable
         // so this method is used to customize its JSON representation when json_encode()
         // is called, for example in tags|json_encode (templates/form/fields.html.twig)
 
-        return $this->name;
-    }
-
-    public function __toString(): string
-    {
         return $this->name;
     }
 }

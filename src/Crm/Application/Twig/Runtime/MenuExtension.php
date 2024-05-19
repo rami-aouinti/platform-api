@@ -9,15 +9,16 @@
 
 namespace App\Crm\Application\Twig\Runtime;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Application\Utils\MenuItemModel;
 use App\Crm\Application\Utils\MenuService;
+use App\User\Domain\Entity\User;
 use Twig\Extension\RuntimeExtensionInterface;
 
 final class MenuExtension implements RuntimeExtensionInterface
 {
-    public function __construct(private MenuService $menuService)
-    {
+    public function __construct(
+        private MenuService $menuService
+    ) {
     }
 
     /**

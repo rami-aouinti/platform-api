@@ -39,7 +39,7 @@ final class MonthPickerType extends AbstractType
         /** @var \DateTime|null $date */
         $date = $form->getData();
 
-        if (null === $date) {
+        if ($date === null) {
             $date = $options['start_date'];
         }
 

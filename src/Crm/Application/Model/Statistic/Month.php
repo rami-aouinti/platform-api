@@ -14,8 +14,6 @@ namespace App\Crm\Application\Model\Statistic;
 use InvalidArgumentException;
 
 /**
- * Class Month
- *
  * @package App\Crm\Application\Model\Statistic
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -30,7 +28,7 @@ final class Month extends Timesheet
      */
     public function __construct($month)
     {
-        $monthNumber = (int) $month;
+        $monthNumber = (int)$month;
         if ($monthNumber < 1 || $monthNumber > 12) {
             throw new InvalidArgumentException(
                 sprintf('Invalid month given. Expected 1-12, received "%s".', $monthNumber)
@@ -46,7 +44,7 @@ final class Month extends Timesheet
 
     public function getMonthNumber(): int
     {
-        return (int) $this->month;
+        return (int)$this->month;
     }
 
     public function getBillableDuration(): int

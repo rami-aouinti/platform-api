@@ -9,19 +9,19 @@
 
 namespace App\Crm\Application\Twig\Runtime;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Application\Reporting\ReportingService;
 use App\Crm\Application\Reporting\ReportInterface;
+use App\User\Domain\Entity\User;
 use Twig\Extension\RuntimeExtensionInterface;
 
 final class ReportingExtension implements RuntimeExtensionInterface
 {
-    public function __construct(private ReportingService $service)
-    {
+    public function __construct(
+        private ReportingService $service
+    ) {
     }
 
     /**
-     * @param User $user
      * @return ReportInterface[]
      */
     public function getAvailableReports(User $user): array

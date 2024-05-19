@@ -21,8 +21,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class InvoiceEditForm
- *
  * @package App\Crm\Transport\Form
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -64,7 +62,7 @@ final class InvoiceEditForm extends AbstractType
             'data_class' => Invoice::class,
             'timezone' => date_default_timezone_get(),
             'attr' => [
-                'data-form-event' => 'kimai.invoiceUpdate'
+                'data-form-event' => 'kimai.invoiceUpdate',
             ],
         ]);
     }

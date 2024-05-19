@@ -31,7 +31,7 @@ class ExportQuery extends TimesheetQuery
         return $this->renderer;
     }
 
-    public function setRenderer(string $renderer): ExportQuery
+    public function setRenderer(string $renderer): self
     {
         $this->renderer = $renderer;
 
@@ -43,7 +43,7 @@ class ExportQuery extends TimesheetQuery
         return $this->markAsExported;
     }
 
-    public function setMarkAsExported(?bool $markAsExported): ExportQuery
+    public function setMarkAsExported(?bool $markAsExported): self
     {
         if ($markAsExported === null) {
             $markAsExported = false;

@@ -12,8 +12,8 @@ declare(strict_types=1);
 namespace App\Crm\Transport\API;
 
 use App\Crm\Domain\Entity\Tag;
-use App\Crm\Transport\Form\API\TagApiEditForm;
 use App\Crm\Domain\Repository\TagRepository;
+use App\Crm\Transport\Form\API\TagApiEditForm;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
@@ -36,8 +36,7 @@ final class TagController extends BaseApiController
     public function __construct(
         private readonly ViewHandlerInterface $viewHandler,
         private readonly TagRepository $repository
-    )
-    {
+    ) {
     }
 
     /**

@@ -23,8 +23,10 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
  */
 final class LdapUserProvider implements UserProviderInterface
 {
-    public function __construct(private LdapManager $ldapManager, private ?LoggerInterface $logger = null)
-    {
+    public function __construct(
+        private LdapManager $ldapManager,
+        private ?LoggerInterface $logger = null
+    ) {
     }
 
     public function loadUserByIdentifier(string $identifier): UserInterface

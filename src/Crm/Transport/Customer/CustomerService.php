@@ -11,25 +11,23 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Customer;
 
-use App\Crm\Transport\Configuration\SystemConfiguration;
+use App\Crm\Application\Utils\NumberGenerator;
+use App\Crm\Application\Validator\ValidationFailedException;
 use App\Crm\Domain\Entity\Customer;
+use App\Crm\Domain\Repository\CustomerRepository;
+use App\Crm\Domain\Repository\Query\CustomerQuery;
+use App\Crm\Transport\Configuration\SystemConfiguration;
 use App\Crm\Transport\Event\CustomerCreateEvent;
 use App\Crm\Transport\Event\CustomerCreatePostEvent;
 use App\Crm\Transport\Event\CustomerCreatePreEvent;
 use App\Crm\Transport\Event\CustomerMetaDefinitionEvent;
 use App\Crm\Transport\Event\CustomerUpdatePostEvent;
 use App\Crm\Transport\Event\CustomerUpdatePreEvent;
-use App\Crm\Domain\Repository\CustomerRepository;
-use App\Crm\Domain\Repository\Query\CustomerQuery;
-use App\Crm\Application\Utils\NumberGenerator;
-use App\Crm\Application\Validator\ValidationFailedException;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Class CustomerService
- *
  * @package App\Crm\Transport\Customer
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -41,15 +39,6 @@ final class CustomerService
         private readonly ValidatorInterface $validator,
         private readonly EventDispatcherInterface $dispatcher
     ) {
-    }
-
-    private function getDefaultTimezone(): string
-    {
-        if (null === ($timezone = $this->configuration->getCustomerDefaultTimezone())) {
-            $timezone = date_default_timezone_get();
-        }
-
-        return $timezone;
     }
 
     public function createNewCustomer(string $name): Customer
@@ -68,7 +57,7 @@ final class CustomerService
 
     public function saveNewCustomer(Customer $customer): Customer
     {
-        if (null !== $customer->getId()) {
+        if ($customer->getId() !== null) {
             throw new InvalidArgumentException('Cannot create customer, already persisted');
         }
 
@@ -79,19 +68,6 @@ final class CustomerService
         $this->dispatcher->dispatch(new CustomerCreatePostEvent($customer));
 
         return $customer;
-    }
-
-    /**
-     * @param string[] $groups
-     * @throws ValidationFailedException
-     */
-    private function validateCustomer(Customer $customer, array $groups = []): void
-    {
-        $errors = $this->validator->validate($customer, null, $groups);
-
-        if ($errors->count() > 0) {
-            throw new ValidationFailedException($errors, 'Validation Failed');
-        }
     }
 
     public function updateCustomer(Customer $customer): Customer
@@ -107,12 +83,16 @@ final class CustomerService
 
     public function findCustomerByName(string $name): ?Customer
     {
-        return $this->repository->findOneBy(['name' => $name]);
+        return $this->repository->findOneBy([
+            'name' => $name,
+        ]);
     }
 
     public function findCustomerByNumber(string $number): ?Customer
     {
-        return $this->repository->findOneBy(['number' => $number]);
+        return $this->repository->findOneBy([
+            'number' => $number,
+        ]);
     }
 
     /**
@@ -126,6 +106,29 @@ final class CustomerService
     public function countCustomer(bool $visible = true): int
     {
         return $this->repository->countCustomer($visible);
+    }
+
+    private function getDefaultTimezone(): string
+    {
+        $timezone = $this->configuration->getCustomerDefaultTimezone();
+        if (null === ($timezone)) {
+            $timezone = date_default_timezone_get();
+        }
+
+        return $timezone;
+    }
+
+    /**
+     * @param string[] $groups
+     * @throws ValidationFailedException
+     */
+    private function validateCustomer(Customer $customer, array $groups = []): void
+    {
+        $errors = $this->validator->validate($customer, null, $groups);
+
+        if ($errors->count() > 0) {
+            throw new ValidationFailedException($errors, 'Validation Failed');
+        }
     }
 
     private function calculateNextCustomerNumber(): ?string

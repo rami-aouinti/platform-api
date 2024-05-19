@@ -28,8 +28,6 @@ interface NumberGeneratorInterface
      *
      * Prefix it with your company name followed by a hyphen (e.g. "acme-"),
      * if this is a third-party generator.
-     *
-     * @return string
      */
     public function getId(): string;
 }

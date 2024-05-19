@@ -17,8 +17,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class CalendarForm
- *
  * @package App\Crm\Transport\Form
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -28,7 +26,9 @@ final class CalendarForm extends AbstractType
     {
         $builder->add('user', UserType::class, [
             'required' => false,
-            'attr' => ['onchange' => 'this.form.submit()']
+            'attr' => [
+                'onchange' => 'this.form.submit()',
+            ],
         ]);
     }
 

@@ -15,9 +15,6 @@ use App\Crm\Application\Utils\FileHelper;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
-/**
- *
- */
 trait PdfRendererTrait
 {
     private bool $inline = false;

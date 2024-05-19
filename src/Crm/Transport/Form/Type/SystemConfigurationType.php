@@ -25,10 +25,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 final class SystemConfigurationType extends AbstractType
 {
-    /**
-     * @param FormBuilderInterface $builder
-     * @param array $options
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addEventListener(
@@ -47,7 +43,7 @@ final class SystemConfigurationType extends AbstractType
                 }
 
                 $required = $preference->isRequired();
-                if (CheckboxType::class === $preference->getType() || YesNoType::class === $preference->getType()) {
+                if ($preference->getType() === CheckboxType::class || $preference->getType() === YesNoType::class) {
                     $required = false;
                 }
 

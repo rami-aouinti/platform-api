@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Command;
 
-use App\User\Domain\Entity\User;
 use App\User\Application\Service\UserService;
+use App\User\Domain\Entity\User;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,15 +21,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Class AbstractRoleCommand
- *
  * @package App\Crm\Transport\Command
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 abstract class AbstractRoleCommand extends Command
 {
-    public function __construct(private UserService $userService)
-    {
+    public function __construct(
+        private UserService $userService
+    ) {
         parent::__construct();
     }
 
@@ -47,13 +46,13 @@ abstract class AbstractRoleCommand extends Command
     {
         $username = $input->getArgument('username');
         $role = $input->getArgument('role');
-        $super = (true === $input->getOption('super'));
+        $super = ($input->getOption('super') === true);
 
-        if (null !== $role && $super) {
+        if ($role !== null && $super) {
             throw new \InvalidArgumentException('You can pass either the role or the --super option (but not both simultaneously).');
         }
 
-        if (null === $role && !$super) {
+        if ($role === null && !$super) {
             throw new \RuntimeException('Not enough arguments, pass a role or use --super.');
         }
 

@@ -11,9 +11,12 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Export\Base;
 
-use App\Crm\Transport\Activity\ActivityStatisticService;
+use App\Crm\Application\Twig\SecurityPolicy\ExportPolicy;
 use App\Crm\Domain\Entity\ExportableItem;
 use App\Crm\Domain\Entity\MetaTableTypeInterface;
+use App\Crm\Domain\Repository\Query\CustomerQuery;
+use App\Crm\Domain\Repository\Query\TimesheetQuery;
+use App\Crm\Transport\Activity\ActivityStatisticService;
 use App\Crm\Transport\Event\ActivityMetaDisplayEvent;
 use App\Crm\Transport\Event\CustomerMetaDisplayEvent;
 use App\Crm\Transport\Event\MetaDisplayEventInterface;
@@ -21,9 +24,6 @@ use App\Crm\Transport\Event\ProjectMetaDisplayEvent;
 use App\Crm\Transport\Event\TimesheetMetaDisplayEvent;
 use App\Crm\Transport\Event\UserPreferenceDisplayEvent;
 use App\Crm\Transport\Project\ProjectStatisticService;
-use App\Crm\Domain\Repository\Query\CustomerQuery;
-use App\Crm\Domain\Repository\Query\TimesheetQuery;
-use App\Crm\Application\Twig\SecurityPolicy\ExportPolicy;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment;
@@ -51,32 +51,7 @@ class HtmlRenderer
     }
 
     /**
-     * @param MetaDisplayEventInterface $event
-     * @return MetaTableTypeInterface[]
-     */
-    protected function findMetaColumns(MetaDisplayEventInterface $event): array
-    {
-        $this->dispatcher->dispatch($event);
-
-        return $event->getFields();
-    }
-
-    protected function getOptions(TimesheetQuery $query): array
-    {
-        $decimal = false;
-        if (null !== $query->getCurrentUser()) {
-            $decimal = $query->getCurrentUser()->isExportDecimal();
-        } elseif (null !== $query->getUser()) {
-            $decimal = $query->getUser()->isExportDecimal();
-        }
-
-        return ['decimal' => $decimal];
-    }
-
-    /**
      * @param ExportableItem[] $timesheets
-     * @param TimesheetQuery $query
-     * @return Response
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
@@ -121,19 +96,14 @@ class HtmlRenderer
         return $response;
     }
 
-    protected function getTemplate(): string
-    {
-        return '@export/' . $this->template;
-    }
-
-    public function setTemplate(string $filename): HtmlRenderer
+    public function setTemplate(string $filename): self
     {
         $this->template = $filename;
 
         return $this;
     }
 
-    public function setId(string $id): HtmlRenderer
+    public function setId(string $id): self
     {
         $this->id = $id;
 
@@ -143,5 +113,34 @@ class HtmlRenderer
     public function getId(): string
     {
         return $this->id;
+    }
+
+    /**
+     * @return MetaTableTypeInterface[]
+     */
+    protected function findMetaColumns(MetaDisplayEventInterface $event): array
+    {
+        $this->dispatcher->dispatch($event);
+
+        return $event->getFields();
+    }
+
+    protected function getOptions(TimesheetQuery $query): array
+    {
+        $decimal = false;
+        if ($query->getCurrentUser() !== null) {
+            $decimal = $query->getCurrentUser()->isExportDecimal();
+        } elseif ($query->getUser() !== null) {
+            $decimal = $query->getUser()->isExportDecimal();
+        }
+
+        return [
+            'decimal' => $decimal,
+        ];
+    }
+
+    protected function getTemplate(): string
+    {
+        return '@export/' . $this->template;
     }
 }

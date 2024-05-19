@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\EventSubscriber;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Application\Twig\LocaleFormatExtensions;
+use App\User\Domain\Entity\User;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -20,8 +20,6 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
- * Class UserEnvironmentSubscriber
- *
  * @package App\Crm\Transport\EventSubscriber
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -31,8 +29,7 @@ final readonly class UserEnvironmentSubscriber implements EventSubscriberInterfa
         private TokenStorageInterface $tokenStorage,
         private AuthorizationCheckerInterface $auth,
         private LocaleFormatExtensions $localeFormatExtensions
-    )
-    {
+    ) {
     }
 
     public static function getSubscribedEvents(): array

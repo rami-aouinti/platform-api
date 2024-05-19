@@ -23,7 +23,9 @@ final class MailType extends AbstractType
         $resolver->setDefaults([
             'label' => 'email',
             'constraints' => [
-                new Email(['mode' => 'html5'])
+                new Email([
+                    'mode' => 'html5',
+                ]),
             ],
         ]);
     }

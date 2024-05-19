@@ -10,4 +10,3 @@ namespace App\Blog\Application\DTO\Post;
 class PostUpdate extends Post
 {
 }
-

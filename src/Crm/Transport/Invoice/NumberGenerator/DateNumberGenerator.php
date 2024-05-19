@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace App\Crm\Transport\Invoice\NumberGenerator;
 
+use App\Crm\Domain\Repository\InvoiceRepository;
 use App\Crm\Transport\Invoice\InvoiceModel;
 use App\Crm\Transport\Invoice\NumberGeneratorInterface;
-use App\Crm\Domain\Repository\InvoiceRepository;
 
 /**
  * Class DateNumberGenerator generates the invoice number based on the current day.
@@ -23,8 +23,9 @@ final class DateNumberGenerator implements NumberGeneratorInterface
 {
     private ?InvoiceModel $model = null;
 
-    public function __construct(private InvoiceRepository $repository)
-    {
+    public function __construct(
+        private InvoiceRepository $repository
+    ) {
     }
 
     public function getId(): string
@@ -37,9 +38,6 @@ final class DateNumberGenerator implements NumberGeneratorInterface
         $this->model = $model;
     }
 
-    /**
-     * @return string
-     */
     public function getInvoiceNumber(): string
     {
         $loops = 0;
@@ -49,7 +47,7 @@ final class DateNumberGenerator implements NumberGeneratorInterface
 
         // in the case that someone configured a weird format, that should not result in an endless loop
         while ($this->repository->hasInvoice($result) && $loops++ < 99) {
-            $suffix = str_pad((string) ++$increaseBy, 2, '0', STR_PAD_LEFT);
+            $suffix = str_pad((string)++$increaseBy, 2, '0', STR_PAD_LEFT);
             $result = date('ymd', $this->model->getInvoiceDate()->getTimestamp()) . '-' . $suffix;
         }
 

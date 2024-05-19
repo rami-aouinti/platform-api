@@ -26,8 +26,7 @@ final class PluginManager
     public function __construct(
         #[TaggedIterator(PluginInterface::class)]
         private readonly iterable $bundles
-    )
-    {
+    ) {
     }
 
     /**

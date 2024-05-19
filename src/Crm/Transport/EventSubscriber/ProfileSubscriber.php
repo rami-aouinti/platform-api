@@ -16,15 +16,14 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
 
 /**
- * Class ProfileSubscriber
- *
  * @package App\Crm\Transport\EventSubscriber
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 final class ProfileSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private ProfileManager $profileManager)
-    {
+    public function __construct(
+        private ProfileManager $profileManager
+    ) {
     }
 
     public static function getSubscribedEvents(): array

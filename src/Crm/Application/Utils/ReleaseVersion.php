@@ -21,12 +21,35 @@ use Composer\Semver\VersionParser;
 final class ReleaseVersion
 {
     /**
+     * Returns an array with the keys:
+     * - version (string, tag name)
+     * - date (string, release date)
+     * - url (string, web address)
+     * - download (string, ZIP URL)
+     * - content (string, release notes)
+     *
+     * @return array{'version': string, 'date': \DateTimeInterface, 'url': string, 'download': string, 'content': string}|null
+     * @throws \Exception
+     */
+    public function getLatestReleaseFromGithub(bool $compatible): ?array
+    {
+        foreach ($this->getReleasesFromGithub() as $release) {
+            $releaseVersion = $release['version'];
+            if ($compatible && !$this->satisfiesMajorVersionConstraint($releaseVersion)) {
+                continue;
+            }
+
+            return $release;
+        }
+
+        return null;
+    }
+    /**
      * Get all releases from GitHub.
      *
      * @throws \Exception
      * @return array|null
      * @return array<string, array{'version': string, 'date': \DateTimeInterface, 'url': string, 'download': string, 'content': string}>
-     * @return array
      */
     private function getReleasesFromGithub(): array
     {
@@ -65,6 +88,7 @@ final class ReleaseVersion
             }
 
             $date = $release->published_at;
+
             try {
                 $date = new \DateTimeImmutable($date);
             } catch (\Exception $ex) {
@@ -86,32 +110,6 @@ final class ReleaseVersion
         }
 
         return $releases;
-    }
-
-    /**
-     * Returns an array with the keys:
-     * - version (string, tag name)
-     * - date (string, release date)
-     * - url (string, web address)
-     * - download (string, ZIP URL)
-     * - content (string, release notes)
-     *
-     * @param bool $compatible
-     * @return array{'version': string, 'date': \DateTimeInterface, 'url': string, 'download': string, 'content': string}|null
-     * @throws \Exception
-     */
-    public function getLatestReleaseFromGithub(bool $compatible): ?array
-    {
-        foreach ($this->getReleasesFromGithub() as $release) {
-            $releaseVersion = $release['version'];
-            if ($compatible && !$this->satisfiesMajorVersionConstraint($releaseVersion)) {
-                continue;
-            }
-
-            return $release;
-        }
-
-        return null;
     }
 
     private function satisfiesMajorVersionConstraint(string $releaseVersion): bool

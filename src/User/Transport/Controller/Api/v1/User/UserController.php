@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\User\Transport\Controller\Api\v1\User;
 
-use App\General\Transport\Rest\Controller;
-use App\General\Transport\Rest\ResponseHandler;
-use App\General\Transport\Rest\Traits\Actions;
 use App\Blog\Application\DTO\Post\UserCreate;
 use App\Blog\Application\DTO\Post\UserPatch;
 use App\Blog\Application\DTO\Post\UserUpdate;
+use App\General\Transport\Rest\Controller;
+use App\General\Transport\Rest\ResponseHandler;
+use App\General\Transport\Rest\Traits\Actions;
 use App\User\Application\Resource\UserResource;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpKernel\Attribute\AsController;

@@ -29,9 +29,21 @@ final class UsersSubscriber extends AbstractActionsSubscriber
         $event->addQuickExport($this->path('user_export'));
 
         if ($this->isGranted('report:other')) {
-            $event->addActionToSubmenu('report', 'weekly', ['url' => $this->path('report_weekly_users'), 'translation_domain' => 'reporting', 'title' => 'report_weekly_users']);
-            $event->addActionToSubmenu('report', 'monthly', ['url' => $this->path('report_monthly_users'), 'translation_domain' => 'reporting', 'title' => 'report_monthly_users']);
-            $event->addActionToSubmenu('report', 'yearly', ['url' => $this->path('report_yearly_users'), 'translation_domain' => 'reporting', 'title' => 'report_yearly_users']);
+            $event->addActionToSubmenu('report', 'weekly', [
+                'url' => $this->path('report_weekly_users'),
+                'translation_domain' => 'reporting',
+                'title' => 'report_weekly_users',
+            ]);
+            $event->addActionToSubmenu('report', 'monthly', [
+                'url' => $this->path('report_monthly_users'),
+                'translation_domain' => 'reporting',
+                'title' => 'report_monthly_users',
+            ]);
+            $event->addActionToSubmenu('report', 'yearly', [
+                'url' => $this->path('report_yearly_users'),
+                'translation_domain' => 'reporting',
+                'title' => 'report_yearly_users',
+            ]);
         }
     }
 }

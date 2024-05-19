@@ -19,8 +19,9 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 final class TimesheetMetaDefinitionEvent extends Event
 {
-    public function __construct(private Timesheet $entity)
-    {
+    public function __construct(
+        private Timesheet $entity
+    ) {
     }
 
     public function getEntity(): Timesheet

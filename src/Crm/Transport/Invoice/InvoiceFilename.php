@@ -32,7 +32,7 @@ final class InvoiceFilename
             $filename .= '-' . $this->convert($company);
         }
 
-        if (null !== $model->getQuery()) {
+        if ($model->getQuery() !== null) {
             $projects = $model->getQuery()->getProjects();
             if (\count($projects) === 1) {
                 $filename .= '-' . $this->convert($projects[0]->getName());
@@ -42,9 +42,9 @@ final class InvoiceFilename
         $this->filename = $filename;
     }
 
-    private function convert(string $filename): string
+    public function __toString(): string
     {
-        return FileHelper::convertToAsciiFilename($filename);
+        return $this->getFilename();
     }
 
     public function getFilename(): string
@@ -52,8 +52,8 @@ final class InvoiceFilename
         return $this->filename;
     }
 
-    public function __toString(): string
+    private function convert(string $filename): string
     {
-        return $this->getFilename();
+        return FileHelper::convertToAsciiFilename($filename);
     }
 }

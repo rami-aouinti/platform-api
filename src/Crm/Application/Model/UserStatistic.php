@@ -1,7 +1,6 @@
 <?php
 
 declare(strict_types=1);
-
 declare(strict_types=1);
 
 /*
@@ -13,19 +12,18 @@ declare(strict_types=1);
 
 namespace App\Crm\Application\Model;
 
-use App\User\Domain\Entity\User;
 use App\Crm\Application\Model\Statistic\Month;
+use App\User\Domain\Entity\User;
 
 /**
- * Class UserStatistic
- *
  * @package App\Crm\Application\Model
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 class UserStatistic extends TimesheetCountedStatistic
 {
-    public function __construct(private User $user)
-    {
+    public function __construct(
+        private User $user
+    ) {
     }
 
     public function getUser(): User
