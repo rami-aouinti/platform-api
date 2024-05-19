@@ -1,0 +1,20 @@
+{
+  "entrypoints": {
+    "tabler": {
+      "js": [
+        "/bundles/tabler/tabler.js?0c24429e4ffb7abe35b1"
+      ],
+      "css": [
+        "/bundles/tabler/tabler.css?00cefdb374eb1d1a803d"
+      ]
+    },
+    "tabler-rtl": {
+      "js": [
+        "/bundles/tabler/tabler-rtl.js?6ce4e19095949da1f375"
+      ],
+      "css": [
+        "/bundles/tabler/tabler-rtl.css?ae2325f06f23c77cf332"
+      ]
+    }
+  }
+}

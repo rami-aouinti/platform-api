@@ -13,6 +13,7 @@ namespace App\Crm\Domain\Entity;
 
 use App\Crm\Application\Export\Annotation as Exporter;
 use App\Crm\Application\Validator\Constraints as Constraints;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -93,7 +94,7 @@ class Project implements EntityWithMetaFields, EntityWithBudget
     #[Serializer\Type(name: "DateTime<'Y-m-d'>")]
     #[Serializer\Accessor(getter: 'getOrderDate')]
     #[Exporter\Expose(label: 'orderDate', type: 'datetime')]
-    private ?\DateTime $orderDate = null;
+    private ?DateTime $orderDate = null;
     /**
      * Project start date (times before this date cannot be recorded)
      *
@@ -105,7 +106,7 @@ class Project implements EntityWithMetaFields, EntityWithBudget
     #[Serializer\Type(name: "DateTime<'Y-m-d'>")]
     #[Serializer\Accessor(getter: 'getStart')]
     #[Exporter\Expose(label: 'project_start', type: 'datetime')]
-    private ?\DateTime $start = null;
+    private ?DateTime $start = null;
     /**
      * Project end time (times after this date cannot be recorded)
      *
@@ -117,7 +118,7 @@ class Project implements EntityWithMetaFields, EntityWithBudget
     #[Serializer\Type(name: "DateTime<'Y-m-d'>")]
     #[Serializer\Accessor(getter: 'getEnd')]
     #[Exporter\Expose(label: 'project_end', type: 'datetime')]
-    private ?\DateTime $end = null;
+    private ?DateTime $end = null;
     #[ORM\Column(name: 'timezone', type: 'string', length: 64, nullable: true)]
     private ?string $timezone = null;
     private bool $localized = false;
@@ -297,14 +298,14 @@ class Project implements EntityWithMetaFields, EntityWithBudget
         $this->localized = true;
     }
 
-    public function getOrderDate(): ?\DateTime
+    public function getOrderDate(): ?DateTime
     {
         $this->localizeDates();
 
         return $this->orderDate;
     }
 
-    public function setOrderDate(?\DateTime $orderDate): Project
+    public function setOrderDate(?DateTime $orderDate): Project
     {
         $this->orderDate = $orderDate;
 
@@ -315,14 +316,14 @@ class Project implements EntityWithMetaFields, EntityWithBudget
         return $this;
     }
 
-    public function getStart(): ?\DateTime
+    public function getStart(): ?DateTime
     {
         $this->localizeDates();
 
         return $this->start;
     }
 
-    public function setStart(?\DateTime $start): Project
+    public function setStart(?DateTime $start): Project
     {
         $this->start = $start;
 
@@ -333,14 +334,14 @@ class Project implements EntityWithMetaFields, EntityWithBudget
         return $this;
     }
 
-    public function getEnd(): ?\DateTime
+    public function getEnd(): ?DateTime
     {
         $this->localizeDates();
 
         return $this->end;
     }
 
-    public function setEnd(?\DateTime $end): Project
+    public function setEnd(?DateTime $end): Project
     {
         $this->end = $end;
 
@@ -437,7 +438,7 @@ class Project implements EntityWithMetaFields, EntityWithBudget
         return $this->teams;
     }
 
-    public function isVisibleAtDate(\DateTime $dateTime): bool
+    public function isVisibleAtDate(DateTime $dateTime): bool
     {
         if (!$this->isVisible()) {
             return false;

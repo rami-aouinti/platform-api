@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\User\Domain\Entity;
 
+use App\Crm\Domain\Entity\Team;
+use App\Crm\Domain\Entity\TeamMember;
+use App\Crm\Domain\Entity\UserPreference;
 use App\General\Domain\Doctrine\DBAL\Types\Types as AppTypes;
 use App\General\Domain\Entity\Interfaces\EntityInterface;
 use App\General\Domain\Entity\Traits\Timestampable;
@@ -25,6 +28,9 @@ use Ramsey\Uuid\UuidInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints as AssertCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\Collection;
+use JMS\Serializer\Annotation as Serializer;
+use OpenApi\Attributes as OA;
 use Throwable;
 
 /**
@@ -412,6 +418,32 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     private string $plainPassword = '';
 
     /**
+     * User preferences
+     *
+     * List of preferences for this user, required ones have dedicated fields/methods
+     *
+     * This Collection can be null for one edge case ONLY:
+     * if a currently logged-in user will be deleted and then refreshed from the session from one of the UserProvider
+     * e.g. see LdapUserProvider::refreshUser() it might crash if $user->getPreferenceValue() is called
+     *
+     * @var Collection<UserPreference>|null
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserPreference::class, cascade: ['persist'])]
+    private ?Collection $preferences = null;
+    /**
+     * List of all team memberships.
+     *
+     * @var Collection<TeamMember>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: TeamMember::class, cascade: ['persist'], fetch: 'LAZY', orphanRemoval: true)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Assert\NotNull]
+    #[Serializer\Expose]
+    #[Serializer\Groups(['User_Entity'])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/TeamMembership'))]
+    private Collection $memberships;
+
+    /**
      * Constructor
      *
      * @throws Throwable
@@ -661,5 +693,180 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     public function eraseCredentials(): void
     {
         $this->plainPassword = '';
+    }
+
+    /**
+     * Read-only list of all visible user preferences.
+     *
+     * @internal only for API usage
+     * @return UserPreference[]
+     */
+    #[Serializer\VirtualProperty]
+    #[Serializer\SerializedName('preferences')]
+    #[Serializer\Groups(['User_Entity'])]
+    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/UserPreference'))]
+    public function getVisiblePreferences(): array
+    {
+        // hide all internal preferences, which are either available in other fields
+        // or which are only used within the Kimai UI
+        $skip = [
+            UserPreference::TIMEZONE,
+            UserPreference::LOCALE,
+            UserPreference::LANGUAGE,
+            UserPreference::SKIN,
+            'calendar_initial_view',
+            'login_initial_view',
+            'update_browser_title',
+            'daily_stats',
+            'export_decimal',
+        ];
+
+        $all = [];
+        foreach ($this->preferences as $preference) {
+            if ($preference->isEnabled() && !\in_array($preference->getName(), $skip)) {
+                $all[] = $preference;
+            }
+        }
+
+        return $all;
+    }
+
+    /**
+     * @return Collection<UserPreference>
+     */
+    public function getPreferences(): Collection
+    {
+        return $this->preferences;
+    }
+
+    /**
+     * @param iterable<UserPreference> $preferences
+     * @return User
+     */
+    public function setPreferences(iterable $preferences): User
+    {
+        $this->preferences = new ArrayCollection();
+
+        foreach ($preferences as $preference) {
+            $this->addPreference($preference);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param bool|int|float|string|null $default
+     * @param bool $allowNull
+     * @return bool|int|float|string|null
+     */
+    public function getPreferenceValue(string $name, mixed $default = null, bool $allowNull = true): bool|int|float|string|null
+    {
+        $preference = $this->getPreference($name);
+        if (null === $preference) {
+            return $default;
+        }
+
+        $value = $preference->getValue();
+
+        return $allowNull ? $value : ($value ?? $default);
+    }
+
+    public function getPreference(string $name): ?UserPreference
+    {
+        if ($this->preferences === null) {
+            return null;
+        }
+
+        foreach ($this->preferences as $preference) {
+            if ($preference->matches($name)) {
+                return $preference;
+            }
+        }
+
+        return null;
+    }
+
+
+    /**
+     * @param UserPreference $preference
+     * @return User
+     */
+    public function addPreference(UserPreference $preference): User
+    {
+        if (null === $this->preferences) {
+            $this->preferences = new ArrayCollection();
+        }
+
+        $this->preferences->add($preference);
+        $preference->setUser($this);
+
+        return $this;
+    }
+
+    public function addMembership(TeamMember $member): void
+    {
+        if ($this->memberships->contains($member)) {
+            return;
+        }
+
+        if ($member->getUser() === null) {
+            $member->setUser($this);
+        }
+
+        if ($member->getUser() !== $this) {
+            throw new \InvalidArgumentException('Cannot set foreign user membership');
+        }
+
+        // when using the API an invalid Team ID triggers the validation too late
+        $team = $member->getTeam();
+        if (($team) === null) {
+            return;
+        }
+
+        if (null !== $this->findMemberByTeam($team)) {
+            return;
+        }
+
+        $this->memberships->add($member);
+        $team->addMember($member);
+    }
+
+    private function findMemberByTeam(Team $team): ?TeamMember
+    {
+        foreach ($this->memberships as $member) {
+            if ($member->getTeam() === $team) {
+                return $member;
+            }
+        }
+
+        return null;
+    }
+
+    public function removeMembership(TeamMember $member): void
+    {
+        if (!$this->memberships->contains($member)) {
+            return;
+        }
+
+        $this->memberships->removeElement($member);
+        if ($member->getTeam() !== null) {
+            $member->getTeam()->removeMember($member);
+        }
+        $member->setUser(null);
+        $member->setTeam(null);
+    }
+
+    /**
+     * @return Collection<TeamMember>
+     */
+    public function getMemberships(): Collection
+    {
+        return $this->memberships;
+    }
+
+    public function hasMembership(TeamMember $member): bool
+    {
+        return $this->memberships->contains($member);
     }
 }

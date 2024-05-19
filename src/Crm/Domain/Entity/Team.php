@@ -19,6 +19,7 @@ use JMS\Serializer\Annotation as Serializer;
 use OpenApi\Attributes as OA;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\User\Domain\Entity\User;
 
 /**
  * Class Team
@@ -144,7 +145,8 @@ class Team
         }
 
         // when using the API an invalid User ID triggers the validation too late
-        if (($user = $member->getUser()) === null) {
+        $user = $member->getUser();
+        if (($user) === null) {
             return;
         }
 
@@ -201,7 +203,8 @@ class Team
 
     public function isTeamlead(User $user): bool
     {
-        if (null !== ($member = $this->findMemberByUser($user))) {
+        $member = $this->findMemberByUser($user);
+        if (null !== ($member)) {
             return $member->isTeamlead();
         }
 
@@ -210,7 +213,8 @@ class Team
 
     public function addTeamlead(User $user): void
     {
-        if (null !== ($member = $this->findMemberByUser($user))) {
+        $member = $this->findMemberByUser($user);
+        if (null !== ($member)) {
             $member->setTeamlead(true);
 
             return;
@@ -231,7 +235,8 @@ class Team
      */
     public function demoteTeamlead(User $user): void
     {
-        if (null !== ($member = $this->findMemberByUser($user))) {
+        $member = $this->findMemberByUser($user);
+        if (null !== ($member)) {
             $member->setTeamlead(false);
         }
     }
@@ -272,7 +277,8 @@ class Team
 
     public function removeUser(User $user): void
     {
-        if (null !== ($member = $this->findMemberByUser($user))) {
+        $member = $this->findMemberByUser($user);
+        if (null !== ($member)) {
             $this->removeMember($member);
         }
     }
