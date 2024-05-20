@@ -8,8 +8,6 @@ use App\Quiz\Domain\Repository\AnswerHistoryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class AnswerHistory
- *
  * @package App\Quiz\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -25,7 +23,7 @@ class AnswerHistory
     #[ORM\Column(type: 'integer')]
     private ?int $answer_id;
 
-    #[ORM\ManyToOne(targetEntity: QuestionHistory::class, inversedBy:'answersHistory')]
+    #[ORM\ManyToOne(targetEntity: QuestionHistory::class, inversedBy: 'answersHistory')]
     #[ORM\JoinColumn(nullable: false)]
     private ?QuestionHistory $question_history;
 

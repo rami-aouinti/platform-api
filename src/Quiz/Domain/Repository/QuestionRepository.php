@@ -9,7 +9,6 @@ use App\Quiz\Domain\Entity\Question;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -37,6 +36,7 @@ class QuestionRepository extends ServiceEntityRepository
     {
         $question = new Question();
         $question->setLanguage($this->language);
+
         return $question;
     }
 
@@ -51,6 +51,7 @@ class QuestionRepository extends ServiceEntityRepository
         $builder->setParameter('language', $this->language);
 
         $builder->orderBy('q.text', 'ASC');
+
         return $builder->getQuery()->getOneOrNullResult();
     }
 
@@ -70,10 +71,11 @@ class QuestionRepository extends ServiceEntityRepository
         }
 
         $builder->orderBy('q.text', 'ASC');
+
         return $builder->getQuery()->getOneOrNullResult();
     }
 
-    public function findAll(int $page = 1, $isTeacher = false, $isAdmin = false): Array //Pagerfanta
+    public function findAll(int $page = 1, $isTeacher = false, $isAdmin = false): array //Pagerfanta
     {
         $builder = $this->createQueryBuilder('q');
 
@@ -110,7 +112,6 @@ class QuestionRepository extends ServiceEntityRepository
         // }
         $builder->orderBy('q.text', 'ASC');
 
-
         return $builder->getQuery()->getResult();
     }
 
@@ -139,6 +140,7 @@ class QuestionRepository extends ServiceEntityRepository
         $builder->andWhere($builder->expr()->in('categories', ':categories'))->setParameter('categories', $categories);
 
         $questions = $builder->getQuery()->getResult();
+
         return sizeof($questions);
     }
 }

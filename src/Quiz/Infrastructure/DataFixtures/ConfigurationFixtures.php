@@ -9,8 +9,6 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
 /**
- * Class ConfigurationFixtures
- *
  * @package App\Quiz\Infrastructure\DataFixtures
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

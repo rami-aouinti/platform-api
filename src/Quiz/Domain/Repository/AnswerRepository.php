@@ -27,6 +27,7 @@ class AnswerRepository extends ServiceEntityRepository
     {
         $builder = $this->createQueryBuilder('a');
         $builder->orderBy('a.text', 'ASC');
+
         return $builder->getQuery()->getResult();
     }
 }

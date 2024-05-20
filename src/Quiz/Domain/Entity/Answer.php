@@ -8,8 +8,6 @@ use App\Quiz\Domain\Repository\AnswerRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Answer
- *
  * @package App\Quiz\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -28,7 +26,7 @@ class Answer
     #[ORM\Column(type: 'boolean')]
     private ?bool $correct;
 
-    #[ORM\ManyToOne(targetEntity: Question::class, inversedBy:'answers')]
+    #[ORM\ManyToOne(targetEntity: Question::class, inversedBy: 'answers')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Question $question;
 
@@ -37,7 +35,6 @@ class Answer
      * It is used to store the answer given by student (type="boolean") in the form
      */
     private bool $workout_correct_given = false;
-
 
     public function __construct()
     {
@@ -96,5 +93,4 @@ class Answer
 
         return $this;
     }
-
 }

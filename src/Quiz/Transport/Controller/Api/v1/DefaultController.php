@@ -10,7 +10,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends AbstractController
 {
-
     #[Route('/', name: 'app_home')]
     public function index(ConfigurationRepository $configurationRepository)
     {

@@ -40,58 +40,55 @@ class RegistrationFormType extends AbstractType
                 'required' => true,
             ]);
 
-            // $builder->add('plainPassword', PasswordType::class, [
-            //     // instead of being set onto the object directly,
-            //     // this is read and encoded in the controller
-            //     'mapped' => false,
-            //     'attr' => ['autocomplete' => 'new-password'],
-            //     'constraints' => [
-            //         new NotBlank([
-            //             'message' => 'Please enter a password',
-            //         ]),
-            //         new Length([
-            //             'min' => 6,
-            //             'minMessage' => 'Your password should be at least {{ limit }} characters',
-            //             // max length allowed by Symfony for security reasons
-            //             'max' => 4096,
-            //         ]),
-            //     ],
-            // ]);
+        // $builder->add('plainPassword', PasswordType::class, [
+        //     // instead of being set onto the object directly,
+        //     // this is read and encoded in the controller
+        //     'mapped' => false,
+        //     'attr' => ['autocomplete' => 'new-password'],
+        //     'constraints' => [
+        //         new NotBlank([
+        //             'message' => 'Please enter a password',
+        //         ]),
+        //         new Length([
+        //             'min' => 6,
+        //             'minMessage' => 'Your password should be at least {{ limit }} characters',
+        //             // max length allowed by Symfony for security reasons
+        //             'max' => 4096,
+        //         ]),
+        //     ],
+        // ]);
 
-            $builder->add('plainPassword', RepeatedType::class, [
-                'type' => PasswordType::class,
-                'options' => [
-                    'attr' => [
-                        'autocomplete' => 'new-password',
-                        'class' => 'password-field'
-                    ],
+        $builder->add('plainPassword', RepeatedType::class, [
+            'type' => PasswordType::class,
+            'options' => [
+                'attr' => [
+                    'autocomplete' => 'new-password',
+                    'class' => 'password-field',
                 ],
-                'first_options' => [
-                    'constraints' => [
-                        new NotBlank([
-                            'message' => $this->translator->trans('Please enter a password'),
-                        ]),
-                        new Length([
-                            'min' => 6,
-                            'minMessage' => $this->translator->trans('Your password should be at least {{ limit }} characters'),
-                            // max length allowed by Symfony for security reasons
-                            'max' => 4096,
-                        ]),
-                    ],
-                    'label' => $this->translator->trans('New password'),
+            ],
+            'first_options' => [
+                'constraints' => [
+                    new NotBlank([
+                        'message' => $this->translator->trans('Please enter a password'),
+                    ]),
+                    new Length([
+                        'min' => 6,
+                        'minMessage' => $this->translator->trans('Your password should be at least {{ limit }} characters'),
+                        // max length allowed by Symfony for security reasons
+                        'max' => 4096,
+                    ]),
                 ],
-                'second_options' => [
-                    'label' => $this->translator->trans('Repeat Password'),
-                ],
-                'invalid_message' => $this->translator->trans('The password fields must match.'),
-                // Instead of being set onto the object directly,
-                // this is read and encoded in the controller
-                'mapped' => false,
-                'required' => true,
-            ]);
-
-
-
+                'label' => $this->translator->trans('New password'),
+            ],
+            'second_options' => [
+                'label' => $this->translator->trans('Repeat Password'),
+            ],
+            'invalid_message' => $this->translator->trans('The password fields must match.'),
+            // Instead of being set onto the object directly,
+            // this is read and encoded in the controller
+            'mapped' => false,
+            'required' => true,
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

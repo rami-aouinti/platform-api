@@ -11,8 +11,6 @@ use Doctrine\Persistence\ObjectManager;
 use Faker;
 
 /**
- * Class ImagesFixtures
- *
  * @package App\Shop\Infrastructure\DataFixtures
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -22,10 +20,10 @@ class ImagesFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Faker\Factory::create('fr_FR');
 
-        for($img = 1; $img <= 100; $img++){
+        for ($img = 1; $img <= 100; $img++) {
             $image = new Images();
             $image->setName($faker->image(null, 640, 480));
-            $product = $this->getReference('prod-'.rand(1, 10));
+            $product = $this->getReference('prod-' . rand(1, 10));
             $image->setProducts($product);
             $manager->persist($image);
         }
@@ -36,7 +34,7 @@ class ImagesFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies(): array
     {
         return [
-            ProductsFixtures::class
+            ProductsFixtures::class,
         ];
     }
 }

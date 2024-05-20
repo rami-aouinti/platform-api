@@ -10,8 +10,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class School
- *
  * @package App\Quiz\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -72,9 +70,6 @@ class School
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getGroups(): Collection
     {
         return $this->groups;

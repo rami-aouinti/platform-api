@@ -32,44 +32,46 @@ class QuizType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('title', TextType::class, array('label' => $this->translator->trans('Name')));
+        $builder->add('title', TextType::class, [
+            'label' => $this->translator->trans('Name'),
+        ]);
         $builder->add('summary');
         $builder->add('number_of_questions');
         if ($options['isAdmin']) {
-            $builder->add('categories', EntityType::class, array(
+            $builder->add('categories', EntityType::class, [
                 'class' => Category::class,
                 'query_builder' => function (CategoryRepository $er) {
                     return $er->createQueryBuilder('c')->andWhere('c.language = :language')->setParameter('language', $this->param->get('locale'))->orderBy('c.shortname', 'ASC');
-                 },
+                },
                 'choice_label' => 'longname',
                 'multiple' => true,
                 'attr' => [
                     'size' => 30,
                 ],
                 // 'expanded' => true, // render check-boxes
-            ));
+            ]);
         } else {
-            $builder->add('categories', EntityType::class, array(
+            $builder->add('categories', EntityType::class, [
                 'class' => Category::class,
                 'query_builder' => function (CategoryRepository $er) {
                     return $er->createQueryBuilder('c')->andWhere('c.created_by = :created_by')->setParameter('created_by', $this->tokenStorage->getToken()->getUser())->andWhere('c.language = :language')->setParameter('language', $this->param->get('locale'))->orderBy('c.shortname', 'ASC');
-                 },
+                },
                 'choice_label' => 'longname',
                 'multiple' => true,
                 'attr' => [
                     'size' => 30,
                 ],
                 // 'expanded' => true, // render check-boxes
-            ));
+            ]);
         }
 
         $builder->add('start_quiz_comment');
         $builder->add('show_result_question');
         $builder->add('result_quiz_comment');
         $builder->add('allow_anonymous_workout');
-        $builder->add('default_question_max_duration', IntegerType::class, array(
+        $builder->add('default_question_max_duration', IntegerType::class, [
             'label' => $this->translator->trans('Default question max duration (seconds)'),
-        ));
+        ]);
         $builder->add('active');
     }
 

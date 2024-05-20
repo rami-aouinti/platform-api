@@ -914,17 +914,6 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface, \
         return $this->memberships->contains($member);
     }
 
-    private function findMemberByTeam(Team $team): ?TeamMember
-    {
-        foreach ($this->memberships as $member) {
-            if ($member->getTeam() === $team) {
-                return $member;
-            }
-        }
-
-        return null;
-    }
-
     public function getWorkouts(): Collection
     {
         return $this->workouts;
@@ -1053,5 +1042,16 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface, \
     public function setLastQuizAccess(?DateTimeInterface $lastQuizAccess): void
     {
         $this->lastQuizAccess = $lastQuizAccess;
+    }
+
+    private function findMemberByTeam(Team $team): ?TeamMember
+    {
+        foreach ($this->memberships as $member) {
+            if ($member->getTeam() === $team) {
+                return $member;
+            }
+        }
+
+        return null;
     }
 }

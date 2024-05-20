@@ -13,29 +13,28 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class ConfigurationController
- *
  * @package App\Quiz\Transport\Controller\Api\v1
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 #[Route('/configuration')]
 class ConfigurationController extends AbstractController
 {
-
     #[Route('/allow_account_creation', name: 'app_configuration_allow_account_creation', methods: ['GET'])]
     public function allow_account_creation(Request $request, ConfigurationRepository $configurationRepository): Response
     {
         $value = $request->query->get('value');
-        $configuration = $configurationRepository->findOneBy(['const' => 'MAIN_ALLOW_USER_ACCOUNT_CREATION']);
+        $configuration = $configurationRepository->findOneBy([
+            'const' => 'MAIN_ALLOW_USER_ACCOUNT_CREATION',
+        ]);
         if (isset($value)) {
             $configuration->setValue(intval($value));
         } else {
-
-            $configuration->setValue(abs($configuration->getValue() -1));
+            $configuration->setValue(abs($configuration->getValue() - 1));
         }
         $configurationRepository->save($configuration, true);
 
         $route = $request->headers->get('referer');
+
         return $this->redirect($route);
     }
 
@@ -95,7 +94,7 @@ class ConfigurationController extends AbstractController
     #[Route('/{id}', name: 'app_configuration_delete', methods: ['POST'])]
     public function delete(Request $request, Configuration $configuration, ConfigurationRepository $configurationRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$configuration->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $configuration->getId(), $request->request->get('_token'))) {
             $configurationRepository->remove($configuration, true);
         }
 

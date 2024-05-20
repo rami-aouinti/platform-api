@@ -121,7 +121,7 @@ final class UpdateCommand extends Command
         try {
             if (
                 $command->run(new ArrayInput([
-                '--env' => $environment,
+                    '--env' => $environment,
                 ]), $output) !== 0
             ) {
                 throw new \RuntimeException('Could not clear cache, missing permissions?');
@@ -137,7 +137,7 @@ final class UpdateCommand extends Command
         try {
             if (
                 $command->run(new ArrayInput([
-                '--env' => $environment,
+                    '--env' => $environment,
                 ]), $output) !== 0
             ) {
                 throw new \RuntimeException('Could not warmup cache, missing permissions?');

@@ -30,31 +30,31 @@ class AnswerType extends AbstractType
     {
         switch ($options['form_type']) {
             case 'student_questioning':
-                $builder->add('workout_correct_given', CheckboxType::class, array(
+                $builder->add('workout_correct_given', CheckboxType::class, [
                     'label' => false,
                     'text_property' => 'text',
                     'required' => false,
-                ));
+                ]);
                 break;
             case 'student_marking':
-                $builder->add('workout_correct_given', CheckboxType::class, array(
+                $builder->add('workout_correct_given', CheckboxType::class, [
                     'label' => false,
                     'text_property' => 'text',
                     'correct_given_property' => 'workout_correct_given',
                     'correct_property' => 'correct',
                     'required' => false,
-                ));
+                ]);
                 break;
             case 'teacher':
-                $builder->add('text', null, array(
+                $builder->add('text', null, [
                     'label' => false,
-                ));
+                ]);
                 $builder->add('correct');
                 break;
             case 'admin':
-                $builder->add('text', null, array(
+                $builder->add('text', null, [
                     'label' => false,
-                ));
+                ]);
                 $builder->add('correct');
                 break;
         }

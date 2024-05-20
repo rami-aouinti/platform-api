@@ -47,28 +47,29 @@ class TimeDiff extends FunctionNode
 
     public function getSql(SqlWalker $sqlWalker)
     {
-        switch($this->type) {
-            case "minute":
+        switch ($this->type) {
+            case 'minute':
                 $time = 60;
                 break;
-            case "hour":
+            case 'hour':
                 $time = 3600;
                 break;
-            case "day":
+            case 'day':
                 $time = 86400;
                 break;
-            case "month":
+            case 'month':
                 $time = 2622585.6;
                 break;
-            case "year":
+            case 'year':
                 $time = 31471200;
                 break;
             default:
                 $time = 1;
         }
+
         return 'ROUND(TIME_TO_SEC(TIMEDIFF(' .
         $this->dateTime1->dispatch($sqlWalker) . ', ' .
         $this->dateTime2->dispatch($sqlWalker) .
-        '))/'.$time.', 0)';
+        '))/' . $time . ', 0)';
     }
 }

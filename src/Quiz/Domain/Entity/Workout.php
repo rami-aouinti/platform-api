@@ -11,8 +11,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Workout
- *
  * @package App\Quiz\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -29,7 +27,7 @@ class Workout
     #[ORM\JoinColumn(nullable: false)]
     private ?User $student = null;
 
-    #[ORM\ManyToOne(targetEntity: Quiz::class, inversedBy:'workouts')]
+    #[ORM\ManyToOne(targetEntity: Quiz::class, inversedBy: 'workouts')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Quiz $quiz;
 
@@ -57,7 +55,7 @@ class Workout
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $token;
 
-    #[ORM\ManyToOne(targetEntity: Session::class, inversedBy:'workouts')]
+    #[ORM\ManyToOne(targetEntity: Session::class, inversedBy: 'workouts')]
     private ?Session $session;
 
     public function __construct()
@@ -65,7 +63,6 @@ class Workout
         $this->completed = false;
         $this->questionsHistory = new ArrayCollection();
     }
-
 
     public function getId(): ?int
     {
@@ -149,9 +146,6 @@ class Workout
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getQuestionsHistory(): Collection
     {
         return $this->questionsHistory;

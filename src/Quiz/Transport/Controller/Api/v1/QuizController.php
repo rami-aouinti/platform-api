@@ -8,7 +8,6 @@ use App\Quiz\Domain\Entity\AnswerHistory;
 use App\Quiz\Domain\Entity\Question;
 use App\Quiz\Domain\Entity\QuestionHistory;
 use App\Quiz\Domain\Entity\Quiz;
-use App\User\Domain\Entity\User;
 use App\Quiz\Domain\Entity\Workout;
 use App\Quiz\Domain\Repository\CategoryRepository;
 use App\Quiz\Domain\Repository\QuizRepository;
@@ -16,6 +15,7 @@ use App\Quiz\Domain\Repository\SessionRepository;
 use App\Quiz\Domain\Repository\WorkoutRepository;
 use App\Quiz\Transport\Form\QuestionType;
 use App\Quiz\Transport\Form\QuizType;
+use App\User\Domain\Entity\User;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
@@ -51,15 +51,15 @@ class QuizController extends AbstractController
                 $user = $workout->getStudent();
 
                 $workout_token = $request->query->get('token');
-                if (isset($workout_token) && ($workout_token != "")) {
+                if (isset($workout_token) && ($workout_token != '')) {
                     if ($workout_token == $workout->getToken()) {
                         // Quiz is completed then display end
                         $score = $workout->getScore();
                         $comment = '';
                         $commentLines = explode("\n", $quiz->getResultQuizComment());
                         foreach ($commentLines as $commentLine) {
-                            [$commentInterval, $commentText] = explode(":", $commentLine);
-                            [$min, $max] = explode("-", $commentInterval);
+                            [$commentInterval, $commentText] = explode(':', $commentLine);
+                            [$min, $max] = explode('-', $commentInterval);
                             if (($score >= $min) && ($score <= $max)) {
                                 $comment = $comment . $commentText . ' ';
                             }
@@ -69,7 +69,9 @@ class QuizController extends AbstractController
                         $em->persist($workout);
                         $em->flush();
 
-                        $form = $this->createForm(QuizType::class, $quiz, array('form_type' => 'student_questioning'));
+                        $form = $this->createForm(QuizType::class, $quiz, [
+                            'form_type' => 'student_questioning',
+                        ]);
 
                         $questionHistoryRepository = $em->getRepository(QuestionHistory::class);
                         $questionsHistory = $questionHistoryRepository->findAllByWorkout($workout);
@@ -86,9 +88,8 @@ class QuizController extends AbstractController
                                 'form' => $form->createView(),
                             ]
                         );
-                    } else {
-                        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Access not allowed');
                     }
+                    $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Access not allowed');
                 } else {
                     $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Access not allowed');
                 }
@@ -110,7 +111,6 @@ class QuizController extends AbstractController
         $startedAt = $quiz->getActivedAt();
 
         $questionHistoryRepository = $em->getRepository(QuestionHistory::class);
-
 
         $session = null;
         $session_id = $request->query->get('session');
@@ -184,7 +184,6 @@ class QuizController extends AbstractController
             $thirdStudentDuration = ($workouts[2])->getDuration()->format('%I:%S');
         }
 
-
         return $this->render(
             'quiz/monitor/podium.html.twig',
             [
@@ -207,12 +206,8 @@ class QuizController extends AbstractController
 
     /**
      * @Route("/{id}/activate", name="quiz_activate", methods="GET")
-     * @param Request                $request
-     * @param Quiz                   $quiz
-     * @param EntityManagerInterface $em
      *
      * @throws ORMException
-     * @return Response
      */
     public function activate(Request $request, Quiz $quiz, EntityManagerInterface $em): Response
     {
@@ -231,14 +226,8 @@ class QuizController extends AbstractController
 
     /**
      * @Route("/{id}/monitor", name="quiz_monitor", methods="GET")
-     * @param Request                $request
-     * @param Quiz                   $quiz
-     * @param EntityManagerInterface $em
-     * @param WorkoutRepository      $workoutRepository
-     * @param SessionRepository      $sessionRepository
      *
      * @throws ORMException
-     * @return Response
      */
     public function monitor(Request $request, Quiz $quiz, EntityManagerInterface $em, WorkoutRepository $workoutRepository, SessionRepository $sessionRepository): Response
     {
@@ -292,7 +281,11 @@ class QuizController extends AbstractController
     public function workout(Request $request, Workout $workout, EntityManagerInterface $em, UserInterface $user = null, MailerInterface $mailer, TranslatorInterface $translator): Response
     {
         if ($workout->getCompleted()) {
-            return $this->redirectToRoute('quiz_result', ['id' => $workout->getQuiz()->getId(), 'workout' => $workout->getId(), 'token' => $workout->getToken()]);
+            return $this->redirectToRoute('quiz_result', [
+                'id' => $workout->getQuiz()->getId(),
+                'workout' => $workout->getId(),
+                'token' => $workout->getToken(),
+            ]);
         }
 
         $now = new \DateTime();
@@ -324,7 +317,10 @@ class QuizController extends AbstractController
         if (!$quiz->getActive()) {
             // $this->denyAccessUnlessGranted('ROLE_TEACHER', null, 'Access not allowed');
             $this->addFlash('danger', $translator->trans('Sorry, the quiz is stopped !'));
-            $form = $this->createForm(QuizType::class, $quiz, array('form_type' => 'student_questioning'));
+            $form = $this->createForm(QuizType::class, $quiz, [
+                'form_type' => 'student_questioning',
+            ]);
+
             return $this->render(
                 'quiz/end.html.twig',
                 [
@@ -360,10 +356,10 @@ class QuizController extends AbstractController
                         $question_duration_minutes = ($now->diff($lastQuestionHistory->getStartedAt()))->format('%i');
                         $question_duration = ($now->diff($lastQuestionHistory->getStartedAt()))->format('%s') + ($question_duration_minutes * 60);
                         if ($question_duration > ($question_max_duration * 1.5)) { // 50% margin
-                            $comment = $translator->trans('Response time (%question_duration% s) exceeded time limit (%question_max_duration% s) by question', array(
+                            $comment = $translator->trans('Response time (%question_duration% s) exceeded time limit (%question_max_duration% s) by question', [
                                 '%question_duration%' => $question_duration,
                                 '%question_max_duration%' => $question_max_duration,
-                            ));
+                            ]);
                             //$comment = 'Response time (' . $question_duration . ' s) exceeded time limit (' . $question_max_duration . ' s) by question';
                             $workout->setComment($comment);
                             $workout->setCompleted(true);
@@ -375,7 +371,12 @@ class QuizController extends AbstractController
                             $email = (new TemplatedEmail())
                                 ->from(new Address($from_email_address, 'JoliQuiz'))
                                 ->to($admin_email_address)
-                                ->subject('🙂 ' . $translator->trans('Quiz "%title%" by %username% = %score%% (%grade%/20) - Before the end!', ['%title%' => $quiz->getTitle(), '%username%' => $user->getName(), '%score%' => $score, '%grade%' => $grade]))
+                                ->subject('🙂 ' . $translator->trans('Quiz "%title%" by %username% = %score%% (%grade%/20) - Before the end!', [
+                                    '%title%' => $quiz->getTitle(),
+                                    '%username%' => $user->getName(),
+                                    '%score%' => $score,
+                                    '%grade%' => $grade,
+                                ]))
                                 // path of the Twig template to render
                                 ->htmlTemplate('emails/quiz_result.html.twig')
                                 // pass variables (name => value) to the template
@@ -391,15 +392,18 @@ class QuizController extends AbstractController
                             if ($user->isToReceiveMyResultByEmail()) {
                                 $email->addTo($user->getEmail());
                             }
+
                             try {
                                 $mailer->send($email);
                             } catch (\Throwable $th) {
                                 $this->addFlash('error', $th->getMessage());
                             }
 
-
                             $this->addFlash('danger', $comment);
-                            $form = $this->createForm(QuizType::class, $quiz, array('form_type' => 'student_questioning'));
+                            $form = $this->createForm(QuizType::class, $quiz, [
+                                'form_type' => 'student_questioning',
+                            ]);
+
                             return $this->render(
                                 'quiz/end.html.twig',
                                 [
@@ -419,7 +423,9 @@ class QuizController extends AbstractController
 
                 /////////////////////////////////////////
                 //Check answers
-                $form = $this->createForm(QuestionType::class, $lastQuestion, array('form_type' => 'student_questioning'));
+                $form = $this->createForm(QuestionType::class, $lastQuestion, [
+                    'form_type' => 'student_questioning',
+                ]);
                 $form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
                     foreach ($lastQuestion->getAnswers() as $key => $lastAnswer) {
@@ -462,7 +468,10 @@ class QuizController extends AbstractController
 
                     if ($quiz->getShowResultQuestion()) {
                         // Show question result
-                        $form = $this->createForm(QuestionType::class, $lastQuestion, array('form_type' => 'student_marking'));
+                        $form = $this->createForm(QuestionType::class, $lastQuestion, [
+                            'form_type' => 'student_marking',
+                        ]);
+
                         return $this->render(
                             'quiz/workout.html.twig',
                             [
@@ -480,7 +489,6 @@ class QuizController extends AbstractController
                     }
                 }
                 /////////////////////////////////////////
-
             }
         }
 
@@ -488,7 +496,10 @@ class QuizController extends AbstractController
         $questionsCount = $questionRepository->countByCategories($quiz->getCategories());
         if ($questionsCount < $quiz->getNumberOfQuestions()) {
             $this->addFlash('danger', 'Not enough questions for this quiz');
-            $form = $this->createForm(QuizType::class, $quiz, array('form_type' => 'student_questioning'));
+            $form = $this->createForm(QuizType::class, $quiz, [
+                'form_type' => 'student_questioning',
+            ]);
+
             return $this->render(
                 'quiz/end.html.twig',
                 [
@@ -540,7 +551,10 @@ class QuizController extends AbstractController
             }
             $question_duration = 0;
 
-            $form = $this->createForm(QuestionType::class, $nextQuestion, array('form_type' => 'student_questioning'));
+            $form = $this->createForm(QuestionType::class, $nextQuestion, [
+                'form_type' => 'student_questioning',
+            ]);
+
             return $this->render(
                 'quiz/workout.html.twig',
                 [
@@ -554,79 +568,80 @@ class QuizController extends AbstractController
                     'form' => $form->createView(),
                 ]
             );
-        } else {
-            // Quiz is completed then display end
-            $score = $workout->getScore();
-            $grade = round($score / 5, 1);
-            $comment = '';
-            $commentLines = explode("\n", $quiz->getResultQuizComment());
-            foreach ($commentLines as $commentLine) {
-                [$commentInterval, $commentText] = explode(":", $commentLine);
-                [$min, $max] = explode("-", $commentInterval);
-                if (($score >= $min) && ($score <= $max)) {
-                    $comment = $comment . $commentText . ' ';
-                }
-            }
-            $workout->setComment($comment);
-            $workout->setCompleted(true);
-            $em->persist($workout);
-            $em->flush();
-
-            // TODO : Mettre l'envoi du mail dans un service
-            $admin_email_address = $this->getParameter('ADMIN_EMAIL_ADDRESS');
-            $from_email_address = $this->getParameter('FROM_EMAIL_ADDRESS');
-            $email = (new TemplatedEmail())
-                ->from(new Address($from_email_address, 'JoliQuiz'))
-                ->to($admin_email_address)
-                ->subject('🙂 ' . $translator->trans('Quiz "%title%" by %username% = %score%% (%grade%/20)', ['%title%' => $quiz->getTitle(), '%username%' => $user->getName(), '%score%' => $score, '%grade%' => $grade]))
-                // path of the Twig template to render
-                ->htmlTemplate('emails/quiz_result.html.twig')
-                // pass variables (name => value) to the template
-                ->context([
-                    'username' => $user->getName(),
-                    'useremail' => $user->getEmail(),
-                    'quiz' => $quiz,
-                    'score' => $score,
-                    'grade' => $grade,
-                    'workout_id' => $workout->getId(),
-                    'workout_token' => $workout->getToken(),
-                ]);
-            if ($user->isToReceiveMyResultByEmail()) {
-                $email->addTo($user->getEmail());
-            }
-            try {
-                $mailer->send($email);
-            } catch (\Throwable $th) {
-                $this->addFlash('error', $th->getMessage());
-            }
-
-            $form = $this->createForm(QuizType::class, $quiz, array('form_type' => 'student_questioning'));
-
-            return $this->render(
-                'quiz/end.html.twig',
-                [
-                    'id' => $workout->getId(),
-                    'quiz' => $quiz,
-                    'score' => $score,
-                    'questionsHistory' => $questionsHistory,
-                    'user' => $user,
-                    'comment' => $workout->getComment(),
-                    'form' => $form->createView(),
-                ]
-            );
         }
+        // Quiz is completed then display end
+        $score = $workout->getScore();
+        $grade = round($score / 5, 1);
+        $comment = '';
+        $commentLines = explode("\n", $quiz->getResultQuizComment());
+        foreach ($commentLines as $commentLine) {
+            [$commentInterval, $commentText] = explode(':', $commentLine);
+            [$min, $max] = explode('-', $commentInterval);
+            if (($score >= $min) && ($score <= $max)) {
+                $comment = $comment . $commentText . ' ';
+            }
+        }
+        $workout->setComment($comment);
+        $workout->setCompleted(true);
+        $em->persist($workout);
+        $em->flush();
+
+        // TODO : Mettre l'envoi du mail dans un service
+        $admin_email_address = $this->getParameter('ADMIN_EMAIL_ADDRESS');
+        $from_email_address = $this->getParameter('FROM_EMAIL_ADDRESS');
+        $email = (new TemplatedEmail())
+            ->from(new Address($from_email_address, 'JoliQuiz'))
+            ->to($admin_email_address)
+            ->subject('🙂 ' . $translator->trans('Quiz "%title%" by %username% = %score%% (%grade%/20)', [
+                '%title%' => $quiz->getTitle(),
+                '%username%' => $user->getName(),
+                '%score%' => $score,
+                '%grade%' => $grade,
+            ]))
+            // path of the Twig template to render
+            ->htmlTemplate('emails/quiz_result.html.twig')
+            // pass variables (name => value) to the template
+            ->context([
+                'username' => $user->getName(),
+                'useremail' => $user->getEmail(),
+                'quiz' => $quiz,
+                'score' => $score,
+                'grade' => $grade,
+                'workout_id' => $workout->getId(),
+                'workout_token' => $workout->getToken(),
+            ]);
+        if ($user->isToReceiveMyResultByEmail()) {
+            $email->addTo($user->getEmail());
+        }
+
+        try {
+            $mailer->send($email);
+        } catch (\Throwable $th) {
+            $this->addFlash('error', $th->getMessage());
+        }
+
+        $form = $this->createForm(QuizType::class, $quiz, [
+            'form_type' => 'student_questioning',
+        ]);
+
+        return $this->render(
+            'quiz/end.html.twig',
+            [
+                'id' => $workout->getId(),
+                'quiz' => $quiz,
+                'score' => $score,
+                'questionsHistory' => $questionsHistory,
+                'user' => $user,
+                'comment' => $workout->getComment(),
+                'form' => $form->createView(),
+            ]
+        );
     }
 
     /**
      * @Route("/{id}/start", name="quiz_start", methods="GET")
-     * @param Request                 $request
-     * @param Quiz                    $quiz
-     * @param EntityManagerInterface  $em
-     * @param UserInterface|null      $user
-     * @param TokenGeneratorInterface $tokenGenerator
      *
      * @throws RandomException
-     * @return Response
      */
     public function start(
         Request $request,
@@ -634,8 +649,7 @@ class QuizController extends AbstractController
         EntityManagerInterface $em,
         UserInterface $user = null,
         TokenGeneratorInterface $tokenGenerator
-    ): Response
-    {
+    ): Response {
         $now = new \DateTime();
 
         if (!$quiz->getAllowAnonymousWorkout()) {
@@ -643,7 +657,9 @@ class QuizController extends AbstractController
         } else {
             if (!$user) {
                 $userRepository = $em->getRepository(User::class);
-                $user = $userRepository->findOneBy(['username' => 'anonymous']);
+                $user = $userRepository->findOneBy([
+                    'username' => 'anonymous',
+                ]);
                 if (!$user) {
                     $user = new User();
                     $user->setUsername('anonymous');
@@ -684,14 +700,8 @@ class QuizController extends AbstractController
 
     /**
      * @Route("/", name="quiz_index", methods="GET")
-     * @param QuizRepository         $quizRepository
-     * @param CategoryRepository     $categoryRepository
-     * @param Request                $request
-     * @param EntityManagerInterface $em
-     * @param UserInterface|null     $user
      *
      * @throws RandomException
-     * @return Response
      */
     public function index(QuizRepository $quizRepository, CategoryRepository $categoryRepository, Request $request, EntityManagerInterface $em, UserInterface $user = null): Response
     {
@@ -700,13 +710,13 @@ class QuizController extends AbstractController
         $now = new DateTime();
 
         $categoryId = $request->query->get('category');
-        $categoryLongName = "";
-        $categoryShortName = "";
+        $categoryLongName = '';
+        $categoryShortName = '';
         if ($categoryId > 0) {
             $quizzes = $quizRepository->findAllByCategories([$categoryId], $this->isGranted('ROLE_TEACHER'), $this->isGranted('ROLE_ADMIN'));
             $category = $categoryRepository->find($categoryId);
             $categoryLongName = $category->getLongName();
-            $categoryShortName =  $category->getShortName();
+            $categoryShortName = $category->getShortName();
         } else {
             $quizzes = $quizRepository->findAll($this->isGranted('ROLE_TEACHER'), $this->isGranted('ROLE_ADMIN'));
         }
@@ -720,14 +730,18 @@ class QuizController extends AbstractController
                     return $this->start($request, $quizzes[0], $em, $user);
                 }
             }
-        }
-        else {
+        } else {
             $user->setLastQuizAccess(null);
             $em->persist($user);
             $em->flush();
         }
 
-        return $this->render('quiz/index.html.twig', ['quizzes' => $quizzes, 'category_id' => $categoryId, 'category_long_name' => $categoryLongName, 'category_short_name' => $categoryShortName]);
+        return $this->render('quiz/index.html.twig', [
+            'quizzes' => $quizzes,
+            'category_id' => $categoryId,
+            'category_long_name' => $categoryLongName,
+            'category_short_name' => $categoryShortName,
+        ]);
     }
 
     /**
@@ -751,7 +765,9 @@ class QuizController extends AbstractController
             $quiz->setNumberOfQuestions(sizeof($category->getQuestions()));
         }
 
-        $form = $this->createForm(QuizType::class, $quiz, ['isAdmin' => $this->isGranted('ROLE_ADMIN')]);
+        $form = $this->createForm(QuizType::class, $quiz, [
+            'isAdmin' => $this->isGranted('ROLE_ADMIN'),
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -771,6 +787,7 @@ class QuizController extends AbstractController
                 return $this->redirectToRoute('quiz_index');
             }
         }
+
         return $this->render('quiz/new.html.twig', [
             'quiz' => $quiz,
             'form' => $form->createView(),
@@ -786,14 +803,20 @@ class QuizController extends AbstractController
 
         $this->denyAccessUnlessGranted('ROLE_TEACHER', null, 'Access not allowed');
 
-        $form = $this->createForm(QuizType::class, $quiz, ['isTeacher' => $this->isGranted('ROLE_TEACHER'), 'isAdmin' => $this->isGranted('ROLE_ADMIN')]);
+        $form = $this->createForm(QuizType::class, $quiz, [
+            'isTeacher' => $this->isGranted('ROLE_TEACHER'),
+            'isAdmin' => $this->isGranted('ROLE_ADMIN'),
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $quiz->setUpdatedAt($now);
             $em->flush();
             $this->addFlash('success', sprintf($translator->trans('Quiz "%s" is updated.'), $quiz->getTitle()));
-            return $this->redirectToRoute('quiz_edit', ['id' => $quiz->getId()]);
+
+            return $this->redirectToRoute('quiz_edit', [
+                'id' => $quiz->getId(),
+            ]);
         }
 
         return $this->render('quiz/edit.html.twig', [
@@ -825,7 +848,8 @@ class QuizController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_TEACHER', null, 'Access not allowed');
 
-        return $this->render('quiz/show.html.twig', ['quiz' => $quiz]);
+        return $this->render('quiz/show.html.twig', [
+            'quiz' => $quiz,
+        ]);
     }
-
 }

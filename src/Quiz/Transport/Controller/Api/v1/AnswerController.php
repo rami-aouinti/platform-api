@@ -26,7 +26,9 @@ class AnswerController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_TEACHER', null, 'Access not allowed');
 
-        return $this->render('answer/index.html.twig', ['answers' => $answerRepository->findAll()]);
+        return $this->render('answer/index.html.twig', [
+            'answers' => $answerRepository->findAll(),
+        ]);
     }
 
     /**
@@ -37,7 +39,9 @@ class AnswerController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_TEACHER', null, 'Access not allowed');
 
         $answer = new Answer();
-        $form = $this->createForm(AnswerType::class, $answer, array('form_type' => 'teacher'));
+        $form = $this->createForm(AnswerType::class, $answer, [
+            'form_type' => 'teacher',
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -62,16 +66,19 @@ class AnswerController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_TEACHER', null, 'Access not allowed');
 
-        $form = $this->createForm(AnswerType::class, $answer, array('form_type' => 'teacher'));
+        $form = $this->createForm(AnswerType::class, $answer, [
+            'form_type' => 'teacher',
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $em->flush();
 
             $this->addFlash('success', sprintf($translator->trans('Answer #%s is updated.'), $answer->getId()));
 
-            return $this->redirectToRoute('answer_edit', ['id' => $answer->getId()]);
+            return $this->redirectToRoute('answer_edit', [
+                'id' => $answer->getId(),
+            ]);
         }
 
         return $this->render('answer/edit.html.twig', [
@@ -87,7 +94,7 @@ class AnswerController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_TEACHER', null, 'Access not allowed');
 
-        if ($this->isCsrfTokenValid('delete'.$answer->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $answer->getId(), $request->request->get('_token'))) {
             $em->remove($answer);
             $em->flush();
 
@@ -104,7 +111,8 @@ class AnswerController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_TEACHER', null, 'Access not allowed');
 
-        return $this->render('answer/show.html.twig', ['answer' => $answer]);
+        return $this->render('answer/show.html.twig', [
+            'answer' => $answer,
+        ]);
     }
-
 }

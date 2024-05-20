@@ -32,7 +32,7 @@ class ProductsRepository extends ServiceEntityRepository
             ->select('c', 'p')
             ->from('App\Shop\Domain\Entity\Products', 'p')
             ->join('p.categories', 'c')
-            ->where("c.slug = '$slug'")
+            ->where("c.slug = '{$slug}'")
             ->setMaxResults($limit)
             ->setFirstResult(($page * $limit) - $limit);
 
@@ -40,7 +40,7 @@ class ProductsRepository extends ServiceEntityRepository
         $data = $paginator->getQuery()->getResult();
 
         //On vérifie qu'on a des données
-        if(empty($data)){
+        if (empty($data)) {
             return $result;
         }
 

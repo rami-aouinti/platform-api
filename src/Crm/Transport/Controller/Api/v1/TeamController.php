@@ -124,7 +124,7 @@ final class TeamController extends AbstractController
             $newName = sprintf('%s (%s)', $team->getName(), $i++);
         } while (
             $this->repository->count([
-            'name' => $newName,
+                'name' => $newName,
             ]) > 0 && $i < 10
         );
         $newTeam->setName($newName);

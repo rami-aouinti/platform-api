@@ -6,9 +6,6 @@ namespace App\Shop\Domain\Entity\Trait;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- *
- */
 trait SlugTrait
 {
     #[ORM\Column(type: 'string', length: 255)]
@@ -20,8 +17,8 @@ trait SlugTrait
     }
 
     public function setSlug(
-        string $slug): self
-    {
+        string $slug
+    ): self {
         $this->slug = $slug;
 
         return $this;

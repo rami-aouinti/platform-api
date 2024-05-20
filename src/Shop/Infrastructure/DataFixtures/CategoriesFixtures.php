@@ -10,8 +10,6 @@ use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 /**
- * Class CategoriesFixtures
- *
  * @package App\Shop\Infrastructure\DataFixtures
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -19,7 +17,10 @@ class CategoriesFixtures extends Fixture
 {
     private int $counter = 1;
 
-    public function __construct(private readonly SluggerInterface $slugger){}
+    public function __construct(
+        private readonly SluggerInterface $slugger
+    ) {
+    }
 
     public function load(ObjectManager $manager): void
     {
@@ -38,13 +39,6 @@ class CategoriesFixtures extends Fixture
         $manager->flush();
     }
 
-    /**
-     * @param string          $name
-     * @param Categories|null $parent
-     * @param ObjectManager   $manager
-     *
-     * @return Categories
-     */
     public function createCategory(string $name, Categories $parent = null, ObjectManager $manager): Categories
     {
         $category = new Categories();
@@ -53,7 +47,7 @@ class CategoriesFixtures extends Fixture
         $category->setParent($parent);
         $manager->persist($category);
 
-        $this->addReference('cat-'.$this->counter, $category);
+        $this->addReference('cat-' . $this->counter, $category);
         $this->counter++;
 
         return $category;

@@ -18,8 +18,8 @@ class ResetPasswordRequestFormType extends AbstractType
                 'label' => 'Entrez votre e-mail',
                 'attr' => [
                     'placeholder' => 'exemple@email.fr',
-                    'class' => 'form-control'
-                ]
+                    'class' => 'form-control',
+                ],
             ])
         ;
     }

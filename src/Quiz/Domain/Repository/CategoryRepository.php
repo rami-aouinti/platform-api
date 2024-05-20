@@ -35,6 +35,7 @@ class CategoryRepository extends ServiceEntityRepository
     {
         $category = new Category();
         $category->setLanguage($this->language);
+
         return $category;
     }
 
@@ -51,6 +52,7 @@ class CategoryRepository extends ServiceEntityRepository
         }
 
         $builder->orderBy('c.shortname', 'ASC');
+
         return $builder->getQuery()->getResult();
     }
 

@@ -11,8 +11,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Language
- *
  * @package App\Quiz\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -24,7 +22,7 @@ class Language
     #[ORM\Column(length: 2)]
     private ?string $id = null;
 
-    #[ORM\Column(length: 50, unique:true, nullable:false)]
+    #[ORM\Column(length: 50, unique: true, nullable: false)]
     private ?string $english_name;
 
     #[ORM\Column(length: 50)]
@@ -42,8 +40,6 @@ class Language
     #[ORM\OneToMany(mappedBy: 'language', targetEntity: Category::class)]
     private ArrayCollection $categories;
 
-
-
     public function __construct()
     {
         $this->questions = new ArrayCollection();
@@ -52,14 +48,14 @@ class Language
         $this->categories = new ArrayCollection();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
     public function __toString(): string
     {
         return $this->getNativeName();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     // public function getCode(): ?string
@@ -98,9 +94,6 @@ class Language
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getQuestions(): Collection
     {
         return $this->questions;
@@ -129,9 +122,6 @@ class Language
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getQuizzes(): Collection
     {
         return $this->quizzes;
@@ -160,9 +150,6 @@ class Language
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getUsers(): Collection
     {
         return $this->users;
@@ -191,9 +178,6 @@ class Language
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getCategories(): Collection
     {
         return $this->categories;

@@ -36,26 +36,31 @@ class QuestionType extends AbstractType
         switch ($options['form_type']) {
             case 'student_questioning':
             case 'student_marking':
-                $builder->add('text', TextareaType::class, array(
+                $builder->add('text', TextareaType::class, [
                     'label' => false,
                     'disabled' => true,
-                    'attr' => array('rows' => '7'),
-                ));
-                $builder->add('answers', CollectionType::class, array(
+                    'attr' => [
+                        'rows' => '7',
+                    ],
+                ]);
+                $builder->add('answers', CollectionType::class, [
                     'label' => false,
                     'entry_type' => AnswerType::class,
-                    'entry_options' => array('label' => false, 'form_type' => $options['form_type']),
-                ));
+                    'entry_options' => [
+                        'label' => false,
+                        'form_type' => $options['form_type'],
+                    ],
+                ]);
                 break;
             case 'teacher':
-                $builder->add('text', TextareaType::class, array(
+                $builder->add('text', TextareaType::class, [
                     'label' => $this->translator->trans('Question wording'),
-                ));
-                $builder->add('max_duration', IntegerType::class, array(
+                ]);
+                $builder->add('max_duration', IntegerType::class, [
                     'required' => false,
                     'label' => $this->translator->trans('Question max duration (seconds)'),
-                ));
-                $builder->add('categories', EntityType::class, array(
+                ]);
+                $builder->add('categories', EntityType::class, [
                     'class' => Category::class,
                     'query_builder' => function (CategoryRepository $repository) {
                         return $repository->createQueryBuilder('c')->andWhere('c.created_by = :created_by')->setParameter('created_by', $this->tokenStorage->getToken()->getUser())->andWhere('c.language = :language')->setParameter('language', $this->param->get('locale'))->orderBy('c.shortname', 'ASC');
@@ -66,27 +71,27 @@ class QuestionType extends AbstractType
                         'size' => 30,
                     ],
                     // 'expanded' => true, // render check-boxes
-                ));
-                $builder->add('answers', CollectionType::class, array(
+                ]);
+                $builder->add('answers', CollectionType::class, [
                     'entry_type' => AnswerType::class,
-                    'entry_options' => array(
+                    'entry_options' => [
                         'label' => false,
                         'form_type' => $options['form_type'],
-                    ),
+                    ],
                     'allow_add' => true,
                     'allow_delete' => true,
                     'by_reference' => false,
-                ));
+                ]);
                 break;
             case 'admin':
-                $builder->add('text', TextareaType::class, array(
+                $builder->add('text', TextareaType::class, [
                     'label' => $this->translator->trans('Question wording'),
-                ));
-                $builder->add('max_duration', IntegerType::class, array(
+                ]);
+                $builder->add('max_duration', IntegerType::class, [
                     'required' => false,
                     'label' => $this->translator->trans('Question max duration (seconds)'),
-                ));
-                $builder->add('categories', EntityType::class, array(
+                ]);
+                $builder->add('categories', EntityType::class, [
                     'class' => Category::class,
                     'query_builder' => function (CategoryRepository $repository) {
                         return $repository->createQueryBuilder('c')->andWhere('c.language = :language')->setParameter('language', $this->param->get('locale'))->orderBy('c.shortname', 'ASC');
@@ -97,17 +102,17 @@ class QuestionType extends AbstractType
                         'size' => 3,
                     ],
                     //'expanded' => true, // render check-boxes
-                ));
-                $builder->add('answers', CollectionType::class, array(
+                ]);
+                $builder->add('answers', CollectionType::class, [
                     'entry_type' => AnswerType::class,
-                    'entry_options' => array(
+                    'entry_options' => [
                         'label' => false,
                         'form_type' => $options['form_type'],
-                    ),
+                    ],
                     'allow_add' => true,
                     'allow_delete' => true,
                     'by_reference' => false,
-                ));
+                ]);
                 break;
         }
     }

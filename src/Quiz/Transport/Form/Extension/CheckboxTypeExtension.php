@@ -31,9 +31,9 @@ class CheckboxTypeExtension extends AbstractTypeExtension
     public function configureOptions(OptionsResolver $resolver)
     {
         // makes it legal for CheckboxType fields to have an label_property option
-        $resolver->setDefined(array('text_property'));
-        $resolver->setDefined(array('correct_given_property'));
-        $resolver->setDefined(array('correct_property'));
+        $resolver->setDefined(['text_property']);
+        $resolver->setDefined(['correct_given_property']);
+        $resolver->setDefined(['correct_property']);
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options)
@@ -44,9 +44,9 @@ class CheckboxTypeExtension extends AbstractTypeExtension
 
             $label = null;
             $value = false;
-            $labelAttr = array();
+            $labelAttr = [];
 
-            if (null !== $parentData) {
+            if ($parentData !== null) {
                 $accessor = PropertyAccess::createPropertyAccessor();
 
                 $label = $accessor->getValue($parentData, $options['text_property']);
@@ -59,11 +59,11 @@ class CheckboxTypeExtension extends AbstractTypeExtension
                     $view->vars['disabled'] = true;
                     $correct_property = $accessor->getValue($parentData, $options['correct_property']);
                     if ($correct_property) {
-                        $labelAttr = array('class' => 'alert-success');
+                        $labelAttr = [
+                            'class' => 'alert-success',
+                        ];
                     }
-                    else {
-                        //$labelAttr = array('class' => 'alert-danger');
-                    }
+                    //$labelAttr = array('class' => 'alert-danger');
                 }
             }
 
@@ -73,5 +73,4 @@ class CheckboxTypeExtension extends AbstractTypeExtension
             $view->vars['label_attr'] = $labelAttr;
         }
     }
-
 }

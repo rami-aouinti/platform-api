@@ -60,6 +60,7 @@ class SchoolController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
+
             return $this->redirectToRoute('school_index');
         }
 
@@ -76,7 +77,7 @@ class SchoolController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_SUPER_ADMIN', null, 'Access not allowed');
 
-        if ($this->isCsrfTokenValid('delete'.$school->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $school->getId(), $request->request->get('_token'))) {
             $em->remove($school);
             $em->flush();
         }
@@ -93,5 +94,4 @@ class SchoolController extends AbstractController
             'school' => $school,
         ]);
     }
-
 }

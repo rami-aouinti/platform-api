@@ -41,11 +41,12 @@ class QuizRepository extends ServiceEntityRepository
     {
         $quiz = new Quiz();
         $quiz->setLanguage($this->language);
-        $commentLines = "0-24: " . $this->translator->trans("Your result is not enough, please review and redo this quiz.") . "\n";
-        $commentLines = $commentLines . "25-50: " . $this->translator->trans("Your result is fairly average, we advise you to review the questions on which you made mistakes, then redo this quiz.") . "\n";
-        $commentLines = $commentLines . "51-75: " . $this->translator->trans("Good result. You have acquired most of the concepts covered in this quiz.") . "\n";
-        $commentLines = $commentLines . "76-100: " . $this->translator->trans("Congratulations! Your answers showed that you have a good knowledge of the concepts covered in this quiz.") . "\n";
+        $commentLines = '0-24: ' . $this->translator->trans('Your result is not enough, please review and redo this quiz.') . "\n";
+        $commentLines = $commentLines . '25-50: ' . $this->translator->trans('Your result is fairly average, we advise you to review the questions on which you made mistakes, then redo this quiz.') . "\n";
+        $commentLines = $commentLines . '51-75: ' . $this->translator->trans('Good result. You have acquired most of the concepts covered in this quiz.') . "\n";
+        $commentLines = $commentLines . '76-100: ' . $this->translator->trans('Congratulations! Your answers showed that you have a good knowledge of the concepts covered in this quiz.') . "\n";
         $quiz->setResultQuizComment($commentLines);
+
         return $quiz;
     }
 
@@ -60,6 +61,7 @@ class QuizRepository extends ServiceEntityRepository
         $builder->setParameter('language', $this->language);
 
         $builder->orderBy('q.title', 'ASC');
+
         return $builder->getQuery()->getOneOrNullResult();
     }
 
@@ -79,6 +81,7 @@ class QuizRepository extends ServiceEntityRepository
         }
 
         $builder->orderBy('q.title', 'ASC');
+
         return $builder->getQuery()->getOneOrNullResult();
     }
 
@@ -101,6 +104,7 @@ class QuizRepository extends ServiceEntityRepository
 
         $builder->orderBy('q.active', 'DESC');
         $builder->addOrderBy('q.title', 'ASC');
+
         return $builder->getQuery()->getResult();
     }
 
@@ -125,7 +129,7 @@ class QuizRepository extends ServiceEntityRepository
         }
 
         $builder->orderBy('q.title', 'ASC');
+
         return $builder->getQuery()->getResult();
     }
-
 }

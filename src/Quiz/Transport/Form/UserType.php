@@ -31,13 +31,13 @@ class UserType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
         switch ($options['form_type']) {
             case 'login':
                 // $builder->add('username', TextType::class);
-                $builder->add('plainPassword', PasswordType::class, array('label' => $this->translator->trans('Password')));
+                $builder->add('plainPassword', PasswordType::class, [
+                    'label' => $this->translator->trans('Password'),
+                ]);
                 break;
-
             case 'new':
                 $builder->add('username', TextType::class);
                 $builder->add('email', EmailType::class);
@@ -48,26 +48,30 @@ class UserType extends AbstractType
                     RepeatedType::class,
                     [
                         'type' => PasswordType::class,
-                        'first_options'  => array('label' => $this->translator->trans('Password')),
-                        'second_options' => array('label' => $this->translator->trans('Repeat Password'))
+                        'first_options' => [
+                            'label' => $this->translator->trans('Password'),
+                        ],
+                        'second_options' => [
+                            'label' => $this->translator->trans('Repeat Password'),
+                        ],
                     ]
                 );
                 if ($this->checker->isGranted('ROLE_SUPER_ADMIN')) {
-                    $builder->add('roles', ChoiceType::class, array(
+                    $builder->add('roles', ChoiceType::class, [
                         'multiple' => true,
                         'expanded' => true, // render check-boxes
-                        'choices' => array(
+                        'choices' => [
                             'Teacher' => 'ROLE_TEACHER',
                             'Admin' => 'ROLE_ADMIN',
                             'Super admin' => 'ROLE_SUPER_ADMIN',
-                        ),
-                    ));
+                        ],
+                    ]);
                 }
-                $builder->add('isActive', CheckboxType::class, array(
+                $builder->add('isActive', CheckboxType::class, [
                     'required' => false,
                     'label' => $this->translator->trans('Account activated'),
-                ));
-                $builder->add('groups', EntityType::class, array(
+                ]);
+                $builder->add('groups', EntityType::class, [
                     'class' => Group::class,
                     // 'query_builder' => function (GroupRepository $er) {
                     //     return $er->createQueryBuilder('c')->andWhere('c.language = :language')->setParameter('language', $this->param->get('locale'))->orderBy('c.shortname', 'ASC');
@@ -75,30 +79,29 @@ class UserType extends AbstractType
                     'choice_label' => 'name',
                     'multiple' => true,
                     // 'expanded' => true, // render check-boxes
-                ));
+                ]);
                 $builder->add('toReceiveMyResultByEmail', CheckboxType::class, [
                     'label' => $this->translator->trans('To receive result by email'),
                     'required' => false,
                 ]);
                 break;
-
             case 'update':
                 $builder->add('username', TextType::class);
                 $builder->add('email', EmailType::class);
                 $builder->add('firstname', TextType::class);
                 $builder->add('lastname', TextType::class);
                 if ($this->checker->isGranted('ROLE_SUPER_ADMIN')) {
-                    $builder->add('roles', ChoiceType::class, array(
+                    $builder->add('roles', ChoiceType::class, [
                         'multiple' => true,
                         'expanded' => true, // render check-boxes
-                        'choices' => array(
+                        'choices' => [
                             'Teacher' => 'ROLE_TEACHER',
                             'Admin' => 'ROLE_ADMIN',
                             'Super admin' => 'ROLE_SUPER_ADMIN',
-                        ),
-                    ));
+                        ],
+                    ]);
                 }
-                $builder->add('groups', EntityType::class, array(
+                $builder->add('groups', EntityType::class, [
                     'class' => Group::class,
                     // 'query_builder' => function (GroupRepository $er) {
                     //     return $er->createQueryBuilder('c')->andWhere('c.language = :language')->setParameter('language', $this->param->get('locale'))->orderBy('c.shortname', 'ASC');
@@ -106,15 +109,15 @@ class UserType extends AbstractType
                     'choice_label' => 'name',
                     'multiple' => true,
                     'required' => false,
-                ));
-                $builder->add('isActive', CheckboxType::class, array(
+                ]);
+                $builder->add('isActive', CheckboxType::class, [
                     'required' => false,
                     'label' => $this->translator->trans('Account activated'),
-                ));
-                $builder->add('isVerified', CheckboxType::class, array(
+                ]);
+                $builder->add('isVerified', CheckboxType::class, [
                     'required' => false,
                     'label' => $this->translator->trans('Email address verified'),
-                ));
+                ]);
                 $builder->add('toReceiveMyResultByEmail', CheckboxType::class, [
                     'label' => $this->translator->trans('To receive result by email'),
                     'required' => false,
@@ -131,47 +134,51 @@ class UserType extends AbstractType
                 //     );
                 // }
                 break;
-                case 'profile':
-                    $builder->add('lastname', TextType::class, array(
-                        'attr' => array(
-                            'readonly' => false,
-                        ),
-                    ));
-                    $builder->add('firstname', TextType::class, array(
-                        'attr' => array(
-                            'readonly' => false,
-                        ),
-                    ));
-                    $builder->add('username', TextType::class, array(
-                        'attr' => array(
-                            'readonly' => true,
-                            'class' => 'bg-light',
-                        ),
-                    ));
-                    $builder->add('email', TextType::class, array(
-                        'attr' => array(
-                            'readonly' => true,
-                            'class' => 'bg-light',
-                        ),
-                    ));
-                    $builder->add('toReceiveMyResultByEmail', CheckboxType::class, [
-                        'label' => $this->translator->trans('To receive my result by email'),
-                        'required' => false,
-                    ]);
-                    break;
-            case 'password':
-                $builder->add('email', TextType::class, array(
-                    'attr' => array(
+            case 'profile':
+                $builder->add('lastname', TextType::class, [
+                    'attr' => [
+                        'readonly' => false,
+                    ],
+                ]);
+                $builder->add('firstname', TextType::class, [
+                    'attr' => [
+                        'readonly' => false,
+                    ],
+                ]);
+                $builder->add('username', TextType::class, [
+                    'attr' => [
                         'readonly' => true,
-                    ),
-                ));
+                        'class' => 'bg-light',
+                    ],
+                ]);
+                $builder->add('email', TextType::class, [
+                    'attr' => [
+                        'readonly' => true,
+                        'class' => 'bg-light',
+                    ],
+                ]);
+                $builder->add('toReceiveMyResultByEmail', CheckboxType::class, [
+                    'label' => $this->translator->trans('To receive my result by email'),
+                    'required' => false,
+                ]);
+                break;
+            case 'password':
+                $builder->add('email', TextType::class, [
+                    'attr' => [
+                        'readonly' => true,
+                    ],
+                ]);
                 $builder->add(
                     'plainPassword',
                     RepeatedType::class,
                     [
                         'type' => PasswordType::class,
-                        'first_options'  => array('label' => $this->translator->trans('Password')),
-                        'second_options' => array('label' => $this->translator->trans('Repeat Password'))
+                        'first_options' => [
+                            'label' => $this->translator->trans('Password'),
+                        ],
+                        'second_options' => [
+                            'label' => $this->translator->trans('Repeat Password'),
+                        ],
                     ]
                 );
                 break;

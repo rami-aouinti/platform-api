@@ -41,7 +41,7 @@ class ConfigurationRepository extends ServiceEntityRepository
         }
     }
 
-    public function getValue($value): ?String
+    public function getValue($value): ?string
     {
         $const = $this->createQueryBuilder('c')
             ->andWhere('c.const = :val')
@@ -51,33 +51,33 @@ class ConfigurationRepository extends ServiceEntityRepository
         ;
         if (isset($const)) {
             return $const->getValue();
-        } else {
-            return null;
         }
+
+        return null;
     }
 
-//    /**
-//     * @return Configuration[] Returns an array of Configuration objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    //    /**
+    //     * @return Configuration[] Returns an array of Configuration objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('c')
+    //            ->andWhere('c.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('c.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
 
-//    public function findOneBySomeField($value): ?Configuration
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    //    public function findOneBySomeField($value): ?Configuration
+    //    {
+    //        return $this->createQueryBuilder('c')
+    //            ->andWhere('c.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }

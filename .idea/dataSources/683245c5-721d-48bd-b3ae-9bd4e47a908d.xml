@@ -1077,7 +1077,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     </schema>
     <schema id="292" parent="1" name="symfony">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2024-05-20.02:03:53</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2024-05-20.02:13:02</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <schema id="293" parent="1" name="symfony_testing">
@@ -1515,7 +1515,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="394" parent="302" name="id">
-      <AutoIncrement>1</AutoIncrement>
+      <AutoIncrement>101</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -2157,7 +2157,7 @@ tag_id</ColNames>
       <UnderlyingIndexName>UNIQ_839C399B5E237E06</UnderlyingIndexName>
     </key>
     <column id="521" parent="312" name="id">
-      <AutoIncrement>1972</AutoIncrement>
+      <AutoIncrement>819</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -2504,7 +2504,7 @@ name</ColNames>
       <UnderlyingIndexName>UNIQ_F44CFF2B5E237E06</UnderlyingIndexName>
     </key>
     <column id="591" parent="318" name="id">
-      <AutoIncrement>14</AutoIncrement>
+      <AutoIncrement>7</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -3128,7 +3128,7 @@ name</ColNames>
       <UnderlyingIndexName>UNIQ_96CDAB2A2989F1FD5E237E06</UnderlyingIndexName>
     </key>
     <column id="720" parent="326" name="id">
-      <AutoIncrement>155</AutoIncrement>
+      <AutoIncrement>72</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -3471,7 +3471,7 @@ team_id</ColNames>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="789" parent="331" name="id">
-      <AutoIncrement>718</AutoIncrement>
+      <AutoIncrement>923</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -3543,7 +3543,7 @@ team_id</ColNames>
       <UnderlyingIndexName>UNIQ_D9F77C285E237E06</UnderlyingIndexName>
     </key>
     <column id="804" parent="333" name="id">
-      <AutoIncrement>4181</AutoIncrement>
+      <AutoIncrement>3305</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -3867,7 +3867,7 @@ name</ColNames>
       <UnderlyingIndexName>UNIQ_8DCEDEB4A76ED3955E237E06</UnderlyingIndexName>
     </key>
     <column id="868" parent="337" name="id">
-      <AutoIncrement>41</AutoIncrement>
+      <AutoIncrement>37</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -5744,7 +5744,7 @@ user_group_id</ColNames>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="1250" parent="364" name="id">
-      <AutoIncrement>1</AutoIncrement>
+      <AutoIncrement>11</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>

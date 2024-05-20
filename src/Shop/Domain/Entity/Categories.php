@@ -11,8 +11,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Categories
- *
  * @package App\Shop\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -89,9 +87,6 @@ class Categories
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getCategories(): Collection
     {
         return $this->categories;
@@ -119,9 +114,6 @@ class Categories
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getProducts(): Collection
     {
         return $this->products;

@@ -46,7 +46,7 @@ final class ActivityValidator extends ConstraintValidator
         if ((bool)$this->systemConfiguration->find('activity.allow_duplicate_number') === false && (($number = $value->getNumber()) !== null)) {
             foreach (
                 $this->activityRepository->findBy([
-                'number' => $number,
+                    'number' => $number,
                 ]) as $tmp
             ) {
                 if ($tmp->getId() !== $value->getId()) {

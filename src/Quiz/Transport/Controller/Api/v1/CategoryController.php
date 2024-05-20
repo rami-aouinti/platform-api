@@ -28,7 +28,9 @@ class CategoryController extends AbstractController
 
         $categories = $categoryRepository->findAll($this->isGranted('ROLE_TEACHER'), $this->isGranted('ROLE_ADMIN'));
 
-        return $this->render('category/index.html.twig', ['categories' => $categories]);
+        return $this->render('category/index.html.twig', [
+            'categories' => $categories,
+        ]);
     }
 
     /**
@@ -48,8 +50,11 @@ class CategoryController extends AbstractController
             $em->persist($category);
             $em->flush();
             $this->addFlash('success', sprintf($translator->trans('Category "%s" is created.'), $category->getShortname()));
+
             // return $this->redirectToRoute('category_index');
-            return $this->redirectToRoute('question_new', ['category' => $category->getId()]);
+            return $this->redirectToRoute('question_new', [
+                'category' => $category->getId(),
+            ]);
         }
 
         return $this->render('category/new.html.twig', [
@@ -71,7 +76,10 @@ class CategoryController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
             $this->addFlash('success', sprintf($translator->trans('Category "%s" is updated.'), $category->getShortname()));
-            return $this->redirectToRoute('category_edit', ['id' => $category->getId()]);
+
+            return $this->redirectToRoute('category_edit', [
+                'id' => $category->getId(),
+            ]);
         }
 
         return $this->render('category/edit.html.twig', [
@@ -87,7 +95,7 @@ class CategoryController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Access not allowed');
 
-        if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->request->get('_token'))) {
             $em->remove($category);
             $em->flush();
             $this->addFlash('success', sprintf($translator->trans('Category "%s" is deleted.'), $category->getShortname()));
@@ -103,7 +111,8 @@ class CategoryController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_USER', null, 'Access not allowed');
 
-        return $this->render('category/show.html.twig', ['category' => $category]);
+        return $this->render('category/show.html.twig', [
+            'category' => $category,
+        ]);
     }
-
 }

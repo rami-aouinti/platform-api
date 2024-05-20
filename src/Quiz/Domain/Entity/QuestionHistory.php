@@ -10,8 +10,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class QuestionHistory
- *
  * @package App\Quiz\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -24,7 +22,7 @@ class QuestionHistory
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Workout::class, inversedBy:'questionsHistory')]
+    #[ORM\ManyToOne(targetEntity: Workout::class, inversedBy: 'questionsHistory')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Workout $workout;
 
@@ -51,7 +49,6 @@ class QuestionHistory
 
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $ended_at;
-
 
     public function __construct()
     {
@@ -135,9 +132,6 @@ class QuestionHistory
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getAnswersHistory(): Collection
     {
         return $this->answersHistory;

@@ -45,7 +45,7 @@ or
   <info>php %command.full_name% --format certificationy --category 'Symfony 3' /home/user/architecture.yml silent</info>
 
 EOT
-        );
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -65,7 +65,7 @@ EOT
                 $io->note(sprintf('Import data from file: "%s"', $file));
             }
         } else {
-            throw new \LogicException(sprintf("The file must be provided. Pass --help to see options."));
+            throw new \LogicException(sprintf('The file must be provided. Pass --help to see options.'));
         }
 
         if ($format) {
@@ -73,7 +73,7 @@ EOT
                 $io->note(sprintf('Import format: "%s"', $format));
             }
         } else {
-            throw new \LogicException(sprintf("The format must be provided. Pass --help to see options."));
+            throw new \LogicException(sprintf('The format must be provided. Pass --help to see options.'));
         }
 
         if ($category) {
@@ -93,7 +93,6 @@ EOT
             case 'certificationy':
                 $result = $this->importCertificationy($output, $format, $file, $language, $category);
                 break;
-
             default:
                 $io->error('Not yet implemented');
                 break;
@@ -103,8 +102,7 @@ EOT
             if (!$silent) {
                 $io->success(sprintf('Import from "%s" file completed!', $file));
             }
-        }
-        else {
+        } else {
             $io->error(sprintf('Error durring import from "%s" file.', $file));
         }
     }
@@ -117,12 +115,12 @@ EOT
 
         if ($persistedCategory) {
             return $persistedCategory;
-        } else {
-            $joliquizCategory = new Category($category);
-            $joliquizCategory->setLanguage($joliquizLanguage);
-            $this->em->persist($joliquizCategory);
-            return $joliquizCategory;
         }
+        $joliquizCategory = new Category($category);
+        $joliquizCategory->setLanguage($joliquizLanguage);
+        $this->em->persist($joliquizCategory);
+
+        return $joliquizCategory;
     }
 
     protected function getLanguage($language)
@@ -133,7 +131,7 @@ EOT
         return $this->em->getReference(Language::class, $language);
     }
 
-    protected function importCertificationy($output, $format, $file, $language, $secondCategory=null)
+    protected function importCertificationy($output, $format, $file, $language, $secondCategory = null)
     {
         $data = Yaml::parseFile($file);
         $questions = $data['questions'];
@@ -159,7 +157,7 @@ EOT
         $progress->start();
 
         foreach ($questions as $question) {
-            $answers = array();
+            $answers = [];
 
             $joliquizQuestion = new Question();
             $joliquizQuestion->addCategory($joliquizCategory);

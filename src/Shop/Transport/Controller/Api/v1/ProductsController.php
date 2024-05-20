@@ -10,8 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class ProductsController
- *
  * @package App\Shop\Transport\Controller\Api\v1
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

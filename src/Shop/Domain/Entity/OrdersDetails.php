@@ -8,8 +8,6 @@ use App\Shop\Domain\Repository\OrdersDetailsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class OrdersDetails
- *
  * @package App\Shop\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

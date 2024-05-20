@@ -146,12 +146,6 @@ final class LoadUserData extends Fixture implements OrderedFixtureInterface
         return true;
     }
 
-    /**
-     * @param $manager
-     * @param $user
-     *
-     * @return void
-     */
     private function createSetting($manager, $user): void
     {
         $setting = new Setting();

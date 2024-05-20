@@ -6,8 +6,8 @@ namespace App\Quiz\Transport\Controller\Api\v1;
 
 use App\Quiz\Domain\Entity\Group;
 use App\Quiz\Domain\Repository\GroupRepository;
-use App\User\Infrastructure\Repository\UserRepository;
 use App\Quiz\Transport\Form\GroupType;
+use App\User\Infrastructure\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\Exception\ORMException;
@@ -65,6 +65,7 @@ class GroupController extends AbstractController
             }
             ////////////////////////////////////////////////
             $em->flush();
+
             return $this->redirectToRoute('group_index');
         }
 
@@ -76,13 +77,8 @@ class GroupController extends AbstractController
 
     /**
      * @Route("/{id}/edit", name="group_edit", methods={"GET","POST"})
-     * @param Request                $request
-     * @param Group                  $group
-     * @param EntityManagerInterface $em
-     * @param UserRepository         $userRepository
      *
      * @throws NotSupported
-     * @return Response
      */
     public function edit(Request $request, Group $group, EntityManagerInterface $em, UserRepository $userRepository): Response
     {
@@ -110,7 +106,9 @@ class GroupController extends AbstractController
             ////////////////////////////////////////////////
             $em->flush();
 
-            return $this->redirectToRoute('user_index', ['group' => $group->getId()]);
+            return $this->redirectToRoute('user_index', [
+                'group' => $group->getId(),
+            ]);
         }
 
         return $this->render('group/edit.html.twig', [
@@ -136,15 +134,10 @@ class GroupController extends AbstractController
 
     /**
      * @Route("remove_user/{id}", name="group_remove_user", methods={"GET"})
-     * @param Request                $request
-     * @param Group                  $group
-     * @param UserRepository         $userRepository
-     * @param EntityManagerInterface $em
      *
      * @throws ORMException
      * @throws OptimisticLockException
      * @throws TransactionRequiredException
-     * @return Response
      */
     public function remove_user(Request $request, Group $group, UserRepository $userRepository, EntityManagerInterface $em): Response
     {
@@ -152,13 +145,15 @@ class GroupController extends AbstractController
 
         $groupId = $group->getId();
         $userId = $request->query->get('user');
-        if ($userId > 0 ) {
+        if ($userId > 0) {
             $user = $userRepository->find($userId);
             $group->removeUser($user);
         }
         $em->flush();
 
-        return $this->redirectToRoute('user_index', ['group' => $groupId]);
+        return $this->redirectToRoute('user_index', [
+            'group' => $groupId,
+        ]);
     }
 
     /**
@@ -170,5 +165,4 @@ class GroupController extends AbstractController
             'group' => $group,
         ]);
     }
-
 }

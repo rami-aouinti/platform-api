@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\Shop\Transport\Controller\Api\v1;
 
 use App\Shop\Domain\Entity\Products;
@@ -11,8 +12,6 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class CartController
- *
  * @package App\Shop\Transport\Controller\Api\v1
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -20,9 +19,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class CartController extends AbstractController
 {
     /**
-     * @param SessionInterface   $session
-     * @param ProductsRepository $productsRepository
-     *
      * @return Response
      */
     #[Route('/', name: 'index')]
@@ -34,19 +30,18 @@ class CartController extends AbstractController
         $data = [];
         $total = 0;
 
-        foreach($panier as $id => $quantity){
+        foreach ($panier as $id => $quantity) {
             $product = $productsRepository->find($id);
 
             $data[] = [
                 'product' => $product,
-                'quantity' => $quantity
+                'quantity' => $quantity,
             ];
             $total += $product->getPrice() * $quantity;
         }
 
         return $this->render('cart/index.html.twig', compact('data', 'total'));
     }
-
 
     #[Route('/add/{id}', name: 'add')]
     public function add(Products $product, SessionInterface $session)
@@ -59,9 +54,9 @@ class CartController extends AbstractController
 
         // On ajoute le produit dans le panier s'il n'y est pas encore
         // Sinon on incrémente sa quantité
-        if(empty($panier[$id])){
+        if (empty($panier[$id])) {
             $panier[$id] = 1;
-        }else{
+        } else {
             $panier[$id]++;
         }
 
@@ -82,10 +77,10 @@ class CartController extends AbstractController
 
         // On retire le produit du panier s'il n'y a qu'1 exemplaire
         // Sinon on décrémente sa quantité
-        if(!empty($panier[$id])){
-            if($panier[$id] > 1){
+        if (!empty($panier[$id])) {
+            if ($panier[$id] > 1) {
                 $panier[$id]--;
-            }else{
+            } else {
                 unset($panier[$id]);
             }
         }
@@ -105,7 +100,7 @@ class CartController extends AbstractController
         // On récupère le panier existant
         $panier = $session->get('panier', []);
 
-        if(!empty($panier[$id])){
+        if (!empty($panier[$id])) {
             unset($panier[$id]);
         }
 

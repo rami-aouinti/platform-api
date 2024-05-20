@@ -21,7 +21,6 @@ class WorkoutRepository extends ServiceEntityRepository
         parent::__construct($registry, Workout::class);
     }
 
-
     public function findLastNotCompletedByStudent($user): ?Workout
     {
         return $this->createQueryBuilder('w')
@@ -53,6 +52,7 @@ class WorkoutRepository extends ServiceEntityRepository
                 $builder->orderBy('w.started_at', 'ASC');
                 break;
         }
+
         // $builder->addOrderBy('w.score', 'DESC')
         // $builder->addOrderBy('w.ended_at', 'DESC')
         return $builder->getQuery()->getResult();
@@ -66,6 +66,7 @@ class WorkoutRepository extends ServiceEntityRepository
         $builder->groupBy('w.student')
             ->orderBy('w.score', 'DESC')
             ->addOrderBy('TIME_DIFF(w.ended_at, w.started_at, \'second\')', 'ASC');
+
         return $builder->getQuery()->setMaxResults(3)->getResult();
     }
 
@@ -90,11 +91,11 @@ class WorkoutRepository extends ServiceEntityRepository
                 $builder->orderBy('w.started_at', 'ASC');
                 break;
         }
+
         // $builder->addOrderBy('w.score', 'DESC')
         // $builder->addOrderBy('w.ended_at', 'DESC')
         return $builder->getQuery()->getResult();
     }
-
 
     public function findFirstThreeByQuizAndSession($quiz, $session): ?array
     {
@@ -112,7 +113,6 @@ class WorkoutRepository extends ServiceEntityRepository
             ->setMaxResults(3)
             ->getResult();
     }
-
 
     //    /**
     //     * @return Workout[] Returns an array of Workout objects

@@ -11,8 +11,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Session
- *
  * @package App\Quiz\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -31,7 +29,7 @@ class Session
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $ended_at;
 
-    #[ORM\ManyToOne(targetEntity: Quiz::class, inversedBy:'sessions')]
+    #[ORM\ManyToOne(targetEntity: Quiz::class, inversedBy: 'sessions')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Quiz $quiz;
 
@@ -41,7 +39,8 @@ class Session
     #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $sended_to_ed;
 
-    public function __construct(Quiz $quiz, DateTime $started_at) {
+    public function __construct(Quiz $quiz, DateTime $started_at)
+    {
         $this->setQuiz($quiz);
         $this->setStartedAt($started_at);
         $this->workouts = new ArrayCollection();
@@ -88,9 +87,6 @@ class Session
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getWorkouts(): Collection
     {
         return $this->workouts;
@@ -129,5 +125,4 @@ class Session
 
         return $this;
     }
-
 }

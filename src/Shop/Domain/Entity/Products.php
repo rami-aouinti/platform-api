@@ -13,8 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class Products
- *
  * @package App\Shop\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -131,9 +129,6 @@ class Products
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getImages(): Collection
     {
         return $this->images;
@@ -161,9 +156,6 @@ class Products
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getOrdersDetails(): Collection
     {
         return $this->ordersDetails;

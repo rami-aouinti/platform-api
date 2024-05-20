@@ -12,8 +12,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Orders
- *
  * @package App\Shop\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -87,9 +85,6 @@ class Orders
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getOrdersDetails(): Collection
     {
         return $this->ordersDetails;

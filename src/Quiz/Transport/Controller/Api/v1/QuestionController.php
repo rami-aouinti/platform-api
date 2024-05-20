@@ -24,45 +24,55 @@ class QuestionController extends AbstractController
     /**
      * @Route("/", defaults={"page": "1"}, name="question_index", methods="GET")
      * @Route("/page/{page}", requirements={"page": "[1-9]\d*"}, methods={"GET"}, name="question_index_paginated")
-     * @param int                    $page
-     * @param QuestionRepository     $questionRepository
-     * @param CategoryRepository     $categoryRepository
-     * @param Request                $request
-     * @param EntityManagerInterface $em
      *
      * @throws Exception
-     * @return Response
      */
     public function index(int $page, QuestionRepository $questionRepository, CategoryRepository $categoryRepository, Request $request, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted('ROLE_TEACHER', null, 'Access not allowed');
 
         $categoryId = $request->query->get('category');
-        $categoryLongName = "";
-        $categoryShortName = "";
-        if ($categoryId > 0 ) {
+        $categoryLongName = '';
+        $categoryShortName = '';
+        if ($categoryId > 0) {
             $page = -1;
             $questions = $questionRepository->findAllByCategories([$categoryId], $page, $this->isGranted('ROLE_TEACHER'), $this->isGranted('ROLE_ADMIN'));
             $category = $categoryRepository->find($categoryId);
             $categoryLongName = $category->getLongName();
-            $categoryShortName =  $category->getShortName();
-            return $this->render('question/index.html.twig', ['page' => $page, 'questions' => $questions, 'category_id' => $categoryId, 'category_long_name' => $categoryLongName, 'category_short_name' => $categoryShortName]);
-        }
-        else {
-            $onlyOrphan = $request->query->get('only-orphan');
-            if ( ($this->isGranted('ROLE_ADMIN')) && (intval($onlyOrphan) > 0) ) {
+            $categoryShortName = $category->getShortName();
 
-                $RAW_QUERY = 'SELECT platform_quiz_question.* FROM platform_quiz_question WHERE id NOT IN (SELECT question_id as id FROM platform_quiz_question_category);';
-                $statement = $em->getConnection()->prepare($RAW_QUERY);
-                $questions = $statement->executeQuery()->fetchAllAssociative();
-
-                // dump($questions);
-                return $this->render('question/index_onlyorphan.html.twig', ['page' => $page, 'questions' => $questions, 'category_id' => $categoryId, 'category_long_name' => $categoryLongName, 'category_short_name' => $categoryShortName]);
-            } else {
-                $questions = $questionRepository->findAll($page, $this->isGranted('ROLE_TEACHER'), $this->isGranted('ROLE_ADMIN'));
-                return $this->render('question/index.html.twig', ['page' => $page, 'questions' => $questions, 'category_id' => $categoryId, 'category_long_name' => $categoryLongName, 'category_short_name' => $categoryShortName]);
-            }
+            return $this->render('question/index.html.twig', [
+                'page' => $page,
+                'questions' => $questions,
+                'category_id' => $categoryId,
+                'category_long_name' => $categoryLongName,
+                'category_short_name' => $categoryShortName,
+            ]);
         }
+        $onlyOrphan = $request->query->get('only-orphan');
+        if (($this->isGranted('ROLE_ADMIN')) && (intval($onlyOrphan) > 0)) {
+            $RAW_QUERY = 'SELECT platform_quiz_question.* FROM platform_quiz_question WHERE id NOT IN (SELECT question_id as id FROM platform_quiz_question_category);';
+            $statement = $em->getConnection()->prepare($RAW_QUERY);
+            $questions = $statement->executeQuery()->fetchAllAssociative();
+
+            // dump($questions);
+            return $this->render('question/index_onlyorphan.html.twig', [
+                'page' => $page,
+                'questions' => $questions,
+                'category_id' => $categoryId,
+                'category_long_name' => $categoryLongName,
+                'category_short_name' => $categoryShortName,
+            ]);
+        }
+        $questions = $questionRepository->findAll($page, $this->isGranted('ROLE_TEACHER'), $this->isGranted('ROLE_ADMIN'));
+
+        return $this->render('question/index.html.twig', [
+            'page' => $page,
+            'questions' => $questions,
+            'category_id' => $categoryId,
+            'category_long_name' => $categoryLongName,
+            'category_short_name' => $categoryShortName,
+        ]);
     }
 
     /**
@@ -84,14 +94,17 @@ class QuestionController extends AbstractController
         }
 
         if ($this->isGranted('ROLE_ADMIN')) {
-            $form = $this->createForm(QuestionType::class, $question, array('form_type'=>'admin'));
+            $form = $this->createForm(QuestionType::class, $question, [
+                'form_type' => 'admin',
+            ]);
         } else {
-            $form = $this->createForm(QuestionType::class, $question, array('form_type'=>'teacher'));
+            $form = $this->createForm(QuestionType::class, $question, [
+                'form_type' => 'teacher',
+            ]);
         }
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $question->setCreatedBy($this->getUser());
             $em->persist($question);
 
@@ -117,9 +130,13 @@ class QuestionController extends AbstractController
                 $newQuestion->addCategory($newCategory);
             }
             if ($this->isGranted('ROLE_ADMIN')) {
-                $form = $this->createForm(QuestionType::class, $newQuestion, array('form_type'=>'admin'));
+                $form = $this->createForm(QuestionType::class, $newQuestion, [
+                    'form_type' => 'admin',
+                ]);
             } else {
-                $form = $this->createForm(QuestionType::class, $newQuestion, array('form_type'=>'teacher'));
+                $form = $this->createForm(QuestionType::class, $newQuestion, [
+                    'form_type' => 'teacher',
+                ]);
             }
         }
 
@@ -141,11 +158,12 @@ class QuestionController extends AbstractController
         if ($this->isGranted('ROLE_ADMIN')) {
             $formType = 'admin';
         }
-        $form = $this->createForm(QuestionType::class, $question, array('form_type'=>$formType));
+        $form = $this->createForm(QuestionType::class, $question, [
+            'form_type' => $formType,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $question->setUpdatedAt(new \DateTime());
 
             foreach ($question->getAnswers() as $answer) {
@@ -156,7 +174,9 @@ class QuestionController extends AbstractController
 
             $this->addFlash('success', sprintf($translator->trans('Question #%s is updated.'), $question->getId()));
 
-            return $this->redirectToRoute('question_edit', ['id' => $question->getId()]);
+            return $this->redirectToRoute('question_edit', [
+                'id' => $question->getId(),
+            ]);
         }
         $questionFirstCategory = $question->getFirstCategory();
         if (isset($questionFirstCategory)) {
@@ -164,7 +184,6 @@ class QuestionController extends AbstractController
         } else {
             $questionFirstCategoryId = 0;
         }
-
 
         return $this->render('question/edit.html.twig', [
             'question' => $question,
@@ -182,7 +201,7 @@ class QuestionController extends AbstractController
 
         $categoryId = $request->query->get('category');
 
-        if ($this->isCsrfTokenValid('delete'.$question->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $question->getId(), $request->request->get('_token'))) {
             $em->remove($question);
             $em->flush();
 
@@ -191,10 +210,12 @@ class QuestionController extends AbstractController
         }
 
         if ($categoryId > 0) {
-            return $this->redirectToRoute('question_index', ['category' => $categoryId]);
-        } else {
-            return $this->redirectToRoute('question_index');
+            return $this->redirectToRoute('question_index', [
+                'category' => $categoryId,
+            ]);
         }
+
+        return $this->redirectToRoute('question_index');
     }
 
     /**
@@ -204,7 +225,8 @@ class QuestionController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_TEACHER', null, 'Access not allowed');
 
-        return $this->render('question/show.html.twig', ['question' => $question]);
+        return $this->render('question/show.html.twig', [
+            'question' => $question,
+        ]);
     }
-
 }

@@ -14,8 +14,6 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Quiz
- *
  * @package App\Quiz\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -50,7 +48,7 @@ class Quiz
     #[ORM\JoinColumn(nullable: true)]
     private ?User $created_by = null;
 
-    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy:'quizzes')]
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'quizzes')]
     #[ORM\JoinTable(name: 'platform_quiz_quiz_category')]
     private ArrayCollection $categories;
 
@@ -63,7 +61,7 @@ class Quiz
     #[ORM\Column(type: 'boolean')]
     private ?bool $show_result_quiz;
 
-    #[ORM\ManyToOne(targetEntity: Language::class, inversedBy:'quizzes')]
+    #[ORM\ManyToOne(targetEntity: Language::class, inversedBy: 'quizzes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Language $language;
 
@@ -213,9 +211,6 @@ class Quiz
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getCategories(): Collection
     {
         return $this->categories;
@@ -239,9 +234,6 @@ class Quiz
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getWorkouts(): Collection
     {
         return $this->workouts;
@@ -366,24 +358,18 @@ class Quiz
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getSessions(): Collection
     {
         return $this->sessions;
     }
 
-    /**
-     * @return Session
-     */
     public function getLastSession(): Session
     {
         if ($this->sessions->last()) {
             return $this->sessions->last();
-        } else {
-            return new Session($this, new DateTime());
         }
+
+        return new Session($this, new DateTime());
     }
 
     public function addSession(Session $session): self
@@ -420,6 +406,4 @@ class Quiz
 
         return $this;
     }
-
-
 }

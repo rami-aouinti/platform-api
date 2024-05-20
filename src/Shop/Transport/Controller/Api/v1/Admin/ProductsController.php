@@ -18,8 +18,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 /**
- * Class ProductsController
- *
  * @package App\Shop\Transport\Controller\Api\v1\Admin
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -30,6 +28,7 @@ class ProductsController extends AbstractController
     public function index(ProductsRepository $productsRepository): Response
     {
         $produits = $productsRepository->findAll();
+
         return $this->render('admin/products/index.html.twig', compact('produits'));
     }
 
@@ -48,11 +47,11 @@ class ProductsController extends AbstractController
         $productForm->handleRequest($request);
 
         //On vérifie si le formulaire est soumis ET valide
-        if($productForm->isSubmitted() && $productForm->isValid()){
+        if ($productForm->isSubmitted() && $productForm->isValid()) {
             // On récupère les images
             $images = $productForm->get('images')->getData();
 
-            foreach($images as $image){
+            foreach ($images as $image) {
                 // On définit le dossier de destination
                 $folder = 'products';
 
@@ -82,7 +81,6 @@ class ProductsController extends AbstractController
             return $this->redirectToRoute('admin_products_index');
         }
 
-
         // return $this->render('admin/products/add.html.twig',[
         //     'productForm' => $productForm->createView()
         // ]);
@@ -108,11 +106,11 @@ class ProductsController extends AbstractController
         $productForm->handleRequest($request);
 
         //On vérifie si le formulaire est soumis ET valide
-        if($productForm->isSubmitted() && $productForm->isValid()){
+        if ($productForm->isSubmitted() && $productForm->isValid()) {
             // On récupère les images
             $images = $productForm->get('images')->getData();
 
-            foreach($images as $image){
+            foreach ($images as $image) {
                 // On définit le dossier de destination
                 $folder = 'products';
 
@@ -123,7 +121,6 @@ class ProductsController extends AbstractController
                 $img->setName($fichier);
                 $product->addImage($img);
             }
-
 
             // On génère le slug
             $slug = $slugger->slug($product->getName());
@@ -143,10 +140,9 @@ class ProductsController extends AbstractController
             return $this->redirectToRoute('admin_products_index');
         }
 
-
-        return $this->render('admin/products/edit.html.twig',[
+        return $this->render('admin/products/edit.html.twig', [
             'productForm' => $productForm->createView(),
-            'product' => $product
+            'product' => $product,
         ]);
 
         // return $this->renderForm('admin/products/edit.html.twig', compact('productForm'));
@@ -168,23 +164,29 @@ class ProductsController extends AbstractController
         // On récupère le contenu de la requête
         $data = json_decode($request->getContent(), true);
 
-        if($this->isCsrfTokenValid('delete' . $image->getId(), $data['_token'])){
+        if ($this->isCsrfTokenValid('delete' . $image->getId(), $data['_token'])) {
             // Le token csrf est valide
             // On récupère le nom de l'image
             $nom = $image->getName();
 
-            if($pictureService->delete($nom, 'products', 300, 300)){
+            if ($pictureService->delete($nom, 'products', 300, 300)) {
                 // On supprime l'image de la base de données
                 $em->remove($image);
                 $em->flush();
 
-                return new JsonResponse(['success' => true], 200);
+                return new JsonResponse([
+                    'success' => true,
+                ], 200);
             }
+
             // La suppression a échoué
-            return new JsonResponse(['error' => 'Erreur de suppression'], 400);
+            return new JsonResponse([
+                'error' => 'Erreur de suppression',
+            ], 400);
         }
 
-        return new JsonResponse(['error' => 'Token invalide'], 400);
+        return new JsonResponse([
+            'error' => 'Token invalide',
+        ], 400);
     }
-
 }

@@ -24,6 +24,7 @@ class GroupRepository extends ServiceEntityRepository
     {
         $builder = $this->createQueryBuilder('g');
         $builder->orderBy('g.name', 'ASC');
+
         return $builder->getQuery()->getResult();
     }
 

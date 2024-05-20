@@ -11,8 +11,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Group
- *
  * @package App\Quiz\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -28,7 +26,7 @@ class Group
     #[ORM\Column(length: 255)]
     private ?string $name;
 
-    #[ORM\ManyToOne(targetEntity: School::class, inversedBy:'groups')]
+    #[ORM\ManyToOne(targetEntity: School::class, inversedBy: 'groups')]
     #[ORM\JoinColumn(nullable: false)]
     private ?School $school;
 
@@ -45,8 +43,6 @@ class Group
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $ed_id;
 
-
-
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -56,9 +52,9 @@ class Group
     {
         if ($this->shortname) {
             return $this->shortname;
-        } else {
-            return "";
         }
+
+        return '';
     }
 
     public function getId(): ?int
@@ -90,9 +86,6 @@ class Group
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getUsers(): Collection
     {
         return $this->users;

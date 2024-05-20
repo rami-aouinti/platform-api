@@ -8,8 +8,6 @@ use App\Shop\Domain\Repository\ImagesRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Images
- *
  * @package App\Shop\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */

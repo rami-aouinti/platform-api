@@ -11,8 +11,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Question
- *
  * @package App\Quiz\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -20,7 +18,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'platform_quiz_question')]
 class Question
 {
-
     public const NUM_ITEMS = 10;
 
     #[ORM\Id]
@@ -55,9 +52,6 @@ class Question
 
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $max_duration;
-
-
-
 
     public function __construct()
     {
@@ -120,27 +114,19 @@ class Question
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getCategories(): Collection
     {
         return $this->categories;
     }
 
-    /**
-     * @return Category|null
-     */
     public function getFirstCategory(): ?Category
     {
         if (sizeof($this->categories) > 0) {
             return $this->categories[0];
         }
-        else {
-            return null;
-        }
-    }
 
+        return null;
+    }
 
     public function addCategory(Category $category): self
     {
@@ -160,9 +146,6 @@ class Question
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getAnswers(): Collection
     {
         return $this->answers;
@@ -214,5 +197,4 @@ class Question
 
         return $this;
     }
-
 }

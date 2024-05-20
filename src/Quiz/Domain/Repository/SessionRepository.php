@@ -24,8 +24,8 @@ class SessionRepository extends ServiceEntityRepository
     public function removeDuplicateWorkouts(int $session_id, int $quiz_id)
     {
         $conn = $this->getEntityManager()->getConnection();
-        $sql = "DELETE FROM tbl_workout WHERE session_id = :session_id AND quiz_id = :quiz_id AND number_of_questions < 1
-                    AND student_id IN (SELECT student_id AS id FROM tbl_workout WHERE session_id = :session_id AND quiz_id = :quiz_id AND number_of_questions > 0);";
+        $sql = 'DELETE FROM tbl_workout WHERE session_id = :session_id AND quiz_id = :quiz_id AND number_of_questions < 1
+                    AND student_id IN (SELECT student_id AS id FROM tbl_workout WHERE session_id = :session_id AND quiz_id = :quiz_id AND number_of_questions > 0);';
         $stmt = $conn->prepare($sql);
         $stmt->bindParam('session_id', $session_id);
         $stmt->bindParam('quiz_id', $quiz_id);
@@ -35,9 +35,9 @@ class SessionRepository extends ServiceEntityRepository
     public function cleanByQuizId(int $quiz_id)
     {
         $conn = $this->getEntityManager()->getConnection();
-        $sql = "delete from tbl_session where quiz_id = :quiz_id
+        $sql = 'delete from tbl_session where quiz_id = :quiz_id
                 and :quiz_id not in (select id as quiz_id from tbl_quiz where active > 0)
-                and id not in (select session_id as id from tbl_workout where session_id is not null and quiz_id = :quiz_id);";
+                and id not in (select session_id as id from tbl_workout where session_id is not null and quiz_id = :quiz_id);';
         $stmt = $conn->prepare($sql);
         $stmt->bindParam('quiz_id', $quiz_id);
         $stmt->executeStatement();
@@ -48,6 +48,7 @@ class SessionRepository extends ServiceEntityRepository
         $builder = $this->createQueryBuilder('s');
         $builder->andWhere('s.quiz = :val')->setParameter('val', $quiz_id);
         $builder->orderBy('s.id', 'DESC');
+
         return $builder->getQuery()->getResult();
     }
 

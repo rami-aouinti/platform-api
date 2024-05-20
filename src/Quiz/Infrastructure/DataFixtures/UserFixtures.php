@@ -15,19 +15,15 @@ use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
- * Class UserFixtures
- *
  * @package App\Quiz\Infrastructure\DataFixtures
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
 class UserFixtures extends Fixture
 {
-
     public const BASIC_USER_REFERENCE = 'basic_user';
     public const TEACHER_USER_REFERENCE = 'teacher_user';
     public const ADMIN_USER_REFERENCE = 'admin_user';
     public const SUPER_ADMIN_USER_REFERENCE = 'super_admin_user';
-
 
     private UserPasswordHasherInterface $userPasswordHasher;
 

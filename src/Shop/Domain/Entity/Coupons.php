@@ -11,8 +11,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Coupons
- *
  * @package App\Shop\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -146,9 +144,6 @@ class Coupons
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getOrders(): Collection
     {
         return $this->orders;

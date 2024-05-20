@@ -31,13 +31,17 @@ class GroupType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('shortname', TextType::class, array('label' => $this->translator->trans('Name')))
-            ->add('name', TextType::class, array('label' => $this->translator->trans('Description')))
+            ->add('shortname', TextType::class, [
+                'label' => $this->translator->trans('Name'),
+            ])
+            ->add('name', TextType::class, [
+                'label' => $this->translator->trans('Description'),
+            ])
             ->add('code')
             ->add('school')
             // ->add('users')
         ;
-        $builder->add('users', EntityType::class, array(
+        $builder->add('users', EntityType::class, [
             'class' => User::class,
             'choice_label' => 'name',
             'multiple' => true,
@@ -46,7 +50,7 @@ class GroupType extends AbstractType
             'attr' => [
                 'size' => 15,
             ],
-        ));
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -42,7 +42,7 @@ final class CustomerValidator extends ConstraintValidator
         if ((bool)$this->systemConfiguration->find('customer.rules.allow_duplicate_number') === false && (($number = $value->getNumber()) !== null)) {
             foreach (
                 $this->customerRepository->findBy([
-                'number' => $number,
+                    'number' => $number,
                 ]) as $tmp
             ) {
                 if ($tmp->getId() !== $value->getId()) {

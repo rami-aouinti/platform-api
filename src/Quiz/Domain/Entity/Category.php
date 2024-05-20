@@ -11,8 +11,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Category
- *
  * @package App\Quiz\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -20,7 +18,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'platform_quiz_category')]
 class Category
 {
-
     #[ORM\Id()]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column(type: 'integer')]
@@ -38,7 +35,7 @@ class Category
     #[ORM\ManyToMany(targetEntity: Question::class, mappedBy: 'categories')]
     private Collection $questions;
 
-    #[ORM\ManyToOne(targetEntity: Language::class, inversedBy:'categories')]
+    #[ORM\ManyToOne(targetEntity: Language::class, inversedBy: 'categories')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Language $language;
 
@@ -51,9 +48,6 @@ class Category
     #[ORM\ManyToOne(inversedBy: 'categories')]
     private ?User $created_by = null;
 
-    /**
-     * @param $shortname
-     */
     public function __construct($shortname = null)
     {
         $this->setCreatedAt(new \DateTime());
@@ -95,9 +89,6 @@ class Category
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getQuizzes(): Collection
     {
         return $this->quizzes;
@@ -123,9 +114,6 @@ class Category
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getQuestions(): Collection
     {
         return $this->questions;

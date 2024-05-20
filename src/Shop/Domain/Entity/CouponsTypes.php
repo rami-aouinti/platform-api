@@ -10,8 +10,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class CouponsTypes
- *
  * @package App\Shop\Domain\Entity
  * @author  Rami Aouinti <rami.aouinti@tkdeutschland.de>
  */
@@ -51,9 +49,6 @@ class CouponsTypes
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getCoupons(): Collection
     {
         return $this->coupons;
