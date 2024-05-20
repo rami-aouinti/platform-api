@@ -9,9 +9,10 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace App\Crm\Transport\Controller\Api\v1;
+namespace App\Information\Transport\Controller\Api\v1;
 
 use App\Crm\Constants;
+use App\Crm\Transport\Controller\Api\v1\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 

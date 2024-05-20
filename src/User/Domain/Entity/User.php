@@ -13,6 +13,11 @@ use App\General\Domain\Entity\Traits\Timestampable;
 use App\General\Domain\Entity\Traits\Uuid;
 use App\General\Domain\Enum\Language;
 use App\General\Domain\Enum\Locale;
+use App\Quiz\Domain\Entity\Category;
+use App\Quiz\Domain\Entity\Group;
+use App\Quiz\Domain\Entity\Question;
+use App\Quiz\Domain\Entity\Quiz;
+use App\Quiz\Domain\Entity\Workout;
 use App\Tool\Domain\Service\Interfaces\LocalizationServiceInterface;
 use App\User\Domain\Entity\Enum\SexEnum;
 use App\User\Domain\Entity\Interfaces\UserGroupAwareInterface;
@@ -49,7 +54,7 @@ use Throwable;
 #[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 #[AssertCollection\UniqueEntity('email')]
 #[AssertCollection\UniqueEntity('username')]
-class User implements EntityInterface, UserInterface, UserGroupAwareInterface
+class User implements EntityInterface, UserInterface, UserGroupAwareInterface, \Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface
 {
     use Blameable;
     use Timestampable;
@@ -442,6 +447,55 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
     #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/TeamMembership'))]
     private Collection $memberships;
 
+    #[ORM\OneToMany(mappedBy: 'student', targetEntity: Workout::class, orphanRemoval: true)]
+    private Collection $workouts;
+
+    #[ORM\OneToMany(mappedBy: 'created_by', targetEntity: Quiz::class, orphanRemoval: true)]
+    private Collection $quizzes;
+
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    private ?\App\Quiz\Domain\Entity\Language $prefered_language = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $token = null;
+
+    #[ORM\Column(length: 16, nullable: true)]
+    private ?string $organization_code = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $organization_label = null;
+
+    #[ORM\Column(length: 5, nullable: true)]
+    private ?string $account_type = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $comment = null;
+
+    #[ORM\Column(length: 2, nullable: true)]
+    private ?string $login_type = null;
+
+    #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: 'users')]
+    #[ORM\JoinTable(name: 'platform_quiz_user_group')]
+    private ?Collection $groups;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $toReceiveMyResultByEmail = null;
+
+    #[ORM\OneToMany(mappedBy: 'created_by', targetEntity: Question::class)]
+    private Collection $questions;
+
+    #[ORM\OneToMany(mappedBy: 'created_by', targetEntity: Category::class)]
+    private Collection $categories;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $current_school_year = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $ed_id = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $lastQuizAccess = null;
+
     /**
      * Constructor
      *
@@ -456,6 +510,11 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
         $this->logsRequest = new ArrayCollection();
         $this->logsLogin = new ArrayCollection();
         $this->logsLoginFailure = new ArrayCollection();
+        $this->workouts = new ArrayCollection();
+        $this->quizzes = new ArrayCollection();
+        $this->groups = new ArrayCollection();
+        $this->questions = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId(): string
@@ -864,5 +923,135 @@ class User implements EntityInterface, UserInterface, UserGroupAwareInterface
         }
 
         return null;
+    }
+
+    public function getWorkouts(): Collection
+    {
+        return $this->workouts;
+    }
+
+    public function setWorkouts(Collection $workouts): void
+    {
+        $this->workouts = $workouts;
+    }
+
+    public function getQuizzes(): Collection
+    {
+        return $this->quizzes;
+    }
+
+    public function setQuizzes(Collection $quizzes): void
+    {
+        $this->quizzes = $quizzes;
+    }
+
+    public function getPreferedLanguage(): ?\App\Quiz\Domain\Entity\Language
+    {
+        return $this->prefered_language;
+    }
+
+    public function setPreferedLanguage(?\App\Quiz\Domain\Entity\Language $prefered_language): void
+    {
+        $this->prefered_language = $prefered_language;
+    }
+
+    public function getOrganizationCode(): ?string
+    {
+        return $this->organization_code;
+    }
+
+    public function setOrganizationCode(?string $organization_code): void
+    {
+        $this->organization_code = $organization_code;
+    }
+
+    public function getOrganizationLabel(): ?string
+    {
+        return $this->organization_label;
+    }
+
+    public function setOrganizationLabel(?string $organization_label): void
+    {
+        $this->organization_label = $organization_label;
+    }
+
+    public function getAccountType(): ?string
+    {
+        return $this->account_type;
+    }
+
+    public function setAccountType(?string $account_type): void
+    {
+        $this->account_type = $account_type;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?string $comment): void
+    {
+        $this->comment = $comment;
+    }
+
+    public function getGroups(): ?Collection
+    {
+        return $this->groups;
+    }
+
+    public function setGroups(?Collection $groups): void
+    {
+        $this->groups = $groups;
+    }
+
+    public function getQuestions(): Collection
+    {
+        return $this->questions;
+    }
+
+    public function setQuestions(Collection $questions): void
+    {
+        $this->questions = $questions;
+    }
+
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function setCategories(Collection $categories): void
+    {
+        $this->categories = $categories;
+    }
+
+    public function getCurrentSchoolYear(): ?string
+    {
+        return $this->current_school_year;
+    }
+
+    public function setCurrentSchoolYear(?string $current_school_year): void
+    {
+        $this->current_school_year = $current_school_year;
+    }
+
+    public function getEdId(): ?int
+    {
+        return $this->ed_id;
+    }
+
+    public function setEdId(?int $ed_id): void
+    {
+        $this->ed_id = $ed_id;
+    }
+
+    public function getLastQuizAccess(): ?DateTimeInterface
+    {
+        return $this->lastQuizAccess;
+    }
+
+    public function setLastQuizAccess(?DateTimeInterface $lastQuizAccess): void
+    {
+        $this->lastQuizAccess = $lastQuizAccess;
     }
 }

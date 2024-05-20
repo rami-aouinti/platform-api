@@ -231,6 +231,12 @@ when@dev:
         App\Crm\Infrastructure\DataFixtures\:
             resource: '../src/Crm/Infrastructure/DataFixtures/*'
 
+        App\Quiz\Infrastructure\DataFixtures\:
+            resource: '../src/Quiz/Infrastructure/DataFixtures/*'
+
+        App\Shop\Infrastructure\DataFixtures\:
+            resource: '../src/Shop/Infrastructure/DataFixtures/*'
+
         App\Tests\TestCase\:
             resource: '../tests/TestCase/*'
 
@@ -271,6 +277,12 @@ when@test:
         App\Crm\Infrastructure\DataFixtures\:
             resource: '../src/Crm/Infrastructure/DataFixtures/*'
 
+        App\Quiz\Infrastructure\DataFixtures\:
+            resource: '../src/Quiz/Infrastructure/DataFixtures/*'
+
+        App\Shop\Infrastructure\DataFixtures\:
+            resource: '../src/Shop/Infrastructure/DataFixtures/*'
+            
         App\Tests\TestCase\:
             resource: '../tests/TestCase/*'
 

@@ -122,6 +122,8 @@ final class LoadUserData extends Fixture implements OrderedFixtureInterface
             ->setLocale(Locale::EN)
             ->setPlainPassword('password' . $suffix);
 
+        $entity->setLastQuizAccess(new \DateTimeImmutable('now'));
+
         if ($role !== null) {
             /** @var UserGroup $userGroup */
             $userGroup = $this->getReference('UserGroup-' . $this->rolesService->getShort($role), UserGroup::class);
@@ -144,6 +146,12 @@ final class LoadUserData extends Fixture implements OrderedFixtureInterface
         return true;
     }
 
+    /**
+     * @param $manager
+     * @param $user
+     *
+     * @return void
+     */
     private function createSetting($manager, $user): void
     {
         $setting = new Setting();
